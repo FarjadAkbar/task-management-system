@@ -8,12 +8,9 @@ export default function Home() {
       <Navbar />
       <main className="container mx-auto py-8 px-6">
         <div className="flex gap-6">
-          {/* Sidebar */}
           <div className="hidden md:flex w-1/4 bg-white shadow-lg rounded-lg">
             <SideBar />
           </div>
-
-          {/* Profile Content */}
           <div className="flex-1 bg-white shadow-lg rounded-lg p-6">
             <h1 className="text-xl font-bold mb-4">Edit Profile</h1>
             <EditProfileForm />
