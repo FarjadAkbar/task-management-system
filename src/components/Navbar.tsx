@@ -60,7 +60,7 @@ const Navbar: React.FC = () => {
                         {/* {session?.user ? ( */}
                         <>
                             <button onClick={() => router.push('/auth/signIn')}>
-                                <span className="block px-4 py-2 hover:text-gold font-semibold">LogOut</span>
+                                <span className="block px-4 py-2 hover:text-gold font-semibold">Login</span>
                             </button>
                         </>
 
