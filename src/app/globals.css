@@ -7,3 +7,9 @@
   --black: #171717;
   --gold: #e1c343;
 }
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+}

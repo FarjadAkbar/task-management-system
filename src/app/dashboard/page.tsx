@@ -1,55 +1,55 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import webdeveloper from '@/components/ui/images/webDeveloper.png';
-import graphicDesigner from '@/components/ui/images/graphicDesigner.png';
-import SEOContentWriter from '@/components/ui/images/SEOContentWriter.png';
-import SEOSpecialist from '@/components/ui/images/seoSpecialist.png';
-import Shipping from '@/components/ui/images/delivery.png';
-import MarketPlace from '@/components/ui/images/MarketPlace.png';
+import database from '@/components/ui/images/database.png';
+import task from '@/components/ui/images/task.png';
+import team from '@/components/ui/images/team.png';
+import ticket from '@/components/ui/images/ticket.png';
+import meetings from '@/components/ui/images/meetings.png';
+import messages from '@/components/ui/images/messages.png';
+import PFolder from '@/components/ui/images/personalfolder.png';
+import SFolder from '@/components/ui/images/sharedfolder.png';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const cardsData = [
-    { src: webdeveloper, title: 'Web Developer', link: 'dashboard/web-developer' },
-    { src: graphicDesigner, title: 'Graphic Designer', link: 'dashboard/graphic-designer' },
-    { src: SEOContentWriter, title: 'SEO Content Writer', link: 'dashboard/seo-content-writer' },
-    { src: SEOSpecialist, title: 'SEO Specialist', link: 'dashboard/seo-specialist' },
-    { src: Shipping, title: 'Shipping and labels Handling', link: 'dashboard/shipping' },
-    { src: MarketPlace, title: 'MarketPlace', subtitle: 'Amazon ebay walmart', link: 'dashboard/marketplace' },
+const cards = [
+    { title: "Database", src: database, href: "" },
+    { title: "Task Manager", src: task, href: "" },
+    { title: "Our Team", src: team, href: "dashboard/our-team" },
+    { title: "Ticket", src: ticket, href: "" },
+    { title: "Events and Meeting", src: meetings, href: "" },
+    { title: "Messages", src: messages, href: "" },
+    { title: "Personal Folder", src: PFolder, href: "" },
+    { title: "Share Folder", src: SFolder, href: "" },
 ];
 
 const Dashboard = () => {
     return (
-        <div className="bg-white min-h-screen">
+        <div className='min-h-screen'>
             <Navbar />
-            <main className="px-6 py-8 mt-0 m-16">
+            <div className="px-6 py-8 mt-0 m-16">
                 <h1 className="text-xl font-semibold text-center md:text-left">MY DASHBOARD</h1>
                 <p className="text-center text-lg mt-4">
                     Employee Name and job title
                     <br />
                     <span className="font-bold">Ayesha Khan Marketing Manager</span>
                 </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-11 mt-8">
-                    {cardsData.map((card, index) => (
-                        <Link key={index} href={card.link}>
-                            <div
-                                className="flex flex-col items-center justify-center border-2 border-black p-4 hover:shadow-md"
-                            >
-                                <Image
-                                    src={card.src}
-                                    alt={card.title}
-                                    className="h-32 w-32 object-contain mb-4"
-                                />
-                                <h2 className="text-center font-semibold text-lg">{card.title}</h2>
-                                {/* {card.subtitle && (
-                                    <p className="text-center text-sm mt-1">{card.subtitle}</p>
-                                )} */}
+                <div className="flex flex-wrap justify-center mt-8">
+                    {cards.map((card, index) => (
+                        <Link href={card.href} key={index} className="w-full sm:w-1/2 lg:w-1/3">
+                            <div className="flex flex-col items-center p-4 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.25)] rounded-lg hover:scale-105 transform transition-transform duration-300 ease-in-out m-6">
+                                <div className="w-36 mb-4">
+                                    <Image
+                                        src={card.src}
+                                        alt={card.title}
+                                        className="rounded-md h-32 object-cover"
+                                    />
+                                </div>
+                                <h3 className="text-md font-semibold">{card.title}</h3>
                             </div>
                         </Link>
                     ))}
                 </div>
-            </main>
+            </div>
         </div>
     );
 };
