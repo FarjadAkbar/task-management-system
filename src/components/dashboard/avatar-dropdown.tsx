@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,6 +49,7 @@ const AvatarDropdown = ({ avatar, userId, name, email }: Props) => {
                 : `${process.env.NEXT_PUBLIC_APP_URL}/images/nouser.png`
             }
           />
+           <AvatarFallback>U</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>

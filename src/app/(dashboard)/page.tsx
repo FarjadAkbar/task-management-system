@@ -15,7 +15,6 @@ const cards = [
 
 const Dashboard = () => {
     return (
-        <div className='min-h-screen'>
             <div className="px-6 py-8 mt-0 m-16">
                 <h1 className="text-xl font-semibold text-center md:text-left">MY DASHBOARD</h1>
                 <p className="text-center text-lg mt-4">
@@ -41,7 +40,6 @@ const Dashboard = () => {
                     ))}
                 </div>
             </div>
-        </div>
     );
 };
 
