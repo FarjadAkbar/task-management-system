@@ -1,24 +1,17 @@
 import React from 'react';
-import Navbar from '@/components/Navbar';
 import Image from "next/image";
-import canva from '@/components/ui/images/canva.png';
-import envato from '@/components/ui/images/Envato-Logo.webp';
-import chatgpt from '@/components/ui/images/chatgpt.png';
-import elevenLabs from '@/components/ui/images/voiceAi.png';
-import adobe from '@/components/ui/images/adobe-suite.png';
 
 const toolsData = [
-    { name: "Canva", image: canva },
-    { name: "Envato", image: envato },
-    { name: "ChatGPT", image: chatgpt },
-    { name: "ElevenLabs", image: elevenLabs, subtitle: "Generative Voice AI" },
-    { name: "Adobe Suite", image: adobe },
+    { name: "Canva", image: "/images/canva.png" },
+    { name: "Envato", image: "/images/Envato-Logo.webp" },
+    { name: "ChatGPT", image: "/images/chatgpt.png" },
+    { name: "ElevenLabs", image: "/images/voiceAi.png", subtitle: "Generative Voice AI" },
+    { name: "Adobe Suite", image: "/images/adobe-suite.png" },
 ];
 
 const page = () => {
     return (
         <>
-            <Navbar />
             <div className='px-6 py-6 mx-16'>
                 <h1 className="text-xl font-bold text-left">TOOLS</h1>
                 <h2 className="text-2xl mt-4 text-center font-semibold">Paid Tools By DolceFrutti</h2>
@@ -60,7 +53,6 @@ const page = () => {
                                 alt={tool.name}
                                 width={80}
                                 height={80}
-                                className="object-contain"
                             />
                             <h3 className="font-semibold text-lg mt-4">{tool.name}</h3>
                             {tool.subtitle && (

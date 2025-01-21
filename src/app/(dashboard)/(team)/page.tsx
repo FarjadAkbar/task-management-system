@@ -1,27 +1,19 @@
 import React from 'react';
-import Navbar from '@/components/Navbar';
-import webdeveloper from '@/components/ui/images/webDeveloper.png';
-import graphicDesigner from '@/components/ui/images/graphicDesigner.png';
-import SEOContentWriter from '@/components/ui/images/SEOContentWriter.png';
-import SEOSpecialist from '@/components/ui/images/seoSpecialist.png';
-import Shipping from '@/components/ui/images/delivery.png';
-import MarketPlace from '@/components/ui/images/MarketPlace.png';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const cardsData = [
-    { src: webdeveloper, title: 'Web Developer', link: 'our-team/web-developer' },
-    { src: graphicDesigner, title: 'Graphic Designer', link: 'our-team/graphic-designer' },
-    { src: SEOContentWriter, title: 'SEO Content Writer', link: 'our-team/seo-content-writer' },
-    { src: SEOSpecialist, title: 'SEO Specialist', link: 'our-team/seo-specialist' },
-    { src: Shipping, title: 'Shipping and labels Handling', link: 'our-team/shipping' },
-    { src: MarketPlace, title: 'MarketPlace', subtitle: 'Amazon ebay walmart', link: 'our-team/marketplace' },
+    { src: "/images/webDeveloper.png", title: 'Web Developer', link: 'our-team/web-developer' },
+    { src: "/images/graphicDesigner.png", title: 'Graphic Designer', link: 'our-team/graphic-designer' },
+    { src: "/images/SEOContentWriter.png", title: 'SEO Content Writer', link: 'our-team/seo-content-writer' },
+    { src: "/images/seoSpecialist.png", title: 'SEO Specialist', link: 'our-team/seo-specialist' },
+    { src: "/images/delivery.png", title: 'Shipping and labels Handling', link: 'our-team/shipping' },
+    { src: "/images/MarketPlace.png", title: 'MarketPlace', subtitle: 'Amazon ebay walmart', link: 'our-team/marketplace' },
 ];
 
 const Ourteam = () => {
     return (
         <div className="bg-white min-h-screen">
-            <Navbar />
             <main className="px-6 py-8 mt-0 m-16">
                 <h1 className="text-xl font-semibold text-center md:text-left">Our Team</h1>
                 <p className="text-center text-lg mt-4">
@@ -38,6 +30,7 @@ const Ourteam = () => {
                                 <Image
                                     src={card.src}
                                     alt={card.title}
+                                    fill
                                     className="h-32 w-32 object-contain mb-4"
                                 />
                                 <h2 className="text-center font-semibold text-lg">{card.title}</h2>

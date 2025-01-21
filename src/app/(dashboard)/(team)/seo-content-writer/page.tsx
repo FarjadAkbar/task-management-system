@@ -1,5 +1,4 @@
-import EmployeeGuidelines from '@/components/EmployeeGuidelines'
-import Navbar from '@/components/Navbar'
+import EmployeeGuidelines from '@/components/dashboard/team/employee-guidelines'
 import React from 'react'
 
 
@@ -80,7 +79,6 @@ const page = () => {
     ];
     return (
         <div className="bg-gray-100 min-h-screen">
-            <Navbar />
             <div className="max-w-7xl mx-auto py-6">
                 <h1 className="text-2xl font-semibold mb-6">SEO Content Writer</h1>
                 <EmployeeGuidelines />

@@ -1,31 +1,21 @@
 import React from 'react';
-import Navbar from '@/components/Navbar';
-import database from '@/components/ui/images/database.png';
-import task from '@/components/ui/images/task.png';
-import team from '@/components/ui/images/team.png';
-import ticket from '@/components/ui/images/ticket.png';
-import meetings from '@/components/ui/images/meetings.png';
-import messages from '@/components/ui/images/messages.png';
-import PFolder from '@/components/ui/images/personalfolder.png';
-import SFolder from '@/components/ui/images/sharedfolder.png';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const cards = [
-    { title: "Database", src: database, href: "" },
-    { title: "Task Manager", src: task, href: "" },
-    { title: "Our Team", src: team, href: "dashboard/our-team" },
-    { title: "Ticket", src: ticket, href: "" },
-    { title: "Events and Meeting", src: meetings, href: "" },
-    { title: "Messages", src: messages, href: "" },
-    { title: "Personal Folder", src: PFolder, href: "" },
-    { title: "Share Folder", src: SFolder, href: "" },
+    { title: "Database", src: "/images/database.png", href: "" },
+    { title: "Task Manager", src: "/images/task.png", href: "" },
+    { title: "Our Team", src: "/images/team.png", href: "dashboard/our-team" },
+    { title: "Ticket", src: "/images/ticket.png", href: "" },
+    { title: "Events and Meeting", src: "/images/meetings.png", href: "" },
+    { title: "Messages", src: "/images/messages.png", href: "" },
+    { title: "Personal Folder", src: "/images/personalfolder.png", href: "" },
+    { title: "Share Folder", src: "/images/sharedfolder.png", href: "" },
 ];
 
 const Dashboard = () => {
     return (
         <div className='min-h-screen'>
-            <Navbar />
             <div className="px-6 py-8 mt-0 m-16">
                 <h1 className="text-xl font-semibold text-center md:text-left">MY DASHBOARD</h1>
                 <p className="text-center text-lg mt-4">
@@ -41,6 +31,7 @@ const Dashboard = () => {
                                     <Image
                                         src={card.src}
                                         alt={card.title}
+                                        fill
                                         className="rounded-md h-32 object-cover"
                                     />
                                 </div>

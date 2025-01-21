@@ -1,12 +1,10 @@
-import EmployeeGuidelines from '@/components/EmployeeGuidelines'
-import Navbar from '@/components/Navbar'
+import EmployeeGuidelines from '@/components/dashboard/team/employee-guidelines'
 import React from 'react'
 
 
 const page = () => {
     return (
         <div>
-            <Navbar />
             <div className="bg-gray-100 min-h-screen p-6">
                 <div className="max-w-7xl mx-auto">
                     <h1 className="text-2xl font-bol mb-4 font-semibold">Graphic Designer</h1>

@@ -1,11 +1,9 @@
-import EditProfileForm from '@/components/EditProfileForm'
-import Navbar from '@/components/Navbar'
-import SideBar from '@/components/SideBar'
+import EditProfileForm from '@/components/dashboard/team/profile-form'
+import SideBar from '@/components/dashboard/sidebar'
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
       <main className="container mx-auto py-8 px-6">
         <div className="flex gap-6">
           <div className="hidden md:flex w-1/4 bg-white shadow-lg rounded-lg">
