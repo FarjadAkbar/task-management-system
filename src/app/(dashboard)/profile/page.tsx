@@ -1,7 +1,16 @@
-import EditProfileForm from '@/components/dashboard/team/profile-form'
+import { getUser } from "@/actions/get-user";
+import { ProfileForm } from "@/components/dashboard/profile/profile-form";
+import { PasswordChangeForm } from "@/components/dashboard/profile/password-change";
+import { ProfilePhotoForm } from "@/components/dashboard/profile/profile-photo-form";
+import H4Title from "@/components/typography/h4";
 import SideBar from '@/components/dashboard/sidebar'
 
-export default function Home() {
+export default async function Profile() {
+  const data = await getUser();
+
+  if (!data) {
+    return <div>No user data.</div>;
+  }
   return (
     <div className="min-h-screen bg-gray-100">
       <main className="container mx-auto py-8 px-6">
@@ -11,7 +20,16 @@ export default function Home() {
           </div>
           <div className="flex-1 bg-white shadow-lg rounded-lg p-6">
             <h1 className="text-xl font-bold mb-4">Edit Profile</h1>
-            <EditProfileForm />
+            <div>
+              <H4Title>Profile photo</H4Title>
+              <ProfilePhotoForm data={data} />
+
+              <H4Title>Profile</H4Title>
+              <ProfileForm data={data} />
+
+              <H4Title>Password change</H4Title>
+              <PasswordChangeForm userId={data.id} />
+            </div>
           </div>
         </div>
       </main>

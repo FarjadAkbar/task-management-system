@@ -11,7 +11,7 @@ async function main() {
   const admin = await prisma.users.create({
     data: {
       account_name: "Admin Account",
-      avatar: "https://example.com/avatar-admin.png",
+      avatar: null,
       email: "admin@example.com",
       is_account_admin: true,
       is_admin: true,
@@ -27,7 +27,7 @@ async function main() {
   const user = await prisma.users.create({
     data: {
       account_name: "User Account",
-      avatar: "https://example.com/avatar-user.png",
+      avatar: null,
       email: "user@example.com",
       is_account_admin: false,
       is_admin: false,

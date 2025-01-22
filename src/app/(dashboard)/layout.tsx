@@ -58,7 +58,7 @@ export default async function AppLayout({
 
   //console.log(typeof build, "build");
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex">
       <div className="flex flex-col h-full w-full overflow-hidden">
         <Header
           id={session.user.id as string}

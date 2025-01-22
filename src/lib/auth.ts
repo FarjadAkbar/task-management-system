@@ -59,7 +59,9 @@ export const authOptions: NextAuthOptions = {
           email: token.email,
         },
       });
-
+      if (!user) {
+        throw new Error("User not found, please register first");
+      }
       await prismadb.users.update({
         where: {
           id: user.id,

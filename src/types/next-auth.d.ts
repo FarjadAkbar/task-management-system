@@ -7,6 +7,12 @@ declare module "next-auth" {
   }
 
   interface Session {
-    user: User;
+    user: User & {
+      id: UserId;
+      _id: UserId;
+      avatar?: string | null | undefined;
+      isAdmin: boolean;
+      userStatus: string;
+    };
   }
 }
