@@ -20,15 +20,15 @@ export default async function Profile() {
           </div>
           <div className="flex-1 bg-white shadow-lg rounded-lg p-6">
             <h1 className="text-xl font-bold mb-4">Edit Profile</h1>
-            <div>
-              <H4Title>Profile photo</H4Title>
-              <ProfilePhotoForm data={data} />
-
-              <H4Title>Profile</H4Title>
-              <ProfileForm data={data} />
-
-              <H4Title>Password change</H4Title>
-              <PasswordChangeForm userId={data.id} />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex flex-col items-center justify-start">
+                <ProfilePhotoForm data={data} />
+              </div>
+              <div className="col-span-1 md:col-span-2">
+                <ProfileForm data={data} />
+                {/* <H4Title>Password change</H4Title>
+                <PasswordChangeForm userId={data.id} /> */}
+              </div>
             </div>
           </div>
         </div>
