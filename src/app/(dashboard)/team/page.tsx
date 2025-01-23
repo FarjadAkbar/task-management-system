@@ -3,12 +3,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const cardsData = [
-    { src: "/images/webDeveloper.png", title: 'Web Developer', link: 'our-team/web-developer' },
-    { src: "/images/graphicDesigner.png", title: 'Graphic Designer', link: 'our-team/graphic-designer' },
-    { src: "/images/SEOContentWriter.png", title: 'SEO Content Writer', link: 'our-team/seo-content-writer' },
-    { src: "/images/seoSpecialist.png", title: 'SEO Specialist', link: 'our-team/seo-specialist' },
-    { src: "/images/delivery.png", title: 'Shipping and labels Handling', link: 'our-team/shipping' },
-    { src: "/images/MarketPlace.png", title: 'MarketPlace', subtitle: 'Amazon ebay walmart', link: 'our-team/marketplace' },
+    { src: "/images/webDeveloper.png", title: 'Web Developer', link: 'team/web-developer' },
+    { src: "/images/graphicDesigner.png", title: 'Graphic Designer', link: 'team/graphic-designer' },
+    { src: "/images/SEOContentWriter.png", title: 'SEO Content Writer', link: 'team/seo-content-writer' },
+    { src: "/images/seoSpecialist.png", title: 'SEO Specialist', link: 'team/seo-specialist' },
+    { src: "/images/delivery.png", title: 'Shipping and labels Handling', link: 'team/shipping' },
+    { src: "/images/MarketPlace.png", title: 'MarketPlace', subtitle: 'Amazon ebay walmart', link: 'team/marketplace' },
 ];
 
 const Ourteam = () => {
@@ -30,7 +30,8 @@ const Ourteam = () => {
                                 <Image
                                     src={card.src}
                                     alt={card.title}
-                                    fill
+                                    width={144}
+                                    height={200}
                                     className="h-32 w-32 object-contain mb-4"
                                 />
                                 <h2 className="text-center font-semibold text-lg">{card.title}</h2>

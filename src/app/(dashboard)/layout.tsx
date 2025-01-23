@@ -47,13 +47,13 @@ export default async function AppLayout({
 
   const user = session?.user;
 
-//   if (user?.userStatus === "PENDING") {
-//     return redirect("/pending");
-//   }
+  //   if (user?.userStatus === "PENDING") {
+  //     return redirect("/pending");
+  //   }
 
-//   if (user?.userStatus === "INACTIVE") {
-//     return redirect("/inactive");
-//   }
+  //   if (user?.userStatus === "INACTIVE") {
+  //     return redirect("/inactive");
+  //   }
 
 
   //console.log(typeof build, "build");
@@ -66,7 +66,7 @@ export default async function AppLayout({
           email={session.user.email as string}
           avatar={session.user.image as string}
         />
-        <div className="flex-grow overflow-y-auto h-full p-5">{children}</div>
+        <div className="flex-grow overflow-y-auto h-full">{children}</div>
       </div>
     </div>
   );

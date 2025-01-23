@@ -25,9 +25,13 @@ interface ProfileFormProps {
 
 const FormSchema = z.object({
   id: z.string(),
-  name: z.string().min(3).max(50),
+  firstname: z.string().min(3).max(50),
+  lastname: z.string().min(3).max(50),
+  email: z.string().email("Invalid email address"),
   username: z.string().min(2).max(50),
   account_name: z.string().min(2).max(50),
+  job_title: z.string().nonempty("Job title is required"),
+  timezone: z.string().nonempty("Timezone is required"),
 });
 
 export function ProfileForm({ data }: ProfileFormProps) {
@@ -40,10 +44,11 @@ export function ProfileForm({ data }: ProfileFormProps) {
     defaultValues: data
       ? { ...data }
       : {
-          name: "",
-          username: "",
-          account_name: "",
-        },
+        name: "",
+        username: "",
+        account_name: "",
+        timezone: "",
+      },
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -54,7 +59,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
       toast.success("Profile updated successfully");
       router.refresh();
     } catch (error) {
-        toast.error("Error updating profile");
+      toast.error("Error updating profile");
     } finally {
       setIsLoading(false);
     }
@@ -64,44 +69,64 @@ export function ProfileForm({ data }: ProfileFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex space-x-5 w-full p-5 items-end"
+        className="space-y-4"
       >
         <FormField
           control={form.control}
-          name="name"
+          name="email"
           render={({ field }) => (
-            <FormItem className="w-1/3">
-              <FormLabel>Full name</FormLabel>
+            <FormItem>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input disabled={isLoading} placeholder="John Doe" {...field} />
+                <Input disabled={isLoading} placeholder="John@gmail.com" {...field}
+                  className="w-full border rounded-md px-3 py-2" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem className="w-1/3">
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input disabled={isLoading} placeholder="jdoe" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <FormField
+              control={form.control}
+              name="firstname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First name</FormLabel>
+                  <FormControl>
+                    <Input disabled={isLoading} placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div>
+            <FormField
+              control={form.control}
+              name="lastname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input disabled={isLoading} placeholder="jdoe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
         <FormField
           control={form.control}
           name="account_name"
           render={({ field }) => (
-            <FormItem className="w-1/3">
+            <FormItem>
               <FormLabel>Company</FormLabel>
               <FormControl>
                 <Input
                   disabled={isLoading}
-                  placeholder="Tesla Inc.,"
+                  placeholder=""
                   {...field}
                 />
               </FormControl>
@@ -109,11 +134,48 @@ export function ProfileForm({ data }: ProfileFormProps) {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="job_title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Job Title</FormLabel>
+              <FormControl>
+                <Input
+                  disabled={isLoading}
+                  placeholder=""
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="timezone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Timezone</FormLabel>
+              <FormControl>
+                <select
+                  {...field}
+                  disabled={isLoading}
+                  className="w-full border border-gray-300 rounded-md p-2"
+                >
+                  <option value="">Select a timezone</option>
+                </select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
 
         <Button className="w-[150px]" type="submit">
-          Update
+          Save Changes
         </Button>
       </form>
-    </Form>
+    </Form >
   );
 }
