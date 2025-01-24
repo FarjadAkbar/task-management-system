@@ -25,6 +25,27 @@ export function ProfilePhotoForm({ data }: ProfileFormProps) {
     setAvatar(data.avatar);
   }, [data.avatar, toast]);
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      setIsUploading(true);
+
+      const response = await axios.post("/api/profile/uploadProfilePhoto", formData);
+      const newAvatar = response.data.avatarUrl;
+      handleUploadSuccess(newAvatar);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      toast.error("Failed to upload profile photo.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleUploadSuccess = async (newAvatar: string) => {
     try {
       setAvatar(newAvatar);
@@ -58,7 +79,7 @@ export function ProfilePhotoForm({ data }: ProfileFormProps) {
           type="file"
           accept="image/*"
           className="hidden"
-          // onChange={handleFileChange}
+          onChange={handleFileChange}
           disabled={isUploading}
         />
       </Label>

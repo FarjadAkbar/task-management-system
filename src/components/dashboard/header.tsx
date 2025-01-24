@@ -54,7 +54,7 @@ const Header = ({ id, name, email, avatar }: Props) => {
         </nav>
       </div>
       <AvatarDropdown avatar={avatar} userId={id} name={name} email={email} />
-      
+
       <div className="md:hidden flex items-center">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
