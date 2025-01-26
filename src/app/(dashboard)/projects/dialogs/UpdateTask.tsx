@@ -1,5 +1,6 @@
 "use client";
 
+import ModalDropzone from "@/components/modals/modal-dropzone";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -19,6 +20,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -29,7 +31,11 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { addChecklistItem, removeChecklistItem, updateChecklistItem } from "@/lib/checklist";
+import {
+  addChecklistItem,
+  removeChecklistItem,
+  updateChecklistItem,
+} from "@/lib/checklist";
 import { cn } from "@/lib/utils";
 import { IChecklistItem } from "@/types/checklist";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -60,7 +66,9 @@ const UpdateTaskDialog = ({
 }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [checklistItems, setChecklistItems] = useState<IChecklistItem[]>(initialData.checklist);
+  const [checklistItems, setChecklistItems] = useState<IChecklistItem[]>(
+    initialData.checklist
+  );
 
   const router = useRouter();
   const { toast } = useToast();
@@ -72,14 +80,14 @@ const UpdateTaskDialog = ({
     priority: z.string().min(3).max(10),
     content: z.string().min(3).max(500),
     checklist: z
-          .array(
-            z.object({
-              id: z.string(),
-              text: z.string(),
-              checked: z.boolean(),
-            })
-          )
-          .optional(),
+      .array(
+        z.object({
+          id: z.string(),
+          text: z.string(),
+          checked: z.boolean(),
+        })
+      )
+      .optional(),
     boardId: z.string().min(3).max(255),
   });
 
@@ -135,6 +143,7 @@ const UpdateTaskDialog = ({
 
   return (
     <div className="flex flex-col space-y-2 w-full ">
+      <ScrollArea className="flex h-screen w-full">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -182,15 +191,18 @@ const UpdateTaskDialog = ({
                 <FormItem>
                   <FormLabel>Due date</FormLabel>
                   <FormControl>
-                  <Input
-                    type="date"
-                    disabled={isLoading}
-                    placeholder="Enter date"
-                    {...field}
-                    value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                    onChange={(e) => field.onChange(new Date(e.target.value))}
-                  />
-
+                    <Input
+                      type="date"
+                      disabled={isLoading}
+                      placeholder="Enter date"
+                      {...field}
+                      value={
+                        field.value
+                          ? field.value.toISOString().split("T")[0]
+                          : ""
+                      }
+                      onChange={(e) => field.onChange(new Date(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -251,48 +263,49 @@ const UpdateTaskDialog = ({
               )}
             />
 
-<div className="space-y-2">
-                    <Label>Checklist &nbsp;</Label>
-                    {checklistItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center space-x-2"
-                      >
-                        <Input
-                          value={item.text}
-                          onChange={(e) =>
-                            updateChecklistItem({
-                              setChecklistItems,
-                              checklistItems,
-                              id: item.id,
-                              text: e.target.value,
-                            })
-                          }
-                        />
-                        <Button
-                          type="button"
-                          onClick={() => 
-                            removeChecklistItem({
-                              setChecklistItems,
-                              checklistItems,
-                              id: item.id,
-                            })
-                          }
-                          variant="ghost"
-                          size="icon"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      onClick={() => addChecklistItem({ setChecklistItems, checklistItems })}
-                      variant="outline"
-                    >
-                      Add Checklist Item
-                    </Button>
-                  </div>
+            <div className="space-y-2">
+              <Label>Checklist &nbsp;</Label>
+              {checklistItems.map((item) => (
+                <div key={item.id} className="flex items-center space-x-2">
+                  <Input
+                    value={item.text}
+                    onChange={(e) =>
+                      updateChecklistItem({
+                        setChecklistItems,
+                        checklistItems,
+                        id: item.id,
+                        text: e.target.value,
+                      })
+                    }
+                  />
+                  <Button
+                    type="button"
+                    onClick={() =>
+                      removeChecklistItem({
+                        setChecklistItems,
+                        checklistItems,
+                        id: item.id,
+                      })
+                    }
+                    variant="ghost"
+                    size="icon"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              <Button
+                type="button"
+                onClick={() =>
+                  addChecklistItem({ setChecklistItems, checklistItems })
+                }
+                variant="outline"
+              >
+                Add Checklist Item
+              </Button>
+            </div>
+
+            <ModalDropzone taskId={initialData.id} />
           </div>
           <div className="flex w-full justify-end space-x-2 pt-2">
             <Button type="submit" disabled={isLoading}>
@@ -305,6 +318,7 @@ const UpdateTaskDialog = ({
           </div>
         </form>
       </Form>
+      </ScrollArea>
     </div>
   );
 };

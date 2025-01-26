@@ -18,8 +18,7 @@ const Dashboard = () => {
         <div className="px-6 py-8 mt-0 m-16">
             <h1 className="text-xl font-semibold text-center md:text-left">MY DASHBOARD</h1>
             <p className="text-center text-lg mt-4">
-                Employee Name and job title
-                <br />
+                
                 <span className="font-bold">Ayesha Khan Marketing Manager</span>
             </p>
             <div className="flex flex-wrap justify-center mt-8">
