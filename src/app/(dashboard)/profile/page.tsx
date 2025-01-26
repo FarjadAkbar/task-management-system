@@ -1,9 +1,8 @@
 import { getUser } from "@/actions/get-user";
-import { ProfileForm } from "@/components/dashboard/profile/profile-form";
-import { PasswordChangeForm } from "@/components/dashboard/profile/password-change";
-import { ProfilePhotoForm } from "@/components/dashboard/profile/profile-photo-form";
-import H4Title from "@/components/typography/h4";
-import SideBar from '@/components/dashboard/sidebar'
+import { ProfileForm } from "./components/ProfileForm";
+import { PasswordChangeForm } from "./components/PasswordChangeForm";
+import { ProfilePhotoForm } from "./components/ProfilePhotoForm";
+import SideBar from './components/Sidebar'
 
 export default async function Profile() {
   const data = await getUser();

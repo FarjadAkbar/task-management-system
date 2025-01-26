@@ -3,8 +3,7 @@ import { prismadb } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-import NewTaskFromProject from "@/emails/NewTaskFromProject";
-import resendHelper from "@/lib/resend";
+// import resendHelper from "@/lib/resend";
 import UpdatedTaskFromProject from "@/emails/UpdatedTaskFromProject";
 
 //Create new task in project route
@@ -16,7 +15,7 @@ export async function PUT(req: Request, props: { params: Promise<{ taskId: strin
   /*
   Resend.com function init - this is a helper function that will be used to send emails
   */
-  const resend = await resendHelper();
+  // const resend = await resendHelper();
   const session = await getServerSession(authOptions);
   const body = await req.json();
   //console.log(body, "body");
@@ -111,26 +110,26 @@ export async function PUT(req: Request, props: { params: Promise<{ taskId: strin
 
         //console.log(notifyRecipient, "notifyRecipient");
 
-        await resend.emails.send({
-          from:
-            process.env.NEXT_PUBLIC_APP_NAME +
-            " <" +
-            process.env.EMAIL_FROM +
-            ">",
-          to: notifyRecipient?.email!,
-          subject:
-            session.user.userLanguage === "en"
-              ? `Task -  ${title} - was updated.`
-              : `Úkol - ${title} - byl aktualizován.`,
-          text: "", // Add this line to fix the types issue
-          react: UpdatedTaskFromProject({
-            taskFromUser: session.user.name!,
-            username: notifyRecipient?.name!,
-            userLanguage: notifyRecipient?.userLanguage!,
-            taskData: task,
-            boardData: boardData,
-          }),
-        });
+        // await resend.emails.send({
+        //   from:
+        //     process.env.NEXT_PUBLIC_APP_NAME +
+        //     " <" +
+        //     process.env.EMAIL_FROM +
+        //     ">",
+        //   to: notifyRecipient?.email!,
+        //   subject:
+        //     session.user.userLanguage === "en"
+        //       ? `Task -  ${title} - was updated.`
+        //       : `Úkol - ${title} - byl aktualizován.`,
+        //   text: "", // Add this line to fix the types issue
+        //   react: UpdatedTaskFromProject({
+        //     taskFromUser: session.user.name!,
+        //     username: notifyRecipient?.name!,
+        //     userLanguage: notifyRecipient?.userLanguage!,
+        //     taskData: task,
+        //     boardData: boardData,
+        //   }),
+        // });
         console.log("Email sent to user: ", notifyRecipient?.email!);
       } catch (error) {
         console.log(error);

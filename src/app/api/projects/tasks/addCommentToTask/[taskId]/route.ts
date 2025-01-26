@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 import NewTaskCommentEmail from "@/emails/NewTaskComment";
-import resendHelper from "@/lib/resend";
 
 export async function POST(
   req: Request,
@@ -14,7 +13,7 @@ export async function POST(
   /*
   Resend.com function init - this is a helper function that will be used to send emails
   */
-  const resend = await resendHelper();
+  // const resend = await resendHelper();
   const session = await getServerSession(authOptions);
   const body = await req.json();
   const { comment } = body;
@@ -111,26 +110,26 @@ export async function POST(
 
         //console.log("Comment send to user: ", user?.email);
 
-        await resend.emails.send({
-          from:
-            process.env.NEXT_PUBLIC_APP_NAME +
-            " <" +
-            process.env.EMAIL_FROM +
-            ">",
-          to: user?.email!,
-          subject:
-            session.user.userLanguage === "en"
-              ? `New comment  on task ${task.title}.`
-              : `Nový komentář k úkolu ${task.title}.`,
-          text: "", // Add this line to fix the types issue
-          react: NewTaskCommentEmail({
-            commentFromUser: session.user.name!,
-            username: user?.name!,
-            userLanguage: user?.userLanguage!,
-            taskId: task.id,
-            comment: comment,
-          }),
-        });
+        // await resend.emails.send({
+        //   from:
+        //     process.env.NEXT_PUBLIC_APP_NAME +
+        //     " <" +
+        //     process.env.EMAIL_FROM +
+        //     ">",
+        //   to: user?.email!,
+        //   subject:
+        //     session.user.userLanguage === "en"
+        //       ? `New comment  on task ${task.title}.`
+        //       : `Nový komentář k úkolu ${task.title}.`,
+        //   text: "", // Add this line to fix the types issue
+        //   react: NewTaskCommentEmail({
+        //     commentFromUser: session.user.name!,
+        //     username: user?.name!,
+        //     userLanguage: user?.userLanguage!,
+        //     taskId: task.id,
+        //     comment: comment,
+        //   }),
+        // });
       }
       return NextResponse.json(newComment, { status: 200 });
     } else {
