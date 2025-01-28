@@ -10,7 +10,7 @@ export default function DocumentsPerview({ taskDocuments }: { taskDocuments: any
     
   const removeFile = async (fileId: string) => {
     try {
-      await axios.delete(`/api/projects/tasks/documents/${fileId}`)
+      await axios.delete(`/api/uploadthing/${fileId}`)
     } catch (error) {
       console.error("Error removing file:", error)
     }
