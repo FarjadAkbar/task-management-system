@@ -31,6 +31,7 @@ model Boards {
   watchers       String[] @db.ObjectId
   assigned_user  Users?   @relation(name: "assigned_user", fields: [user], references: [id])
   watchers_users Users[]  @relation(name: "watching_users", fields: [watchers], references: [id])
+  sections       Sections[]
 }
 
 model Employees {
@@ -101,6 +102,7 @@ model Sections {
   title    String
   position Int?
   tasks    Tasks[]
+  board_relation Boards @relation(fields: [board], references: [id])
 }
 
 model modulStatus {

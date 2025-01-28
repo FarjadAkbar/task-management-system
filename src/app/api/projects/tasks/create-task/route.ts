@@ -24,6 +24,7 @@ export async function POST(req: Request) {
     account,
     checklist,
     dueDateAt,
+    attachments
   } = body;
 
   if (!session) {
@@ -57,6 +58,7 @@ export async function POST(req: Request) {
 
     let contentUpdated = content;
 
+    console.log(attachments, "attach");
     const task = await prismadb.tasks.create({
       data: {
         v: 0,
@@ -70,10 +72,29 @@ export async function POST(req: Request) {
         position: tasksCount > 0 ? tasksCount : 0,
         user: user,
         taskStatus: "ACTIVE",
-        checklist: checklist ? JSON.stringify(checklist) : null,
+        checklist: checklist,
       },
     });
 
+    await Promise.all(
+      attachments.map((att: any) =>
+        prismadb.tasks.update({
+          where: {
+            id: task.id,
+          },
+          data: {
+            updatedBy: session.user.id,
+            documents: {
+              connect: {
+                id: att.id,
+              },
+            },
+          },
+        })
+      )
+    );
+    
+console.log(task, "task")
     //Make update to Board - updatedAt field to trigger re-render and reorder
     await prismadb.boards.update({
       where: {

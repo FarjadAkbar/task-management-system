@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { FileUploaderDropzone } from "@/components/ui/file-uploader-dropzone";
 import {
   Form,
   FormControl,
@@ -59,6 +60,7 @@ const NewTaskDialog = ({ users, boards }: Props) => {
 
   const [isMounted, setIsMounted] = useState(false);
   const [checklistItems, setChecklistItems] = useState<IChecklistItem[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<Array<{ id: string; name: string; url: string }>>([])
 
   const router = useRouter();
   const { toast } = useToast();
@@ -96,6 +98,19 @@ const NewTaskDialog = ({ users, boards }: Props) => {
   }
 
   //Actions
+  const handleFileUpload = (files: Array<{ id: string; name: string; url: string }>) => {
+    setUploadedFiles((prevFiles) => [...prevFiles, ...files])
+    console.log(files, "files");
+  }
+
+  const removeFile = async (fileId: string) => {
+    try {
+      setUploadedFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId))
+      await axios.delete(`/api/uploadthing/${fileId}`)
+    } catch (error) {
+      console.error("Error removing file:", error)
+    }
+  }
   
   const onSubmit = async (data: NewAccountFormValues) => {
     console.log(data);
@@ -104,7 +119,11 @@ const NewTaskDialog = ({ users, boards }: Props) => {
       await axios.post(`/api/projects/tasks/create-task`, {
         ...data,
         checklist: checklistItems,
+        attachments: uploadedFiles,
       });
+      setChecklistItems([]);
+      setUploadedFiles([]);
+      
       toast({
         title: "Success",
         description: `New task: ${data.title}, created successfully`,
@@ -196,6 +215,7 @@ const NewTaskDialog = ({ users, boards }: Props) => {
                           type="date"
                           disabled={isLoading}
                           placeholder="Enter date"
+                          min={new Date().toISOString().split("T")[0]}
                           {...field}
                           value={field.value ? field.value.toISOString().split('T')[0] : ''}
                           onChange={(e) => field.onChange(new Date(e.target.value))}
@@ -286,6 +306,7 @@ const NewTaskDialog = ({ users, boards }: Props) => {
                       </FormItem>
                     )}
                   />
+                  
                   <div className="space-y-2">
                     <Label>Checklist &nbsp;</Label>
                     {checklistItems.map((item) => (
@@ -328,6 +349,26 @@ const NewTaskDialog = ({ users, boards }: Props) => {
                       Add Checklist Item
                     </Button>
                   </div>
+
+                  <div className="space-y-2">
+                <Label>Attachments</Label>
+                <FileUploaderDropzone onUploadSuccess={handleFileUpload} />
+                {uploadedFiles.length > 0 && (
+                <div className="mt-2">
+                  <p>Uploaded files:</p>
+                  <ul className="list-disc pl-5">
+                    {uploadedFiles.map((file) => (
+                      <li key={file.id} className="flex items-center justify-between">
+                        <span>{file.name}</span>
+                        <Button type="button" onClick={() => removeFile(file.id)} variant="ghost" size="sm">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </li>
+                    ))} 
+                  </ul>
+                </div>
+              )}
+              </div>
                 </div>
                 <div className="flex w-full justify-end space-x-2 pt-2">
                   <DialogTrigger asChild>

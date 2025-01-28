@@ -16,7 +16,7 @@ interface TaskChecklistProps {
 }
 
 export function TaskChecklist({ taskId, initialChecklist }: TaskChecklistProps) {
-  const [checklist, setChecklist] = useState<ChecklistItem[]>(initialChecklist)
+  const [checklist, setChecklist] = useState<ChecklistItem[]>(Array.isArray(initialChecklist) ? initialChecklist : JSON.parse(initialChecklist))
 
 
   const handleCheckChange = async (id: string, checked: boolean) => {

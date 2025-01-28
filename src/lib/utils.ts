@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { File, FileImage, FileText, FileAudio, FileVideo, FileIcon as FilePdf } from "lucide-react"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -46,4 +47,24 @@ export function generateRandomPassword() {
     .join("");
 
   return password;
+}
+
+export function getFileIcon(fileType: string) {
+  if (fileType.startsWith("image/")) return FileImage
+  if (fileType.startsWith("audio/")) return FileAudio
+  if (fileType.startsWith("video/")) return FileVideo
+  if (fileType === "application/pdf") return FilePdf
+  if (fileType.startsWith("text/")) return FileText
+  return File
+}
+
+
+export function previewFile(file: { document_file_url: string; document_file_mimeType: string }) {
+  if (file.document_file_mimeType.startsWith("image/")) {
+    window.open(file.document_file_url, "_blank")
+  } else {
+    // For non-image files, you might want to use a more sophisticated preview method
+    // This is a simple fallback that will attempt to open the file in a new tab
+    window.open(file.document_file_url, "_blank")
+  }
 }

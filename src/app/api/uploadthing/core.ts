@@ -16,9 +16,9 @@ const auth = async (req: Request) => {
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
   fileUploader: f({
-    blob: { maxFileSize: "64MB", maxFileCount: 1 },
-    image: { maxFileSize: "4MB" },
-    pdf: { maxFileSize: "64MB", maxFileCount: 1 },
+    blob: { maxFileSize: "64MB", maxFileCount: 10 },
+    image: { maxFileSize: "8MB", maxFileCount: 10 },
+    pdf: { maxFileSize: "64MB", maxFileCount: 10 },
   }).middleware(async ({ req }) => {
     // This code runs on your server before upload
     const user = await auth(req);

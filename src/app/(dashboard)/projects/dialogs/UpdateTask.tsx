@@ -79,15 +79,6 @@ const UpdateTaskDialog = ({
     dueDateAt: z.date(),
     priority: z.string().min(3).max(10),
     content: z.string().min(3).max(500),
-    checklist: z
-      .array(
-        z.object({
-          id: z.string(),
-          text: z.string(),
-          checked: z.boolean(),
-        })
-      )
-      .optional(),
     boardId: z.string().min(3).max(255),
   });
 
@@ -101,7 +92,6 @@ const UpdateTaskDialog = ({
       dueDateAt: initialData.dueDateAt,
       priority: initialData.priority,
       content: initialData.content,
-      checklist: initialData.checklist,
       boardId: boardId,
     },
   });
@@ -195,6 +185,7 @@ const UpdateTaskDialog = ({
                       type="date"
                       disabled={isLoading}
                       placeholder="Enter date"
+                      min={new Date().toISOString().split("T")[0]}
                       {...field}
                       value={
                         field.value
@@ -304,8 +295,6 @@ const UpdateTaskDialog = ({
                 Add Checklist Item
               </Button>
             </div>
-
-            <ModalDropzone taskId={initialData.id} />
           </div>
           <div className="flex w-full justify-end space-x-2 pt-2">
             <Button type="submit" disabled={isLoading}>

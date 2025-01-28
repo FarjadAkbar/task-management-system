@@ -47,8 +47,26 @@ export const columns: ColumnDef<Task>[] = [
     ),
     cell: ({ row }) => (
       <Link href={`/projects/boards/${row.original.id}`}>
-        <div className="w-[300px]">{row.getValue("title")}</div>
+        <div className="w-[200px]">{row.getValue("title")}</div>
       </Link>
+    ),
+  },
+  {
+    accessorKey: "total_task",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Total Task" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-[100px]">{row.getValue("total_task")}</div>
+    ),
+  },
+  {
+    accessorKey: "completed_task",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Completed Task" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-[100px]">{row.getValue("completed_task")}</div>
     ),
   },
   {

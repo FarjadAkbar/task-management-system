@@ -1,11 +1,11 @@
 import { UploadDropzone } from "@uploadthing/react";
-import { ourFileRouter, OurFileRouter } from "@/app/api/uploadthing/core";
+import { OurFileRouter } from "@/app/api/uploadthing/core";
 
 import "@uploadthing/react/styles.css";
 import axios from "axios";
 
 interface Props {
-  onUploadSuccess?: (newAvatar: string) => void;
+  onUploadSuccess?: (files: { id: string; name: string; url: string }[]) => void
   taskId?: string;
 }
 
@@ -17,13 +17,23 @@ export const FileUploaderDropzone = ({ onUploadSuccess, taskId }: Props) => (
     endpoint={"fileUploader"}
     onClientUploadComplete={async (res) => {
       // Do something with the response
-      if(taskId !== undefined && res) {
-        await axios.post(`/api/projects/tasks/${res[0]?.serverData?.id}/assign`, {
-          taskId: taskId!,
-        });
+      if (taskId !== undefined && res) {
+        await Promise.all(
+          res.map(async (file) => {
+            await axios.post(`/api/projects/tasks/${file?.serverData?.id}/assign`, {
+              taskId: taskId,
+            });
+          })
+        );
       }
-      if (onUploadSuccess && res) {
-        onUploadSuccess(res[0]?.url);
+      
+      if (onUploadSuccess && res?.length) {
+        const uploadedFiles = res.map((file) => ({
+          id: file.serverData.id,
+          name: file.name,
+          url: file.url,
+        }))
+        onUploadSuccess(uploadedFiles)
       }
     }}
     onUploadError={(error: Error) => {
