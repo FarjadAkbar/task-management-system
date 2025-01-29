@@ -4,14 +4,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 import NewTaskFromProject from "@/emails/NewTaskFromProject";
-import resendHelper from "@/lib/resend";
+// import resendHelper from "@/lib/resend";
 
 export async function POST(req: Request, props: { params: Promise<{ boardId: string }> }) {
   const params = await props.params;
   /*
   Resend.com function init - this is a helper function that will be used to send emails
   */
-  const resend = await resendHelper();
+  // const resend = await resendHelper();
   const session = await getServerSession(authOptions);
   const body = await req.json();
   const { boardId } = params;
@@ -111,26 +111,26 @@ export async function POST(req: Request, props: { params: Promise<{ boardId: str
 
           //console.log(notifyRecipient, "notifyRecipient");
 
-          await resend.emails.send({
-            from:
-              process.env.NEXT_PUBLIC_APP_NAME +
-              " <" +
-              process.env.EMAIL_FROM +
-              ">",
-            to: notifyRecipient?.email!,
-            subject:
-              session.user.userLanguage === "en"
-                ? `New task -  ${title}.`
-                : `Nový úkol - ${title}.`,
-            text: "", // Add this line to fix the types issue
-            react: NewTaskFromProject({
-              taskFromUser: session.user.name!,
-              username: notifyRecipient?.name!,
-              userLanguage: notifyRecipient?.userLanguage!,
-              taskData: task,
-              boardData: boardData,
-            }),
-          });
+          // await resend.emails.send({
+          //   from:
+          //     process.env.NEXT_PUBLIC_APP_NAME +
+          //     " <" +
+          //     process.env.EMAIL_FROM +
+          //     ">",
+          //   to: notifyRecipient?.email!,
+          //   subject:
+          //     session.user.userLanguage === "en"
+          //       ? `New task -  ${title}.`
+          //       : `Nový úkol - ${title}.`,
+          //   text: "", // Add this line to fix the types issue
+          //   react: NewTaskFromProject({
+          //     taskFromUser: session.user.name!,
+          //     username: notifyRecipient?.name!,
+          //     userLanguage: notifyRecipient?.userLanguage!,
+          //     taskData: task,
+          //     boardData: boardData,
+          //   }),
+          // });
           console.log("Email sent to user: ", notifyRecipient?.email!);
         } catch (error) {
           console.log(error);

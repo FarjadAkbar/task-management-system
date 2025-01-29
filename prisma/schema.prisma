@@ -9,46 +9,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model crm_Accounts {
-  id                   String               @id @default(auto()) @map("_id") @db.ObjectId
-  v                    Int                  @map("__v")
-  createdAt            DateTime             @default(now()) @db.Date
-  createdBy            String?              @db.ObjectId
-  updatedAt            DateTime?            @updatedAt @db.Date
-  updatedBy            String?              @db.ObjectId
-  annual_revenue       String?
-  assigned_to          String?              @db.ObjectId
-  billing_city         String?
-  billing_country      String?
-  billing_postal_code  String?
-  billing_state        String?
-  billing_street       String?
-  company_id           String?
-  description          String?
-  email                String?
-  employees            String?
-  fax                  String?
-  industry             String?              @db.ObjectId
-  member_of            String?
-  name                 String
-  office_phone         String?
-  shipping_city        String?
-  shipping_country     String?
-  shipping_postal_code String?
-  shipping_state       String?
-  shipping_street      String?
-  status               String?              @default("Inactive")
-  type                 String?              @default("Customer")
-  vat                  String?
-  website              String?
-  documentsIDs         String[]             @db.ObjectId
-  assigned_documents   Documents[]          @relation(fields: [documentsIDs], references: [id])
-  industry_type        crm_Industry_Type?   @relation(fields: [industry], references: [id])
-  assigned_to_user     Users?               @relation(fields: [assigned_to], references: [id])
-  crm_accounts_tasks   crm_Accounts_Tasks[]
-  watchers             String[]             @db.ObjectId
-  watching_users       Users[]              @relation(name: "watching_accounts", fields: [watchers], references: [id])
-}
 
 model Boards {
   id                String    @id @default(auto()) @map("_id") @db.ObjectId
@@ -71,6 +31,7 @@ model Boards {
   watchers       String[] @db.ObjectId
   assigned_user  Users?   @relation(name: "assigned_user", fields: [user], references: [id])
   watchers_users Users[]  @relation(name: "watching_users", fields: [watchers], references: [id])
+  sections       Sections[]
 }
 
 model Employees {
@@ -111,11 +72,8 @@ model Documents {
   assigned_user          String?             @db.ObjectId
   connected_documents    String[]
   tasksIDs               String[]            @db.ObjectId
-  crm_accounts_tasksIDs  String[]            @db.ObjectId
   accountsIDs            String[]            @db.ObjectId
   tasks                  Tasks[]             @relation(fields: [tasksIDs], references: [id])
-  crm_accounts_tasks     crm_Accounts_Tasks? @relation(fields: [crm_accounts_tasksIDs], references: [id])
-  accounts               crm_Accounts[]      @relation(fields: [accountsIDs], references: [id])
   created_by             Users?              @relation(name: "created_by_user", fields: [created_by_user], references: [id])
   assigned_to_user       Users?              @relation(name: "assigned_to_user", fields: [assigned_user], references: [id])
   documents_type         Documents_Types?    @relation(fields: [document_type], references: [id])
@@ -144,13 +102,7 @@ model Sections {
   title    String
   position Int?
   tasks    Tasks[]
-}
-
-model crm_Industry_Type {
-  id       String         @id @default(auto()) @map("_id") @db.ObjectId
-  v        Int            @map("__v")
-  name     String
-  accounts crm_Accounts[]
+  board_relation Boards @relation(fields: [board], references: [id])
 }
 
 model modulStatus {
@@ -174,6 +126,7 @@ model Tasks {
   section          String?         @db.ObjectId
   tags             Json?
   title            String
+  checklist        Json?
   likes            Int?            @default(0)
   user             String?         @db.ObjectId
   documentIDs      String[]        @db.ObjectId
@@ -185,29 +138,6 @@ model Tasks {
   taskStatus       taskStatus?     @default(ACTIVE)
 }
 
-model crm_Accounts_Tasks {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  v             Int             @map("__v")
-  content       String?
-  createdAt     DateTime?       @default(now()) @db.Date
-  createdBy     String?         @db.ObjectId
-  updatedAt     DateTime?       @updatedAt @db.Date
-  updatedBy     String?         @db.ObjectId
-  dueDateAt     DateTime?       @default(now()) @db.Date
-  priority      String
-  tags          Json?
-  title         String
-  likes         Int?            @default(0)
-  user          String?         @db.ObjectId
-  comments      tasksComments[]
-  documents     Documents[]
-  assigned_user Users?          @relation(fields: [user], references: [id])
-  //CRM assigments
-  account       String?         @db.ObjectId
-  crm_accounts  crm_Accounts?   @relation(fields: [account], references: [id])
-  //Staus
-  taskStatus    taskStatus?     @default(ACTIVE)
-}
 
 model tasksComments {
   id                             String              @id @default(auto()) @map("_id") @db.ObjectId
@@ -216,8 +146,6 @@ model tasksComments {
   createdAt                      DateTime            @default(now()) @db.Date
   task                           String              @db.ObjectId
   user                           String              @db.ObjectId
-  assigned_crm_account_task      String?             @db.ObjectId
-  assigned_crm_account_task_task crm_Accounts_Tasks? @relation(fields: [assigned_crm_account_task], references: [id])
   assigned_task                  Tasks?              @relation(fields: [task], references: [id], onDelete: Cascade)
   assigned_user                  Users?              @relation(fields: [user], references: [id])
 }
@@ -228,14 +156,6 @@ enum taskStatus {
   COMPLETE
 }
 
-model TodoList {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt   String
-  description String
-  title       String
-  url         String
-  user        String
-}
 
 enum ActiveStatus {
   ACTIVE
@@ -332,6 +252,9 @@ model Users {
   created_on           DateTime              @default(now()) @db.Date
   lastLoginAt          DateTime?             @db.Date
   name                 String?
+  first_name           String?
+  last_name            String?
+  job_title            String?
   password             String?
   username             String?
   userStatus           ActiveStatus          @default(PENDING)
@@ -339,13 +262,10 @@ model Users {
   created_by_documents Documents[]           @relation(name: "created_by_user")
   assigned_documents   Documents[]           @relation(name: "assigned_to_user")
   tasks                Tasks[]
-  crm_accounts_tasks   crm_Accounts_Tasks[]
-  accounts             crm_Accounts[]
   boards               Boards[]              @relation(name: "assigned_user")
   watching_boardsIDs   String[]              @db.ObjectId
   watching_boards      Boards[]              @relation(name: "watching_users", fields: [watching_boardsIDs], references: [id])
   watching_accountsIDs String[]              @db.ObjectId
-  watching_accounts    crm_Accounts[]        @relation(name: "watching_accounts", fields: [watching_accountsIDs], references: [id])
   instructionMaterials InstructionMaterial[]
   comments             Comment[]
   sharedDatabases      SharedDatabase[]

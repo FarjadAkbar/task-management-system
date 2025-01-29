@@ -2,26 +2,38 @@ import { UploadDropzone } from "@uploadthing/react";
 import { OurFileRouter } from "@/app/api/uploadthing/core";
 
 import "@uploadthing/react/styles.css";
+import axios from "axios";
 
 interface Props {
-  uploader:
-    | "pdfUploader"
-    | "imageUploader"
-    | "docUploader"
-    | "profilePhotoUploader";
-  onUploadSuccess?: (newAvatar: string) => void;
+  onUploadSuccess?: (files: { id: string; name: string; url: string }[]) => void
+  taskId?: string;
 }
 
-export const FileUploaderDropzone = ({ uploader, onUploadSuccess }: Props) => (
+
+export const FileUploaderDropzone = ({ onUploadSuccess, taskId }: Props) => (
   //@ts-ignore
   //TODO: Fix this issue with the type OurFileRouter
   <UploadDropzone<OurFileRouter>
-    endpoint={uploader}
-    onClientUploadComplete={(res) => {
+    endpoint={"fileUploader"}
+    onClientUploadComplete={async (res) => {
       // Do something with the response
-      console.log("Files: ", res);
-      if (onUploadSuccess && res) {
-        onUploadSuccess(res[0]?.url);
+      if (taskId !== undefined && res) {
+        await Promise.all(
+          res.map(async (file) => {
+            await axios.post(`/api/projects/tasks/${file?.serverData?.id}/assign`, {
+              taskId: taskId,
+            });
+          })
+        );
+      }
+      
+      if (onUploadSuccess && res?.length) {
+        const uploadedFiles = res.map((file) => ({
+          id: file.serverData.id,
+          name: file.name,
+          url: file.url,
+        }))
+        onUploadSuccess(uploadedFiles)
       }
     }}
     onUploadError={(error: Error) => {

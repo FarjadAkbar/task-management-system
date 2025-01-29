@@ -1,7 +1,7 @@
-import Loader from "@/components/loader";
+import SuspenseLoading from "@/components/loadings/suspense";
 
 export default function Loading() {
   return (
-    <Loader />
+    <SuspenseLoading />
   );
 }

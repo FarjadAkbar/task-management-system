@@ -1,21 +1,18 @@
+"use server";
+
 import { NextResponse } from "next/server";
 import { prismadb } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-
-import NewTaskFromCRMEmail from "@/emails/NewTaskFromCRM";
+import { render } from "@react-email/render";
 import NewTaskFromProject from "@/emails/NewTaskFromProject";
-import resendHelper from "@/lib/resend";
+import sendEmail from "@/lib/sendmail";
 
 //Create new task in project route
 /*
 TODO: there is second route for creating task in board, but it is the same as this one. Consider merging them (/api/projects/tasks/create-task/[boardId]). 
 */
 export async function POST(req: Request) {
-  /*
-  Resend.com function init - this is a helper function that will be used to send emails
-  */
-  const resend = await resendHelper();
   const session = await getServerSession(authOptions);
   const body = await req.json();
   const {
@@ -24,9 +21,10 @@ export async function POST(req: Request) {
     board,
     priority,
     content,
-    notionUrl,
     account,
+    checklist,
     dueDateAt,
+    attachments
   } = body;
 
   if (!session) {
@@ -60,10 +58,7 @@ export async function POST(req: Request) {
 
     let contentUpdated = content;
 
-    if (notionUrl) {
-      contentUpdated = content + "\n\n" + notionUrl;
-    }
-
+    console.log(attachments, "attach");
     const task = await prismadb.tasks.create({
       data: {
         v: 0,
@@ -77,9 +72,29 @@ export async function POST(req: Request) {
         position: tasksCount > 0 ? tasksCount : 0,
         user: user,
         taskStatus: "ACTIVE",
+        checklist: checklist,
       },
     });
 
+    await Promise.all(
+      attachments.map((att: any) =>
+        prismadb.tasks.update({
+          where: {
+            id: task.id,
+          },
+          data: {
+            updatedBy: session.user.id,
+            documents: {
+              connect: {
+                id: att.id,
+              },
+            },
+          },
+        })
+      )
+    );
+    
+console.log(task, "task")
     //Make update to Board - updatedAt field to trigger re-render and reorder
     await prismadb.boards.update({
       where: {
@@ -103,25 +118,25 @@ export async function POST(req: Request) {
 
         //console.log(notifyRecipient, "notifyRecipient");
 
-        await resend.emails.send({
+        const emailHtml = render(
+          NewTaskFromProject({
+            taskFromUser: session.user.name!,
+            username: notifyRecipient?.name!,
+            taskData: task,
+            boardData: boardData,
+          })
+        );
+
+        await sendEmail({
           from:
             process.env.NEXT_PUBLIC_APP_NAME +
             " <" +
             process.env.EMAIL_FROM +
             ">",
           to: notifyRecipient?.email!,
-          subject:
-            session.user.userLanguage === "en"
-              ? `New task -  ${title}.`
-              : `Nový úkol - ${title}.`,
-          text: "", // Add this line to fix the types issue
-          react: NewTaskFromProject({
-            taskFromUser: session.user.name!,
-            username: notifyRecipient?.name!,
-            userLanguage: notifyRecipient?.userLanguage!,
-            taskData: task,
-            boardData: boardData,
-          }),
+          subject: `New task -  ${title}.`,
+          text: "",
+          html: await emailHtml,
         });
         console.log("Email sent to user: ", notifyRecipient?.email!);
       } catch (error) {

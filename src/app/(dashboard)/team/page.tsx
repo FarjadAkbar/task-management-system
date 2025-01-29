@@ -17,8 +17,6 @@ const Ourteam = () => {
             <main className="px-6 py-8 mt-0 m-16">
                 <h1 className="text-xl font-semibold text-center md:text-left">Our Team</h1>
                 <p className="text-center text-lg mt-4">
-                    Employee Name and job title
-                    <br />
                     <span className="font-bold">Ayesha Khan Marketing Manager</span>
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-11 mt-8">

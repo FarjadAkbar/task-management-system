@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Header from "@/components/dashboard/header";
 import { Metadata } from "next";
+import Header from "./components/Header";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -66,7 +66,7 @@ export default async function AppLayout({
           email={session.user.email as string}
           avatar={session.user.image as string}
         />
-        <div className="flex-grow overflow-y-auto h-full">{children}</div>
+        <div className="flex-1 space-y-4 p-8 pt-6 border-l min-h-screen h-full">{children}</div>
       </div>
     </div>
   );
