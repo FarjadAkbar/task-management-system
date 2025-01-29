@@ -6,9 +6,13 @@ import { generateRandomPassword } from "@/lib/utils";
 
 import { hash } from "bcryptjs";
 import InviteUserEmail from "@/emails/InviteUser";
-import nodemailer from "nodemailer";
+import { render } from "@react-email/render";
+import sendEmail from "@/lib/sendmail";
 
 export async function POST(req: Request) {
+  /*
+  Resend.com function init - this is a helper function that will be used to send emails
+  */
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -17,11 +21,11 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, email, language } = body;
+    const { name, email, job_title } = body;
 
-    if (!name || !email || !language) {
+    if (!name || !email || !job_title) {
       return NextResponse.json(
-        { error: "Name, Email, and Language is required!" },
+        { error: "Name, Email and Job Title is required!" },
         {
           status: 200,
         }
@@ -30,19 +34,7 @@ export async function POST(req: Request) {
 
     const password = generateRandomPassword();
 
-    let message = "";
-
-    switch (language) {
-      case "en":
-        message = `You have been invited to ${process.env.NEXT_PUBLIC_APP_NAME} \n\n Your username is: ${email} \n\n Your password is: ${password} \n\n Please login to ${process.env.NEXT_PUBLIC_APP_URL} \n\n Thank you \n\n ${process.env.NEXT_PUBLIC_APP_NAME}`;
-        break;
-      case "cz":
-        message = `Byl jste pozván do ${process.env.NEXT_PUBLIC_APP_NAME} \n\n Vaše uživatelské jméno je: ${email} \n\n Vaše heslo je: ${password} \n\n Prosím přihlašte se na ${process.env.NEXT_PUBLIC_APP_URL} \n\n Děkujeme \n\n ${process.env.NEXT_PUBLIC_APP_NAME}`;
-        break;
-      default:
-        message = `You have been invited to ${process.env.NEXT_PUBLIC_APP_NAME} \n\n Your username is: ${email} \n\n Your password is: ${password} \n\n Please login to ${process.env.NEXT_PUBLIC_APP_URL} \n\n Thank you \n\n ${process.env.NEXT_PUBLIC_APP_NAME}`;
-        break;
-    }
+    let message = `You have been invited to ${process.env.NEXT_PUBLIC_APP_NAME} \n\n Your username is: ${email} \n\n Your password is: ${password} \n\n Please login to ${process.env.NEXT_PUBLIC_APP_URL} \n\n Thank you \n\n ${process.env.NEXT_PUBLIC_APP_NAME}`;
 
     //Check if user already exists in local database
     const checkexisting = await prismadb.users.findFirst({
@@ -71,6 +63,7 @@ export async function POST(req: Request) {
             is_account_admin: false,
             is_admin: false,
             email,
+            job_title,
             userStatus: "ACTIVE",
             password: await hash(password, 12),
           },
@@ -80,26 +73,25 @@ export async function POST(req: Request) {
           return new NextResponse("User not created", { status: 500 });
         }
 
-        const transporter = nodemailer.createTransport({
-          host: process.env.EMAIL_HOST,
-          port: parseInt(process.env.EMAIL_PORT || "587"),
-          secure: false, // Set to true if you're using SSL/TLS
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
-          },
-        });
-  
-        // Sending email
-        const mailOptions = {
-          from: `${process.env.NEXT_PUBLIC_APP_NAME} <${process.env.EMAIL_FROM}>`,
+        const emailHtml = render(
+          InviteUserEmail({
+            invitedByUsername: session.user?.name! || "admin",
+            username: user?.name!,
+            invitedUserPassword: password
+          })
+        );
+
+        await sendEmail({
+          from:
+            process.env.NEXT_PUBLIC_APP_NAME +
+            " <" +
+            process.env.EMAIL_FROM +
+            ">",
           to: user.email,
-          subject: `You have been invited to ${process.env.NEXT_PUBLIC_APP_NAME}`,
-          text: message, // Plain text version of the email
-          html: `<p>${message.replace(/\n/g, "<br>")}</p>`, // HTML version of the email
-        };
-  
-        const info = await transporter.sendMail(mailOptions);
+          subject: `You have been invited to ${process.env.NEXT_PUBLIC_APP_NAME} `,
+          text: message, 
+          html: await emailHtml,
+        });
 
         return NextResponse.json(user, { status: 200 });
       } catch (err) {
