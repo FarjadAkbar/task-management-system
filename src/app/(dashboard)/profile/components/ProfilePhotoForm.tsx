@@ -4,10 +4,10 @@ import Image from "next/image";
 import { Users } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { toast } from "react-toastify";
+
+import { useToast } from "@/hooks/use-toast";
 import { FileUploaderDropzone } from "@/components/ui/file-uploader-dropzone";
+
 import useAvatarStore from "@/store/useAvatarStore";
 import axios from "axios";
 
@@ -17,7 +17,8 @@ interface ProfileFormProps {
 
 export function ProfilePhotoForm({ data }: ProfileFormProps) {
   const [avatar, setAvatar] = useState(data.avatar);
-  const [isUploading, setIsUploading] = useState(false);
+
+  const { toast } = useToast();
   const router = useRouter();
   const setAvatarStore = useAvatarStore((state) => state.setAvatar);
 
@@ -25,49 +26,42 @@ export function ProfilePhotoForm({ data }: ProfileFormProps) {
     setAvatar(data.avatar);
   }, [data.avatar, toast]);
 
-  const handleUploadSuccess = async (newAvatar: string) => {
+  const handleUploadSuccess = async (files: { id: string; name: string; url: string }[]) => {
     try {
-      setAvatar(newAvatar);
-      setAvatarStore(newAvatar);
-      await axios.put("/api/profile/updateProfilePhoto", { avatar: newAvatar });
-      toast.success("Profile photo updated successfully.");
+      setAvatar(files[0].url);
+      setAvatarStore(files[0].url);
+      await axios.put("/api/profile/updateProfilePhoto", { avatar: files[0].url });
+      toast({
+        title: "Profile photo updated.",
+        description: "Your profile photo has been updated.",
+        duration: 5000,
+      });
     } catch (e) {
       console.log(e);
-      toast.error("Error updating profile photo.");
+      toast({
+        variant: "default",
+        title: "Error updating profile photo.",
+        description: "There was an error updating your profile photo.",
+        duration: 5000,
+      });
     } finally {
       router.refresh();
     }
   };
 
-
   return (
-    <div className="flex flex-col items-center">
-      <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden mb-4">
+    <div className="flex items-center space-x-5">
+      <div>
         <Image
           src={avatar || "/images/nouser.png"}
           alt="avatar"
-          width={140}
-          height={160}
-          className="w-full h-full object-cover"
+          width={100}
+          height={100}
         />
       </div>
-      <Label htmlFor="file-upload" className="block mb-2 text-sm font-medium hover:underline cursor-pointer">
-        Upload Image
-        <Input
-          id="file-upload"
-          type="file"
-          accept="image/*"
-          className="hidden"
-          // onChange={handleFileChange}
-          disabled={isUploading}
-        />
-      </Label>
-      {/* <FileUploaderDropzone
-          uploader={"profilePhotoUploader"}
-          onUploadSuccess={handleUploadSuccess}
-        /> */}
+      <div>
+        <FileUploaderDropzone onUploadSuccess={handleUploadSuccess} />
+      </div>
     </div>
-
-  )
-
+  );
 }

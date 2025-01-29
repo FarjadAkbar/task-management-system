@@ -1,9 +1,6 @@
-"use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
-import { FaUserCircle, FaBell, FaBars, FaTimes } from "react-icons/fa";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import AvatarDropdown from "./ui/AvatarDropdown";
 
 type Props = {
@@ -14,18 +11,14 @@ type Props = {
 };
 
 const Header = ({ id, name, email, avatar }: Props) => {
-  const router = useRouter();
-  // const { data: session } = useSession();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   return (
     <header className="bg-black text-white px-4 py-1 flex items-center justify-between relative">
       <div className="flex items-center space-x-4">
         <Image src={"/images/logo.png"} alt="Logo" width={120} height={120} />
       </div>
-      <div className="hidden md:flex space-x-6">
+      <div className="flex space-x-6">
         <nav className="space-x-6">
-          <Link href="/dashboard" passHref>
+          <Link href="/" passHref>
             <span className="hover:text-gold font-semibold text-lg">
               Dashboard
             </span>
@@ -55,7 +48,7 @@ const Header = ({ id, name, email, avatar }: Props) => {
       </div>
       <AvatarDropdown avatar={avatar} userId={id} name={name} email={email} />
       
-      <div className="md:hidden flex items-center">
+      {/* <div className="md:hidden flex items-center">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="text-2xl ml-4"
@@ -96,7 +89,7 @@ const Header = ({ id, name, email, avatar }: Props) => {
             </span>
           </Link>
         </div>
-      )}
+      )} */}
     </header>
   );
 };

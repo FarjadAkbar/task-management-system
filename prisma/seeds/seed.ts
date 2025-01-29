@@ -16,6 +16,9 @@ async function main() {
       is_account_admin: true,
       is_admin: true,
       name: "Admin User",
+      first_name: "Farjad",
+      last_name: "Akbar",
+      job_title: "Full Stack Developer",
       password: adminHashedPassword, // Use hashed password
       username: "admin",
       userStatus: "ACTIVE",

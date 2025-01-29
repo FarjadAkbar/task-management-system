@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getUser } from '@/actions/get-user';
 
 const cards = [
     { title: "Database", src: "/images/database.png", href: "" },
@@ -13,13 +14,18 @@ const cards = [
     { title: "Share Folder", src: "/images/sharedfolder.png", href: "" },
 ];
 
-const Dashboard = () => {
+
+export default async function Dashboard() {
+    const data = await getUser();
+    if (!data) {
+        return <div>No user data.</div>;
+      }
     return (
         <div className="px-6 py-8 mt-0 m-16">
             <h1 className="text-xl font-semibold text-center md:text-left">MY DASHBOARD</h1>
             <p className="text-center text-lg mt-4">
                 
-                <span className="font-bold">Ayesha Khan Marketing Manager</span>
+                <span className="font-bold">{data.name} - {data.job_title}</span>
             </p>
             <div className="flex flex-wrap justify-center mt-8">
                 {cards.map((card, index) => (
@@ -42,5 +48,3 @@ const Dashboard = () => {
         </div>
     );
 };
-
-export default Dashboard;

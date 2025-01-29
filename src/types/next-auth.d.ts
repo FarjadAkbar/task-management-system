@@ -10,6 +10,7 @@ declare module "next-auth" {
     user: User & {
       id: UserId;
       _id: UserId;
+      job_title?: string;
       avatar?: string | null | undefined;
       isAdmin: boolean;
       userStatus: string;

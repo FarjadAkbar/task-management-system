@@ -252,6 +252,9 @@ model Users {
   created_on           DateTime              @default(now()) @db.Date
   lastLoginAt          DateTime?             @db.Date
   name                 String?
+  first_name           String?
+  last_name            String?
+  job_title            String?
   password             String?
   username             String?
   userStatus           ActiveStatus          @default(PENDING)

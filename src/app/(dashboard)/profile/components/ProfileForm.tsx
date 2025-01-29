@@ -25,13 +25,10 @@ interface ProfileFormProps {
 
 const FormSchema = z.object({
   id: z.string(),
-  firstname: z.string().min(3).max(50),
-  lastname: z.string().min(3).max(50),
+  first_name: z.string().min(3).max(50),
+  last_name: z.string().min(3).max(50),
   email: z.string().email("Invalid email address"),
-  username: z.string().min(2).max(50),
-  account_name: z.string().min(2).max(50),
   job_title: z.string().nonempty("Job title is required"),
-  timezone: z.string().nonempty("Timezone is required"),
 });
 
 export function ProfileForm({ data }: ProfileFormProps) {
@@ -41,14 +38,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: data
-      ? { ...data }
-      : {
-        name: "",
-        username: "",
-        account_name: "",
-        timezone: "",
-      },
+    defaultValues: data,
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -69,7 +59,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4"
+        className="flex space-x-5 w-full p-5 items-end"
       >
         <FormField
           control={form.control}
@@ -89,7 +79,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
           <div>
             <FormField
               control={form.control}
-              name="firstname"
+              name="first_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>First name</FormLabel>
@@ -104,7 +94,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
           <div>
             <FormField
               control={form.control}
-              name="lastname"
+              name="last_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
@@ -117,23 +107,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
             />
           </div>
         </div>
-        <FormField
-          control={form.control}
-          name="account_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Company</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={isLoading}
-                  placeholder=""
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        
         <FormField
           control={form.control}
           name="job_title"
@@ -146,25 +120,6 @@ export function ProfileForm({ data }: ProfileFormProps) {
                   placeholder=""
                   {...field}
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="timezone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Timezone</FormLabel>
-              <FormControl>
-                <select
-                  {...field}
-                  disabled={isLoading}
-                  className="w-full border border-gray-300 rounded-md p-2"
-                >
-                  <option value="">Select a timezone</option>
-                </select>
               </FormControl>
               <FormMessage />
             </FormItem>
