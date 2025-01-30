@@ -68,7 +68,7 @@ export async function DELETE(req: Request) {
       You must delete tasks comments before you delete task, because of foreign key constraint.
       TODO: This can be done by PRISMA cascade delete
       */
-    await prismadb.tasksComments.deleteMany({
+    await prismadb.TasksComments.deleteMany({
       where: {
         task: id,
       },

@@ -10,7 +10,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Shield, User } from "lucide-react";
+import { Calendar, Shield, Star, User } from "lucide-react";
 import { getTask } from "@/actions/projects/get-task";
 import { getTaskDocuments } from "@/actions/projects/get-task-documents";
 import { getTaskComments } from "@/actions/projects/get-task-comments";
@@ -21,6 +21,7 @@ import { TaskChecklist } from "./components/TaskChecklist";
 import ModalDropzone from "@/components/modals/modal-dropzone";
 import { TeamConversations } from "./components/team-conversation";
 import DocumentsPerview from "./components/documents-perview";
+import { getTaskFeedback } from "@/actions/projects/get-task-feedback";
 
 interface TaskPageProps {
   params: { taskId: string };
@@ -33,6 +34,7 @@ const TaskPage = async ({ params }: TaskPageProps) => {
   const task: any = await getTask(taskId);
   const taskDocuments: any = await getTaskDocuments(taskId);
   const comments: any = await getTaskComments(taskId);
+  const feedback: any = await getTaskFeedback(taskId);
   const activeUsers: any = await getActiveUsers();
   const boards = await getBoards(user?.id!);
 
@@ -110,6 +112,8 @@ const TaskPage = async ({ params }: TaskPageProps) => {
                 users={activeUsers}
                 boards={boards}
                 initialData={task}
+                isAdmin={user?.isAdmin || false}
+                feedback={feedback.length > 0 ? false : true}
               />
             </CardFooter>
           </Card>
@@ -142,6 +146,37 @@ const TaskPage = async ({ params }: TaskPageProps) => {
               <ModalDropzone taskId={taskId} />
             </CardFooter>
           </Card>
+
+          {feedback.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Feedback</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {feedback.map((item: any) => (
+                    <div key={item.id} className="border-b pb-4 last:border-b-0">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">{item.user.name}</span>
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`w-4 h-4 ${
+                                star <= item.rating ? "text-yellow-400 fill-current" : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-2">{item.feedback}</p>
+                      <span className="text-xs text-gray-400 mt-1">{moment(item.createdAt).format("MMM D, YYYY")}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <div>

@@ -44,11 +44,6 @@ const Header = ({ id, name, email, avatar }: Props) => {
               Suggestion
             </span>
           </Link>
-          <Link href="/users" passHref>
-            <span className="hover:text-gold font-semibold text-lg">
-              Users
-            </span>
-          </Link>
         </nav>
       </div>
       <AvatarDropdown avatar={avatar} userId={id} name={name} email={email} />

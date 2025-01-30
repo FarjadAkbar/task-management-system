@@ -69,7 +69,7 @@ export async function POST(
         },
       });
 
-      const newComment = await prismadb.tasksComments.create({
+      const newComment = await prismadb.TasksComments.create({
         data: {
           v: 0,
           comment: comment,
@@ -134,7 +134,7 @@ export async function POST(
       return NextResponse.json(newComment, { status: 200 });
     } else {
       //
-      const newComment = await prismadb.tasksComments.create({
+      const newComment = await prismadb.TasksComments.create({
         data: {
           v: 0,
           comment: comment,
