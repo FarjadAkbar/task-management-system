@@ -3,7 +3,6 @@ import { prismadb } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { generateRandomPassword } from "@/lib/utils";
-
 import { hash } from "bcryptjs";
 import InviteUserEmail from "@/emails/InviteUser";
 import { render } from "@react-email/render";
@@ -21,9 +20,9 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, email, job_title } = body;
+    const { name, email, role } = body;
 
-    if (!name || !email || !job_title) {
+    if (!name || !email || !role) {
       return NextResponse.json(
         { error: "Name, Email and Job Title is required!" },
         {
@@ -59,11 +58,9 @@ export async function POST(req: Request) {
             name,
             username: "",
             avatar: "",
-            account_name: "",
-            is_account_admin: false,
             is_admin: false,
             email,
-            job_title,
+            role: role.toUpperCase(),
             userStatus: "ACTIVE",
             password: await hash(password, 12),
           },

@@ -27,8 +27,7 @@ const FormSchema = z.object({
   id: z.string(),
   first_name: z.string().min(3).max(50),
   last_name: z.string().min(3).max(50),
-  email: z.string().email("Invalid email address"),
-  job_title: z.string().nonempty("Job title is required"),
+  email: z.string().email("Invalid email address")
 });
 
 export function ProfileForm({ data }: ProfileFormProps) {
@@ -107,25 +106,6 @@ export function ProfileForm({ data }: ProfileFormProps) {
             />
           </div>
         </div>
-        
-        <FormField
-          control={form.control}
-          name="job_title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Job Title</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={isLoading}
-                  placeholder=""
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
 
         <Button className="w-[150px]" type="submit">
           Save Changes

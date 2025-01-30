@@ -10,18 +10,16 @@ async function main() {
 
   const admin = await prisma.users.create({
     data: {
-      account_name: "Admin Account",
       avatar: null,
       email: "admin@example.com",
-      is_account_admin: true,
       is_admin: true,
       name: "Admin User",
       first_name: "Farjad",
       last_name: "Akbar",
-      job_title: "Full Stack Developer",
       password: adminHashedPassword, // Use hashed password
       username: "admin",
       userStatus: "ACTIVE",
+      role: "ADMIN",
     },
   });
 
@@ -29,15 +27,14 @@ async function main() {
 
   const user = await prisma.users.create({
     data: {
-      account_name: "User Account",
       avatar: null,
       email: "user@example.com",
-      is_account_admin: false,
       is_admin: false,
       name: "Regular User",
       password: userHashedPassword, // Use hashed password
       username: "user",
       userStatus: "ACTIVE",
+      role: "DEVELOPER",
     },
   });
 

@@ -27,10 +27,11 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Icons } from "@/components/ui/icons";
 
+const roles = ["Developer", "Designer", "Manager", "Marketer", "Lead"];
 const FormSchema = z.object({
   name: z.string().min(3).max(50),
   email: z.string().email(),
-  job_title: z.string().min(3).max(50)
+  role: z.enum(roles as [string, ...string[]])
 });
 
 export function InviteForm() {
@@ -71,7 +72,7 @@ export function InviteForm() {
       form.reset({
         name: "",
         email: "",
-        job_title: ""
+        role: roles[0]
       });
       router.refresh();
       setIsLoading(false);
@@ -114,19 +115,30 @@ export function InviteForm() {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="job_title"
-          render={({ field }) => (
-            <FormItem className="w-1/3">
-              <FormLabel>Job Title</FormLabel>
+       <FormField
+        control={form.control}
+        name="role"
+        render={({ field }) => (
+          <FormItem className="w-1/3">
+            <FormLabel>Role</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
               <FormControl>
-                <Input disabled={isLoading} placeholder="graphic design" {...field} />
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a role" />
+                </SelectTrigger>
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <SelectContent>
+                {roles.map((role) => (
+                  <SelectItem key={role} value={role}>
+                    {role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
         <Button className="w-[150px]" type="submit" disabled={isLoading}>
           {isLoading ? (
             <Icons.spinner className="animate-spin" />

@@ -8,7 +8,7 @@ const cards = [
     { title: "Task Manager", src: "/images/task.png", href: "/projects", allowedUser: true },
     { title: "Our Team", src: "/images/team.png", href: "/users", allowedUser: false },
     { title: "Ticket", src: "/images/ticket.png", href: "", allowedUser: true },
-    { title: "Events and Meeting", src: "/images/meetings.png", href: "", allowedUser: true },
+    { title: "Events and Meeting", src: "/images/meetings.png", href: "/meet", allowedUser: true },
     { title: "Messages", src: "/images/messages.png", href: "", allowedUser: true },
     { title: "Personal Folder", src: "/images/personalfolder.png", href: "/personal-documents", allowedUser: true },
     { title: "Share Folder", src: "/images/sharedfolder.png", href: "/shared-documents", allowedUser: true },
@@ -29,7 +29,7 @@ const cards = [
       <div className="px-6 py-8 mt-0 m-16">
         <h1 className="text-xl font-semibold text-center md:text-left">MY DASHBOARD</h1>
         <p className="text-center text-lg mt-4">
-          <span className="font-bold">{data.name} - {data.job_title}</span>
+          <span className="font-bold">{data.name} - {data.role}</span>
         </p>
         <div className="flex flex-wrap justify-center mt-8">
           {filteredCards.map((card, index) => (

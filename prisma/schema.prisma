@@ -156,46 +156,6 @@ enum ActiveStatus {
 }
 
 
-model PersonalNote {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  content     String
-  tags        String[]
-  category    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        Users    @relation(fields: [userId], references: [id])
-  userId      String   @db.ObjectId
-}
-
-
-
-model SharedDatabase {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  content     String
-  createdBy   Users    @relation(fields: [createdById], references: [id])
-  createdById String   @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  accessRole  String[] 
-  status      SharedStatusEnum @default(DRAFT)
-  version     Int       @default(1)
-}
-
-
-
-
-
-model Announcement {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  title      String
-  content    String
-  createdBy  Users    @relation(fields: [createdById], references: [id])
-  createdById String  @db.ObjectId
-  createdAt  DateTime @default(now())
-  comments   Comment[]
-}
 
 model Comment {
   id             String      @id @default(auto()) @map("_id") @db.ObjectId
@@ -228,17 +188,69 @@ model Feedback {
 }
 
 
+enum RoleEnum {
+  ADMIN
+  DEVELOPER
+  DESIGNER
+  MANAGER
+  MARKETER
+  LEAD
+}
+
+model Users {
+  id                   String                @id @default(auto()) @map("_id") @db.ObjectId
+  v                    Int                   @default(0) @map("__v")
+  avatar               String?
+  email                String                @unique
+  is_admin             Boolean               @default(false)
+  created_on           DateTime              @default(now()) @db.Date
+  lastLoginAt          DateTime?             @db.Date
+  name                 String?
+  first_name           String?
+  last_name            String?
+  password             String?
+  username             String?
+  userStatus           ActiveStatus          @default(PENDING)
+  tasksComment         TasksComments[]
+  taskFeedback         TaskFeedback[]
+  role                 RoleEnum              @default(DEVELOPER)
+  created_by_documents Documents[]           @relation(name: "created_by_user")
+  assigned_documents   Documents[]           @relation(name: "assigned_to_user")
+  tasks                Tasks[]
+  boards               Boards[]              @relation(name: "assigned_user")
+  watching_boardsIDs   String[]              @db.ObjectId
+  watching_boards      Boards[]              @relation(name: "watching_users", fields: [watching_boardsIDs], references: [id])
+  instructionMaterials InstructionMaterial[]
+  comments             Comment[]
+  sharedDatabases      SharedDatabase[]
+  feedback             Feedback[]
+  eventsParticipated   EventParticipant[]
+  createdEvents        Event[]            @relation("CreatedEvents")
+  personalNotes        PersonalNote[]
+  announcements        Announcement[]
+}
+
+enum EventType {
+  MEETING
+  CONFERENCE
+  WORKSHOP
+  WEBINAR
+  SOCIAL
+}
+
 model Event {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  startTime   DateTime
-  endTime     DateTime
-  createdBy   Users          @relation("CreatedEvents", fields: [createdById], references: [id])
-  createdById String         @db.ObjectId
-  participants EventParticipant[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id                String                @id @default(auto()) @map("_id") @db.ObjectId
+  title             String
+  description       String
+  eventType         EventType            @default(MEETING)
+  startTime         DateTime
+  endTime           DateTime
+  createdBy         Users                 @relation("CreatedEvents", fields: [createdById], references: [id])
+  createdById       String                @db.ObjectId
+  participants      EventParticipant[]
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  externalCalendar  String?
 }
 
 model EventParticipant {
@@ -247,63 +259,48 @@ model EventParticipant {
   eventId String @db.ObjectId
   user    Users  @relation(fields: [userId], references: [id])
   userId  String @db.ObjectId
-
+  role    RoleEnum
   @@unique([eventId, userId])
 }
 
 
-model Users {
-  id                   String                @id @default(auto()) @map("_id") @db.ObjectId
-  v                    Int                   @default(0) @map("__v")
-  account_name         String?
-  avatar               String?
-  email                String                @unique
-  is_account_admin     Boolean               @default(false)
-  is_admin             Boolean               @default(false)
-  created_on           DateTime              @default(now()) @db.Date
-  lastLoginAt          DateTime?             @db.Date
-  name                 String?
-  first_name           String?
-  last_name            String?
-  job_title            String?
-  password             String?
-  username             String?
-  userStatus           ActiveStatus          @default(PENDING)
-  tasksComment         TasksComments[]
-  taskFeedback         TaskFeedback[]
-  created_by_documents Documents[]           @relation(name: "created_by_user")
-  assigned_documents   Documents[]           @relation(name: "assigned_to_user")
-  tasks                Tasks[]
-  boards               Boards[]              @relation(name: "assigned_user")
-  watching_boardsIDs   String[]              @db.ObjectId
-  watching_boards      Boards[]              @relation(name: "watching_users", fields: [watching_boardsIDs], references: [id])
-  watching_accountsIDs String[]              @db.ObjectId
-  instructionMaterials InstructionMaterial[]
-  comments             Comment[]
-  sharedDatabases      SharedDatabase[]
-  feedback             Feedback[]
-  eventsParticipated   EventParticipant[]
-  createdEvents        Event[]            @relation("CreatedEvents")
-  personalNotes        PersonalNote[]
-  permissions          Permission[]
-  announcements        Announcement[]
-}
-
-enum PermissionLevel {
-  VIEW
-  EDIT
-  MANAGE
+model PersonalNote {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  content     String
+  tags        String[]
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        Users    @relation(fields: [userId], references: [id])
+  userId      String   @db.ObjectId
 }
 
 
-model Permission {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  feature    String
-  level      PermissionLevel
-  user       Users     @relation(fields: [userId], references: [id])
-  userId     String
-  createdAt  DateTime  @default(now())
+
+model SharedDatabase {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  content     String
+  createdBy   Users    @relation(fields: [createdById], references: [id])
+  createdById String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  accessRole  String[] 
+  status      SharedStatusEnum @default(DRAFT)
+  version     Int       @default(1)
 }
+
+model Announcement {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  content    String
+  createdBy  Users    @relation(fields: [createdById], references: [id])
+  createdById String  @db.ObjectId
+  createdAt  DateTime @default(now())
+  comments   Comment[]
+}
+
 
 model InstructionMaterial {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId

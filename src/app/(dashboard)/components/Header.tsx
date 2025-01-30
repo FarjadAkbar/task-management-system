@@ -34,9 +34,9 @@ const Header = ({ id, name, email, avatar }: Props) => {
               Guidelines
             </span>
           </Link>
-          <Link href="/zoom" passHref>
+          <Link href="/meet" passHref>
             <span className="hover:text-gold font-semibold text-lg">
-              Zoom Meeting
+              Meeting
             </span>
           </Link>
           <Link href="/suggestion" passHref>
