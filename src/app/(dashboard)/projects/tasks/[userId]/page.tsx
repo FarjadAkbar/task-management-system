@@ -1,11 +1,11 @@
 import { getTask } from "@/actions/projects/get-task";
 import { getUserTasks } from "@/actions/projects/get-user-tasks";
-import Container from "@/components/dashboard/container";
 import React from "react";
 import { TasksDataTable } from "../components/data-table";
 import { columns } from "../components/columns";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import Container from "@/app/(dashboard)/components/ui/Container";
 
 type TaskDetailPageProps = {
   params: Promise<{

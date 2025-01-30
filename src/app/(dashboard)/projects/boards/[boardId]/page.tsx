@@ -1,7 +1,6 @@
 import { getBoard } from "@/actions/projects/get-board";
 import React, { Suspense } from "react";
 
-import Container from "@/components/dashboard/container";
 import NewSectionDialog from "./dialogs/NewSection";
 
 import NewTaskInProjectDialog from "./dialogs/NewTaskInProject";
@@ -16,6 +15,7 @@ import { authOptions } from "@/lib/auth";
 import { Users } from "@prisma/client";
 // import AiAssistantProject from "./components/AiAssistantProject";
 import { Lock } from "lucide-react";
+import Container from "@/app/(dashboard)/components/ui/Container";
 
 interface BoardDetailProps {
   params: Promise<{ boardId: string }>;

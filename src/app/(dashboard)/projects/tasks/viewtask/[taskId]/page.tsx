@@ -24,13 +24,13 @@ import DocumentsPerview from "./components/documents-perview";
 import { getTaskFeedback } from "@/actions/projects/get-task-feedback";
 
 interface TaskPageProps {
-  params: { taskId: string };
+  params: Promise<{ taskId: string }>;
 }
 
 const TaskPage = async ({ params }: TaskPageProps) => {
   const session = await getServerSession(authOptions);
   const user = session?.user;
-  const { taskId } = params;
+  const { taskId } = await params;
   const task: any = await getTask(taskId);
   const taskDocuments: any = await getTaskDocuments(taskId);
   const comments: any = await getTaskComments(taskId);
