@@ -13,8 +13,8 @@ export default async function sendEmail(
 ): Promise<void> {
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: 2525,
-    secure: false,
+    port: parseInt(process.env.EMAIL_PORT || '587', 10),
+    secure: process.env.EMAIL_SECURE === 'true',
     auth: {
       user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD,
