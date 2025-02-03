@@ -1,13 +1,12 @@
-import { authOptions } from "@/lib/auth";
 import { prismadb } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
+import { requireUser } from "@/lib/user";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 const f = createUploadthing();
 
 const auth = async (req: Request) => {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  const user = await requireUser();
+  const userId = user?.id;
   if (!userId) return false;
   return { id: userId };
 };

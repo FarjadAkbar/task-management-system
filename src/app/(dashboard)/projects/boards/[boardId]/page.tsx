@@ -10,12 +10,11 @@ import DeleteProjectDialog from "./dialogs/DeleteProject";
 import { getKanbanData } from "@/actions/projects/get-kanban-data";
 import Kanban from "./components/Kanban";
 import { getBoards } from "@/actions/projects/get-boards";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { Users } from "@prisma/client";
 // import AiAssistantProject from "./components/AiAssistantProject";
 import { Lock } from "lucide-react";
 import Container from "@/app/(dashboard)/components/ui/Container";
+import { requireUser } from "@/lib/user";
 
 interface BoardDetailProps {
   params: Promise<{ boardId: string }>;
@@ -25,9 +24,8 @@ export const maxDuration = 300;
 
 const BoardPage = async (props: BoardDetailProps) => {
   const params = await props.params;
-  const session = await getServerSession(authOptions);
-  const user = session?.user;
   const { boardId } = params;
+  const user = await requireUser();
   const board: any = await getBoard(boardId);
   const boards = await getBoards(user?.id!);
   const users: Users[] = await getActiveUsers();

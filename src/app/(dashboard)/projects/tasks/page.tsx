@@ -4,20 +4,15 @@ import { TasksDataTable } from "./components/data-table";
 import { columns } from "./components/columns";
 
 import { Button } from "@/components/ui/button";
-import Container from "../../components/ui/Container";
 import H2Title from "@/components/typography/h2";
 import SuspenseLoading from "@/components/loadings/suspense";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import Link from "next/link";
+import { requireUser } from "@/lib/user";
 
 const TasksPage = async () => {
   const tasks: any = await getTasks();
-  const session = await getServerSession(authOptions);
-  
-  if (!session) return null;
-
-  const userId = session.user.id;
+  const user = await requireUser();
+  const userId = user?.id;
 
   return (
     <Suspense fallback={<SuspenseLoading />}>

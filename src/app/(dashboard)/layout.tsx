@@ -1,8 +1,7 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import Header from "./components/Header";
+import { requireUser } from "@/lib/user";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -37,15 +36,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
-
-  //console.log(session, "session");
-
-  if (!session) {
-    return redirect("/sign-in");
-  }
-
-  const user = session?.user;
+  const user = await requireUser();
 
   //   if (user?.userStatus === "PENDING") {
   //     return redirect("/pending");
@@ -56,15 +47,14 @@ export default async function AppLayout({
   //   }
 
 
-  //console.log(typeof build, "build");
   return (
     <div className="flex">
       <div className="flex flex-col h-full w-full overflow-hidden">
         <Header
-          id={session.user.id as string}
-          name={session.user.name as string}
-          email={session.user.email as string}
-          avatar={session.user.image as string}
+          id={user.id as string}
+          name={user.name as string}
+          email={user.email as string}
+          avatar={user.image as string}
         />
         <div className="flex-1 space-y-4 p-8 pt-6 border-l min-h-screen h-full">{children}</div>
       </div>

@@ -2,22 +2,19 @@ import { getUsers } from "@/actions/get-users";
 import React from "react";
 import { InviteForm } from "./components/InviteForm";
 import { Separator } from "@/components/ui/separator";
-
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { AdminUserDataTable } from "./table-components/data-table";
 import { columns } from "./table-components/columns";
 import { Users } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import SendMailToAll from "./components/send-mail-to-all";
 import Container from "../components/ui/Container";
+import { requireUser } from "@/lib/user";
 
 const AdminUsersPage = async () => {
   const users: Users[] = await getUsers();
+  const user = await requireUser();
 
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.isAdmin) {
+  if (!user?.isAdmin) {
     return (
       <Container
         title="Administration"

@@ -1,5 +1,3 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import moment from "moment";
 import {
   Card,
@@ -22,15 +20,15 @@ import ModalDropzone from "@/components/modals/modal-dropzone";
 import { TeamConversations } from "./components/team-conversation";
 import DocumentsPerview from "./components/documents-perview";
 import { getTaskFeedback } from "@/actions/projects/get-task-feedback";
+import { requireUser } from "@/lib/user";
 
 interface TaskPageProps {
   params: Promise<{ taskId: string }>;
 }
 
 const TaskPage = async ({ params }: TaskPageProps) => {
-  const session = await getServerSession(authOptions);
-  const user = session?.user;
   const { taskId } = await params;
+  const user = await requireUser();
   const task: any = await getTask(taskId);
   const taskDocuments: any = await getTaskDocuments(taskId);
   const comments: any = await getTaskComments(taskId);

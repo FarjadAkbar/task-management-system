@@ -27,7 +27,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Icons } from "@/components/ui/icons";
 
-const roles = ["Developer", "Designer", "Manager", "Marketer", "Lead"];
+const roles = ["Developer", "Animator", "SEO", "Content Writer", "Designer", "Manager", "Marketer", "Lead"];
 const FormSchema = z.object({
   name: z.string().min(3).max(50),
   email: z.string().email(),
@@ -36,7 +36,6 @@ const FormSchema = z.object({
 
 export function InviteForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const router = useRouter();
 
   const { toast } = useToast();
