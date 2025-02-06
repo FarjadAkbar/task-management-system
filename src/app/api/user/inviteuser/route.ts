@@ -7,6 +7,7 @@ import { hash } from "bcryptjs";
 import InviteUserEmail from "@/emails/InviteUser";
 import { render } from "@react-email/render";
 import sendEmail from "@/lib/sendmail";
+import { Day } from "@prisma/client";
 
 export async function POST(req: Request) {
   /*
@@ -70,6 +71,25 @@ export async function POST(req: Request) {
           return new NextResponse("User not created", { status: 500 });
         }
 
+
+        // Add availability for all days except Sunday
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const availabilityPromises = days.map(day => {
+          return prismadb.availability.create({
+            data: {
+              day: day as Day,
+              fromTime: "08:00",
+              tillTime: "18:00",
+              user: {
+                connect: {
+                  id: user.id,
+                },
+              },
+            },
+          });
+        });
+
+        await Promise.all(availabilityPromises);
         const emailHtml = render(
           InviteUserEmail({
             invitedByUsername: session.user?.name! || "admin",

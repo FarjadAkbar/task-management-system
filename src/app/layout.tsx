@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Footer from "@/app/(dashboard)/components/Footer";
 import { ToastContainer } from 'react-toastify';
 import { Toaster } from "@/components/ui/toaster"
 import 'react-toastify/dist/ReactToastify.css';
@@ -34,7 +33,6 @@ export default function RootLayout({
         {/* <ClientProvider> */}
         {children}
         {/* </ClientProvider> */}
-        <Footer />
         <ToastContainer />
         <Toaster />
       </body>

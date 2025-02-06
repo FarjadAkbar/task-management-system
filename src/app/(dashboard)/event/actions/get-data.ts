@@ -1,31 +1,26 @@
+import { nylas } from "@/lib/nylas";
 import { prismadb } from "@/lib/prisma";
 
-export async function getData(id: string) {
-  const data = await prismadb.users.findUnique({
+export async function getData(userId: string) {
+  const userData = await prismadb.users.findUnique({
     where: {
-      id: id,
+      id: userId,
     },
-
     select: {
-      events: {
-        select: {
-          id: true,
-          active: true,
-          title: true,
-          url: true,
-          duration: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      },
-      username: true,
+      grantId: true,
+      grantEmail: true,
     },
   });
 
-  if (!data) {
-    return notFound();
+  if (!userData) {
+    throw new Error("User not found");
   }
+  const data = await nylas.events.list({
+    identifier: userData?.grantId as string,
+    queryParams: {
+      calendarId: userData?.grantEmail as string,
+    },
+  });
 
   return data;
 }

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import Header from "./components/Header";
 import { requireUser } from "@/lib/user";
+import Footer from "./components/Footer";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -48,16 +49,19 @@ export default async function AppLayout({
 
 
   return (
-    <div className="flex">
-      <div className="flex flex-col h-full w-full overflow-hidden">
-        <Header
-          id={user.id as string}
-          name={user.name as string}
-          email={user.email as string}
-          avatar={user.image as string}
-        />
-        <div className="flex-1 space-y-4 p-8 pt-6 border-l min-h-screen h-full">{children}</div>
+    <>
+      <div className="flex">
+        <div className="flex flex-col h-full w-full overflow-hidden">
+          <Header
+            id={user.id as string}
+            name={user.name as string}
+            email={user.email as string}
+            avatar={user.image as string}
+          />
+          <div className="flex-1 space-y-4 p-8 pt-6 border-l min-h-screen h-full">{children}</div>
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

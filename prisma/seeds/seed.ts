@@ -38,6 +38,47 @@ async function main() {
     },
   });
 
+  const days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const availabilityPromises = days.map((day) => {
+    return prisma.availability.create({
+      data: {
+        day: day,
+        fromTime: "08:00",
+        tillTime: "18:00",
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+  });
+
+  await Promise.all(availabilityPromises);
+
+  const availabilityAdminPromises = days.map((day) => {
+    return prisma.availability.create({
+      data: {
+        day: day,
+        fromTime: "08:00",
+        tillTime: "18:00",
+        user: {
+          connect: {
+            id: admin.id,
+          },
+        },
+      },
+    });
+  });
+
+  await Promise.all(availabilityAdminPromises);
   console.log("Regular user created:", user);
 }
 
