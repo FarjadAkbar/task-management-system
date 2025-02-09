@@ -56,7 +56,9 @@ const validateEventType = async (data: any) => {
   return Object.keys(errors).length > 0 ? errors : null
 }
 
-export async function POST(req: Request) {
+export async function PUT(req: Request, props: { params: Promise<{ eventId: string }> }) {
+const params = await props.params;
+  
   try {
     const user = await requireUser()
     if (!user) {
@@ -66,6 +68,15 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validationErrors = await validateEventType(body)
 
+    const existingEvent = await prismadb.event.findUnique({
+        where: { id: params.eventId },
+        include: { participants: true },
+      });
+  
+      if (!existingEvent || existingEvent.userId !== user.id) {
+        return NextResponse.json({ error: "Event not found or unauthorized" }, { status: 404 });
+      }
+  
     if (validationErrors) {
       return NextResponse.json({ errors: validationErrors }, { status: 400 })
     }
@@ -74,7 +85,8 @@ export async function POST(req: Request) {
     const formTime = body.eventTime;
     const eventDate = body.eventDate.split("T")[0];
 
-    const eventTypeData = await prismadb.event.create({
+    const updatedEvent = await prismadb.event.update({
+    where: { id: params.eventId },
       data: {
         title: body.title,
         url: uniqueUrl,
@@ -87,59 +99,58 @@ export async function POST(req: Request) {
       }
     });
     
-    // Ensure participants are provided and construct the participants data
-    const participantsData = Array.isArray(body.participants) && body.participants.length > 0
-      ? body.participants.map((employeeId: string) => ({
-          userId: employeeId,
-          eventId: eventTypeData.id,
-        }))
-      : [];
-    
-    if (participantsData.length === 0) {
-      return NextResponse.json({ error: "At least one participant is required" }, { status: 400 });
-    }
-    
-    // Use Promise.all to handle the asynchronous operation properly
-    const participants = await Promise.all(
-      body.participants.map(async (employeeId: string) => {
-        const res = await prismadb.eventParticipant.create({
-          data: {
-            eventId: eventTypeData.id,
-            userId: employeeId
-          },
-          include: {
-            user: true
-          }
-        });
-    
-        return { name: res.user.username, email: res.user.email, status: "yes" };
-      })
-    );
+     // Update participants
+     const existingParticipantIds = existingEvent.participants.map(p => p.userId);
 
+     // Remove participants not in the updated list
+     const participantsToRemove = existingParticipantIds.filter(id => !body.participants.includes(id));
+     await prismadb.eventParticipant.deleteMany({
+       where: {
+         eventId: body.id,
+         userId: { in: participantsToRemove },
+       },
+     });
+ 
+     // Add new participants
+     const participantsToAdd = body.participants.filter(id => !existingParticipantIds.includes(id));
+     await Promise.all(
+       participantsToAdd.map(employeeId =>
+         prismadb.eventParticipant.create({
+           data: {
+             eventId: updatedEvent.id,
+             userId: employeeId,
+           },
+         })
+       )
+     );
+ 
     
-    const meetingLength = eventTypeData.duration;
+    const meetingLength = updatedEvent.duration;
     const startDateTime = new Date(`${eventDate}T${formTime}:00`);
-    
+
     // Calculate the end time by adding the meeting length (in minutes) to the start time
     const endDateTime = new Date(startDateTime.getTime() + meetingLength * 60000);
 
-    await nylas.events.create({
+    await nylas.events.update({
       identifier: user?.grantId as string,
+      eventId: body.nylasEventId,
       requestBody: {
-        title: eventTypeData?.title,
-        description: eventTypeData?.description,
+        title: updatedEvent.title,
+        description: updatedEvent.description,
         when: {
           startTime: Math.floor(startDateTime.getTime() / 1000),
           endTime: Math.floor(endDateTime.getTime() / 1000),
         },
         metadata: {
-          eventId: eventTypeData.id
+          eventId: updatedEvent.id,
         },
         conferencing: {
           autocreate: {},
           provider: "Google Meet",
         },
-        participants: participants,
+        participants: body.participants.map(participantId => ({
+          userId: participantId,
+        })),
       },
       queryParams: {
         calendarId: user?.grantEmail as string,
@@ -153,4 +164,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   }
 }
-

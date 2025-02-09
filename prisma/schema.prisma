@@ -243,6 +243,8 @@ model Event {
   duration          Int
   url               String
   description       String
+  date              String
+  time              String
   active            Boolean              @default(true)
   videoCallSoftware String               @default("Google Meet")
 

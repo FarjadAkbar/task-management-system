@@ -2,19 +2,19 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React from "react";
 import { CalendarCheck2 } from "lucide-react";
-import { format, fromUnixTime } from "date-fns";
-import { Icon, Video } from "lucide-react";
 import { requireUser } from "@/lib/user";
 import { getData } from "./actions/get-data";
 import { EmptyState } from "./_components/EmptyState";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { CancelEventForm } from "./_components/CancelEventForm";
+import { CancelEventFormProps } from "@/types/cancel-event";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
 const EventPage = async () => {
   const user = await requireUser();
   const data = await getData(user?.id as string);
 
+  console.log(data, "data")
   return (
     <>
       <div className="flex items-center justify-between px-2">
@@ -56,9 +56,13 @@ const EventPage = async () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {data.data.map((item) => (
-             <CancelEventForm key={item.id} item={item} />
-            ))}
+          {data.data.map((item) => (
+            <>
+            <CancelEventForm key={item.id} item={item as Required<CancelEventFormProps["item"]>} />
+              <Separator />
+            </>
+          ))}
+
           </CardContent>
         </Card>
       )}

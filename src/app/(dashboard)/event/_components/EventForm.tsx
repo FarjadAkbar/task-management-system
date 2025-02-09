@@ -17,33 +17,46 @@ import { X } from "lucide-react"
 import axios from "axios"
 import { DatePicker } from "@/components/ui/date-picker"
 import { TimeSelect } from "./TimeSelect"
+import { useRouter } from "next/navigation"
+
 
 const eventTypeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   duration: z.enum(["15", "30", "45", "60"]),
-  employees: z.array(z.string()).min(1, "At least one employee must be selected"),
+  participants: z.array(z.string()).min(1, "At least one participant must be selected"),
   eventDate: z.date({ required_error: "Please select a date" }),
   eventTime: z.string({ required_error: "Please select a time slot" }),
 })
 
 type EventTypeSchema = z.infer<typeof eventTypeSchema>
 
-interface CreateNewEventFormProps {
+interface EventFormProps {
   employees: any[]
+  eventData?: EventTypeSchema
+  isEditMode: boolean
+  nylasEventId?: nylasEventId;
 }
 
-export const CreateNewEventForm: React.FC<CreateNewEventFormProps> = ({ employees }) => {
+export const EventForm: React.FC<EventFormProps> = ({ employees, eventData, isEditMode, nylasEventId }) => {
+  const router = useRouter()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<EventTypeSchema>({
     resolver: zodResolver(eventTypeSchema),
-    defaultValues: {
+    defaultValues: eventData ? {
+      title: eventData.title,
+      description: eventData.description,
+      duration: (eventData.duration.toString() as "15" | "30" | "45" | "60") ?? "30",
+      participants: eventData.participants.map((participant) => participant.userId),
+      eventDate: eventData.eventDate, // Ensure it's a Date object
+      eventTime: eventData.eventTime,
+    } : {
       title: "",
       description: "",
       duration: "30",
-      employees: [],
+      participants: [],
       eventDate: undefined,
       eventTime: "",
     },
@@ -52,13 +65,18 @@ export const CreateNewEventForm: React.FC<CreateNewEventFormProps> = ({ employee
   const onSubmit = async (data: EventTypeSchema) => {
     setIsSubmitting(true)
     try {
-      const response = await axios.post("/api/events/create", data)
-      if (response.status === 201) {
-        console.log(response, "..........")
+      const url = isEditMode ? `/api/events/update/${eventData?.id}` : "/api/events/create"
+      const method = isEditMode ? "put" : "post"
+      const postData = nylasEventId ? { ...data, nylasEventId } : data;
+      const response = await axios[method](url, postData)
+      if (response.status === 200 || response.status === 201) {
         toast({
-          title: "Event Created",
-          description: "Your new event type has been created successfully.",
+          title: isEditMode ? "Event Updated" : "Event Created",
+          description: isEditMode
+            ? "Your event type has been updated successfully."
+            : "Your new event type has been created successfully.",
         })
+        router.push("/event")
       } else {
         toast({
           title: "Unexpected Response",
@@ -68,7 +86,10 @@ export const CreateNewEventForm: React.FC<CreateNewEventFormProps> = ({ employee
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "An error occurred while creating the event",
+        description:
+          error instanceof Error
+            ? error.message
+            : `An error occurred while ${isEditMode ? "updating" : "creating"} the event`,
         variant: "destructive",
       })
     } finally {
@@ -135,7 +156,7 @@ export const CreateNewEventForm: React.FC<CreateNewEventFormProps> = ({ employee
             />
             <FormField
               control={form.control}
-              name="employees"
+              name="participants"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Participants</FormLabel>
@@ -161,18 +182,18 @@ export const CreateNewEventForm: React.FC<CreateNewEventFormProps> = ({ employee
                     </SelectContent>
                   </Select>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {field.value.map((employeeId) => {
-                      const employee = employees.find((e) => e.id === employeeId)
+                    {field.value.map((participantId) => {
+                      const participant = employees.find((e) => e.id === participantId)
                       return (
-                        <Badge key={employeeId} variant="secondary">
-                          {employee?.name}
+                        <Badge key={participantId} variant="secondary">
+                          {participant?.name}
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             className="ml-2 h-auto p-0 text-muted-foreground"
                             onClick={() => {
-                              field.onChange(field.value.filter((id) => id !== employeeId))
+                              field.onChange(field.value.filter((id) => id !== participantId))
                             }}
                           >
                             <X className="h-3 w-3" />
@@ -193,7 +214,7 @@ export const CreateNewEventForm: React.FC<CreateNewEventFormProps> = ({ employee
                 <FormItem>
                   <FormLabel>Event Date</FormLabel>
                   <FormControl>
-                    <DatePicker mode="single" selected={field.value} onSelect={(date) => field.onChange(date)} />
+                    <DatePicker selected={field.value} onSelect={(date) => field.onChange(date)} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -220,10 +241,16 @@ export const CreateNewEventForm: React.FC<CreateNewEventFormProps> = ({ employee
 
             <div className="flex justify-end space-x-4 mt-8">
               <Button variant="outline" asChild>
-                <Link href="/dashboard">Cancel</Link>
+                <Link href="/event">Cancel</Link>
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Creating..." : "Create Event Type"}
+                {isSubmitting
+                  ? isEditMode
+                    ? "Updating..."
+                    : "Creating..."
+                  : isEditMode
+                    ? "Update Event Type"
+                    : "Create Event Type"}
               </Button>
             </div>
           </form>
@@ -232,4 +259,5 @@ export const CreateNewEventForm: React.FC<CreateNewEventFormProps> = ({ employee
     </Card>
   )
 }
+
 
