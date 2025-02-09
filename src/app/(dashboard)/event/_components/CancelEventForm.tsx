@@ -16,9 +16,8 @@ import Link from "next/link"
 import { CancelEventFormProps } from "@/types/cancel-event"
 
 const formSchema = z.object({
-  eventId: z.string(),
+  eventId: z.string(), //nylas-event-id
 })
-
 
 
 export function CancelEventForm({ item }: CancelEventFormProps) {
@@ -131,9 +130,9 @@ export function CancelEventForm({ item }: CancelEventFormProps) {
                 </div>
               </DialogContent>
             </Dialog>
-            <Button type="button" asChild>
+            {/* <Button type="button" asChild>
               <Link href={`/event/${item.metadata.eventId}`}>Edit</Link>
-            </Button>
+            </Button> */}
             <FormField
               control={form.control}
               name="eventId"
