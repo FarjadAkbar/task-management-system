@@ -1,6 +1,6 @@
 import { getUsers } from "../actions/get-users"
 import { requireUser } from "@/lib/user"
-import { CreateNewEventForm } from "../_components/CreateNewEventForm"
+import { EventForm } from "../_components/EventForm"
 
 export default async function CreateNewEventPage() {
   const user = await requireUser()
@@ -11,7 +11,7 @@ export default async function CreateNewEventPage() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Add new appointment type</h1>
         <p className="text-muted-foreground mb-8">Create a new appointment type that allows people to book times.</p>
-        <CreateNewEventForm employees={employees} />
+        <EventForm employees={employees} isEditMode={false} />
       </div>
     </div>
   )

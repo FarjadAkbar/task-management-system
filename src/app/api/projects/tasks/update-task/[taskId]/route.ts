@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { prismadb } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-
-// import resendHelper from "@/lib/resend";
+import { render } from "@react-email/render";
+import sendEmail from "@/lib/sendmail";
 import UpdatedTaskFromProject from "@/emails/UpdatedTaskFromProject";
 
 //Create new task in project route
@@ -110,26 +110,26 @@ export async function PUT(req: Request, props: { params: Promise<{ taskId: strin
 
         //console.log(notifyRecipient, "notifyRecipient");
 
-        // await resend.emails.send({
-        //   from:
-        //     process.env.NEXT_PUBLIC_APP_NAME +
-        //     " <" +
-        //     process.env.EMAIL_FROM +
-        //     ">",
-        //   to: notifyRecipient?.email!,
-        //   subject:
-        //     session.user.userLanguage === "en"
-        //       ? `Task -  ${title} - was updated.`
-        //       : `Úkol - ${title} - byl aktualizován.`,
-        //   text: "", // Add this line to fix the types issue
-        //   react: UpdatedTaskFromProject({
-        //     taskFromUser: session.user.name!,
-        //     username: notifyRecipient?.name!,
-        //     userLanguage: notifyRecipient?.userLanguage!,
-        //     taskData: task,
-        //     boardData: boardData,
-        //   }),
-        // });
+        const emailHtml = render(
+          UpdatedTaskFromProject({
+            taskFromUser: session.user.name!,
+            username: notifyRecipient?.name!,
+            taskData: task,
+            boardData: boardData,
+          })
+        );
+
+        await sendEmail({
+          from:
+            process.env.NEXT_PUBLIC_APP_NAME +
+            " <" +
+            process.env.EMAIL_FROM +
+            ">",
+          to: notifyRecipient?.email!,
+          subject: `Task -  ${title} - was updated.`,
+          text: "",
+          html: await emailHtml,
+        });
         console.log("Email sent to user: ", notifyRecipient?.email!);
       } catch (error) {
         console.log(error);

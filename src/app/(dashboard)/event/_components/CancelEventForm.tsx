@@ -10,33 +10,22 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import { useRouter } from "next/navigation"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import Link from "next/link"
+import { CancelEventFormProps } from "@/types/cancel-event"
 
 const formSchema = z.object({
   eventId: z.string(),
 })
 
-interface CancelEventFormProps {
-  item: {
-    id: string
-    title: string
-    when: {
-      startTime: number
-      endTime: number
-    }
-    conferencing: {
-      details: {
-        url: string
-      }
-    }
-    participants: {
-      name: string
-    }[]
-  }
-}
+
 
 export function CancelEventForm({ item }: CancelEventFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false)
   const { toast } = useToast()
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -78,14 +67,15 @@ export function CancelEventForm({ item }: CancelEventFormProps) {
       })
     } finally {
       setIsLoading(false)
+      setShowCancelConfirmation(false)
     }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-3 justify-between items-center">
-          <div>
+        <div className="grid grid-cols-5 justify-between items-center">
+          <div className="col-span-2">
             <p className="text-muted-foreground text-sm">{format(fromUnixTime(item.when.startTime), "EEE, dd MMM")}</p>
             <p className="text-muted-foreground text-xs pt-1">
               {format(fromUnixTime(item.when.startTime), "hh:mm a")} -{" "}
@@ -107,19 +97,80 @@ export function CancelEventForm({ item }: CancelEventFormProps) {
             <h2 className="text-sm font-medium">{item.title}</h2>
             <p className="text-sm text-muted-foreground">You and {item.participants[0].name}</p>
           </div>
-          <FormField
-            control={form.control}
-            name="eventId"
-            render={() => (
-              <FormItem>
-                <FormControl>
-                  <Button type="submit" variant="destructive" disabled={isLoading}>
-                    {isLoading ? "Cancelling..." : "Cancel"}
-                  </Button>
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          <div className="col-span-2 flex justify-end space-x-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="secondary">View</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{item.title}</DialogTitle>
+                </DialogHeader>
+                <div className="mt-4">
+                  <p>
+                    <strong>Date:</strong> {format(fromUnixTime(item.when.startTime), "EEEE, MMMM d, yyyy")}
+                  </p>
+                  <p>
+                    <strong>Time:</strong> {format(fromUnixTime(item.when.startTime), "h:mm a")} -{" "}
+                    {format(fromUnixTime(item.when.endTime), "h:mm a")}
+                  </p>
+                  <p>
+                    <strong>Participants:</strong> You and {item.participants[0].name}
+                  </p>
+                  <p>
+                    <strong>Meeting Link:</strong>{" "}
+                    <a
+                      href={item.conferencing.details.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline"
+                    >
+                      {item.conferencing.details.url}
+                    </a>
+                  </p>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Button type="button" asChild>
+              <Link href={`/event/${item.metadata.eventId}`}>Edit</Link>
+            </Button>
+            <FormField
+              control={form.control}
+              name="eventId"
+              render={() => (
+                <FormItem>
+                  <FormControl>
+                    <Dialog open={showCancelConfirmation} onOpenChange={setShowCancelConfirmation}>
+                      <DialogTrigger asChild>
+                        <Button variant="destructive">Cancel Event</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Cancel Event</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to cancel this event? This action cannot be undone.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setShowCancelConfirmation(false)}>
+                            No, keep event
+                          </Button>
+                          <Button
+                            type="submit"
+                            variant="destructive"
+                            disabled={isLoading}
+                            onClick={form.handleSubmit(onSubmit)}
+                          >
+                            {isLoading ? "Cancelling..." : "Yes, cancel event"}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
         <Separator className="my-3" />
       </form>

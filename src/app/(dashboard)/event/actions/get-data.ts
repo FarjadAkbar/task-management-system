@@ -15,6 +15,8 @@ export async function getData(userId: string) {
   if (!userData) {
     throw new Error("User not found");
   }
+  if(userData?.grantId == null || userData?.grantEmail == null) return { data: [] };
+
   const data = await nylas.events.list({
     identifier: userData?.grantId as string,
     queryParams: {
