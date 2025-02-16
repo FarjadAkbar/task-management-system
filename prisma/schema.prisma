@@ -227,12 +227,13 @@ model Users {
   watching_boards      Boards[]              @relation(name: "watching_users", fields: [watching_boardsIDs], references: [id])
   instructionMaterials InstructionMaterial[]
   comments             Comment[]
-  sharedDatabases      SharedDatabase[]
+  notes                Note[]
+  sharedNotes          SharedNote[]
+  sharedNoteAccess     SharedNoteAccess[]
   feedback             Feedback[]
   eventsParticipated   EventParticipant[]
   events               Event[]           
   Availability         Availability[] 
-  personalNotes        PersonalNote[]
   announcements        Announcement[]
 }
 
@@ -289,32 +290,39 @@ enum Day {
 }
 
 
-model PersonalNote {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  content     String
-  tags        String[]
-  category    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        Users    @relation(fields: [userId], references: [id])
-  userId      String   @db.ObjectId
+model Note {
+  id       String              @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    Users     @relation(fields: [authorId], references: [id])
+  authorId  String
+}
+
+model SharedNote {
+  id       String              @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    Users     @relation(fields: [authorId], references: [id])
+  authorId  String
+  access    SharedNoteAccess[]
+}
+
+model SharedNoteAccess {
+  id       String              @id @default(auto()) @map("_id") @db.ObjectId
+  note      SharedNote @relation(fields: [noteId], references: [id])
+  noteId    String
+  user      Users     @relation(fields: [userId], references: [id])
+  userId    String
+  canEdit   Boolean  @default(false)
+
+  @@unique([noteId, userId])
 }
 
 
-
-model SharedDatabase {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  content     String
-  createdBy   Users    @relation(fields: [createdById], references: [id])
-  createdById String   @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  accessRole  String[] 
-  status      SharedStatusEnum @default(DRAFT)
-  version     Int       @default(1)
-}
 
 model Announcement {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
