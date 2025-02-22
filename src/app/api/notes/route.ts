@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "User ID is required" }, { status: 400 })
   }
 
-  const notes = await prismadb.note.findMany({
+  const notes = await prismadb.notes.findMany({
     where: { authorId: userId },
     orderBy: { updatedAt: "desc" },
   })
