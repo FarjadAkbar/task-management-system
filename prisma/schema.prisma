@@ -96,12 +96,6 @@ model Sections {
   board_relation Boards @relation(fields: [board], references: [id])
 }
 
-model modulStatus {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  isVisible Boolean
-}
-
 model Tasks {
   id               String          @id @default(auto()) @map("_id") @db.ObjectId
   v                Int             @map("__v")
@@ -156,17 +150,6 @@ enum ActiveStatus {
 }
 
 
-
-model Comment {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  content        String
-  createdBy      Users       @relation(fields: [createdById], references: [id])
-  createdById    String      @db.ObjectId
-  createdAt      DateTime    @default(now())
-  announcement   Announcement @relation(fields: [announcementId], references: [id])
-  announcementId String      @db.ObjectId
-}
-
 model TaskFeedback {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   taskId    String   @db.ObjectId
@@ -198,6 +181,8 @@ enum RoleEnum {
   MANAGER
   MARKETER
   LEAD
+  IT
+  OPERATION
 }
 
 model Users {
@@ -223,18 +208,15 @@ model Users {
   assigned_documents   Documents[]           @relation(name: "assigned_to_user")
   tasks                Tasks[]
   boards               Boards[]              @relation(name: "assigned_user")
+  tickets              Ticket[]               
+  assigned_tickets     Ticket[]              @relation(name: "assigned_ticket") 
   watching_boardsIDs   String[]              @db.ObjectId
   watching_boards      Boards[]              @relation(name: "watching_users", fields: [watching_boardsIDs], references: [id])
-  instructionMaterials InstructionMaterial[]
-  comments             Comment[]
-  notes                Note[]
-  sharedNotes          SharedNote[]
-  sharedNoteAccess     SharedNoteAccess[]
+  notes                Notes[]
   feedback             Feedback[]
   eventsParticipated   EventParticipant[]
   events               Event[]           
   Availability         Availability[] 
-  announcements        Announcement[]
 }
 
 
@@ -290,67 +272,45 @@ enum Day {
 }
 
 
-model Note {
+model Notes {
   id       String              @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   content   String
+  is_public Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   author    Users     @relation(fields: [authorId], references: [id])
   authorId  String
 }
 
-model SharedNote {
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+
+
+model Ticket {
   id       String              @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    Users     @relation(fields: [authorId], references: [id])
-  authorId  String
-  access    SharedNoteAccess[]
-}
-
-model SharedNoteAccess {
-  id       String              @id @default(auto()) @map("_id") @db.ObjectId
-  note      SharedNote @relation(fields: [noteId], references: [id])
-  noteId    String
-  user      Users     @relation(fields: [userId], references: [id])
-  userId    String
-  canEdit   Boolean  @default(false)
-
-  @@unique([noteId, userId])
-}
-
-
-
-model Announcement {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  title      String
-  content    String
-  createdBy  Users    @relation(fields: [createdById], references: [id])
-  createdById String  @db.ObjectId
-  createdAt  DateTime @default(now())
-  comments   Comment[]
-}
-
-
-model InstructionMaterial {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
-  content     String
-  category    String
-  createdBy   Users    @relation(fields: [createdById], references: [id])
-  createdById String   @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  roles       String[] // Roles that can access this material
-}
-
-
-
-enum SharedStatusEnum {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
+  description String
+  status      TicketStatus  @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  // Relations
+  createdBy   Users          @relation(fields: [createdById], references: [id])
+  createdById String
+  assignedTo  Users?         @relation("assigned_ticket", fields: [assignedToId], references: [id])
+  assignedToId String?
 }

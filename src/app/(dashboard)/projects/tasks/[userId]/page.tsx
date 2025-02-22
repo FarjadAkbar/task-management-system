@@ -1,10 +1,11 @@
 import { getTask } from "@/actions/projects/get-task";
 import { getUserTasks } from "@/actions/projects/get-user-tasks";
 import React from "react";
-import { TasksDataTable } from "../components/data-table";
 import { columns } from "../components/columns";
 import Container from "@/app/(dashboard)/components/ui/Container";
 import { requireUser } from "@/lib/user";
+import { DataTable } from "@/app/(dashboard)/components/table-components/data-table";
+import { priorities, statuses } from "../data/data";
 
 type TaskDetailPageProps = {
   params: Promise<{
@@ -25,7 +26,12 @@ const TaskDetailPage = async (props: TaskDetailPageProps) => {
       title={`${user?.name}'s Tasks`}
       description={"Everything you need to know about tasks"}
     >
-      <TasksDataTable data={tasks} columns={columns} />
+ <DataTable data={tasks} columns={columns} 
+        filters={[
+                            { name: "title", isInput: true }, // Input search
+                            { name: "taskStatus", options: statuses },
+                            { name: "priority", options: priorities },
+                          ]} />
     </Container>
   );
 };

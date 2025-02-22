@@ -41,9 +41,13 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
       //TODO: send data to the server
       toast.success("Password changed successfully");
       router.refresh();
-    } catch (error: any) {
-      console.log(error.response.data);
-      toast.error(error.response.data);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error);
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }
