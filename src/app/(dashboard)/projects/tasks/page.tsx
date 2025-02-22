@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
 import { getTasks } from "@/actions/projects/get-tasks";
-import { TasksDataTable } from "./components/data-table";
 import { columns } from "./components/columns";
 
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,8 @@ import H2Title from "@/components/typography/h2";
 import SuspenseLoading from "@/components/loadings/suspense";
 import Link from "next/link";
 import { requireUser } from "@/lib/user";
+import { DataTable } from "../../components/table-components/data-table";
+import { priorities, statuses } from "./data/data";
 
 const TasksPage = async () => {
   const tasks: any = await getTasks();
@@ -26,7 +27,12 @@ const TasksPage = async () => {
           </div>
       </div>
       <div>
-        <TasksDataTable data={tasks} columns={columns} />
+        <DataTable data={tasks} columns={columns} 
+        filters={[
+                            { name: "title", isInput: true }, // Input search
+                            { name: "taskStatus", options: statuses },
+                            { name: "priority", options: priorities },
+                          ]} />
       </div>
     </Suspense>
   );

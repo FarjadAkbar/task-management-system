@@ -81,9 +81,13 @@ export function LoginComponent() {
         // console.log("Status OK");
         toast.success("Login successful");
       }
-    } catch (error: any) {
-      console.log(error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error);
         toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
       router.push("/");
@@ -133,7 +137,7 @@ export function LoginComponent() {
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        placeholder="John Doe"
+                        placeholder="test@example.com"
                         {...field}
                       />
                     </FormControl>
@@ -152,7 +156,7 @@ export function LoginComponent() {
                         <Input
                           className="w-full"
                           disabled={isLoading}
-                          placeholder="Password"
+                          placeholder="********"
                           type={show ? "text" : "password"}
                           {...field}
                         />

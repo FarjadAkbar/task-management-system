@@ -7,7 +7,7 @@ const cards = [
     { title: "Database", src: "/images/database.png", href: "/databases", allowedUser: true },
     { title: "Task Manager", src: "/images/task.png", href: "/projects", allowedUser: true },
     { title: "Our Team", src: "/images/team.png", href: "/users", allowedUser: false },
-    { title: "Ticket", src: "/images/ticket.png", href: "", allowedUser: true },
+    { title: "Ticket", src: "/images/ticket.png", href: "/tickets", allowedUser: true },
     { title: "Events and Meeting", src: "/images/meetings.png", href: "/event", allowedUser: true },
     { title: "Messages", src: "/images/messages.png", href: "", allowedUser: true },
     { title: "Personal Folder", src: "/images/personalfolder.png", href: "/personal-documents", allowedUser: true },

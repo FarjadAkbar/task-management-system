@@ -3,18 +3,17 @@ import Link from "next/link";
 import React from "react";
 import { CalendarCheck2 } from "lucide-react";
 import { requireUser } from "@/lib/user";
-import { getData } from "./actions/get-data";
+import { getEvents } from "@/actions/events/get-events";
 import { EmptyState } from "./_components/EmptyState";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CancelEventForm } from "./_components/CancelEventForm";
-import { CancelEventFormProps } from "@/types/cancel-event";
-import { Separator } from "@radix-ui/react-dropdown-menu";
+import { CalendarView } from "./_components/CalendarView";
+import NewEventDialog from "./dialogs/NewEvent";
+import { IEventProps } from "@/types/event";
 
 const EventPage = async () => {
   const user = await requireUser();
-  const data = await getData(user?.id as string);
+  const events = await getEvents(user?.id as string);
 
-  console.log(data, "data")
   return (
     <>
       <div className="flex items-center justify-between px-2">
@@ -33,19 +32,16 @@ const EventPage = async () => {
             </Button>
             {
               user?.grantId && (
-                <Button asChild>
-                  <Link href="/event/new">Create New Event</Link>
-                </Button>
+                <NewEventDialog />
               )
             }
         </div>
       </div>
-      {data.data.length === 0 ? (
+      {events.data.length === 0 ? (
         <EmptyState
           title="You have no Event"
           description="You can create your first event by clicking the button below."
-          buttonText={user?.grantId ? "Add Event" : "Connect Calender to Account"}
-          href={user?.grantId ? "/event/new" : "/api/auth"}
+          grantId={user?.grantId}
         />
       ) : (
         <Card>
@@ -56,13 +52,7 @@ const EventPage = async () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-          {data.data.map((item) => (
-            <>
-            <CancelEventForm key={item.id} item={item as Required<CancelEventFormProps["item"]>} />
-              <Separator />
-            </>
-          ))}
-
+          <CalendarView events={events.data as IEventProps[]} />
           </CardContent>
         </Card>
       )}

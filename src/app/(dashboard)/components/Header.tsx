@@ -34,7 +34,7 @@ const Header = ({ id, name, email, avatar }: Props) => {
               Guidelines
             </span>
           </Link>
-          <Link href="/meet" passHref>
+          <Link href="/event" passHref>
             <span className="hover:text-gold font-semibold text-lg">
               Meeting
             </span>

@@ -1,19 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Ban, FileIcon, PlusCircle } from "lucide-react";
 import Link from "next/link";
+import NewEventDialog from "../dialogs/NewEvent";
 
 interface iAppProps {
   title: string;
   description: string;
-  buttonText: string;
-  href: string;
+  grantId: string | undefined;
 }
 
 export function EmptyState({
-  buttonText,
   description,
-  href,
   title,
+  grantId
 }: iAppProps) {
   return (
     <div className="flex flex-col flex-1 h-full items-center justify-center rounded-md border border-dashed p-8 text-center animate-in fade-in-50">
@@ -26,9 +25,15 @@ export function EmptyState({
       </p>
 
       <Button asChild>
-        <Link href={href}>
-          <PlusCircle className="mr-2 size-4" /> {buttonText}
+        {
+grantId ? (
+  <NewEventDialog />
+) : (
+        <Link href="/api/auth">
+          <PlusCircle className="mr-2 size-4" /> Connect Calender to Account
         </Link>
+)
+        }
       </Button>
     </div>
   );

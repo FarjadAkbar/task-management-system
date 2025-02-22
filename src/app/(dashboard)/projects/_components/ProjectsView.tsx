@@ -13,8 +13,9 @@ import NewProjectDialog from "../dialogs/NewProject";
 import { Button } from "@/components/ui/button";
 import H2Title from "@/components/typography/h2";
 
-import { ProjectsDataTable } from "../table-components/data-table";
+import { DataTable } from "../../components/table-components/data-table";
 import { columns } from "../table-components/columns";
+import { visibility } from "../data/data";
 // import AiAssistant from "./AiAssistant";
 
 const ProjectsView = async () => {
@@ -48,7 +49,11 @@ const ProjectsView = async () => {
             {/* <AiAssistant session={session} /> */}
           </div>
         </div>
-        <ProjectsDataTable data={boards} columns={columns} />
+        <DataTable data={boards} columns={columns}
+        filters={[
+                    { name: "title", isInput: true }, // Input search
+                    { name: "visibility", options: visibility },
+                  ]}/>
       </div>
     </>
   );

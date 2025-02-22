@@ -2,13 +2,14 @@ import { getUsers } from "@/actions/get-users";
 import React from "react";
 import { InviteForm } from "./components/InviteForm";
 import { Separator } from "@/components/ui/separator";
-import { AdminUserDataTable } from "./table-components/data-table";
 import { columns } from "./table-components/columns";
 import { Users } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import SendMailToAll from "./components/send-mail-to-all";
 import Container from "../components/ui/Container";
 import { requireUser } from "@/lib/user";
+import { DataTable } from "../components/table-components/data-table";
+import { isAdmin, statuses } from "./table-data/data";
 
 const AdminUsersPage = async () => {
   const users: Users[] = await getUsers();
@@ -43,8 +44,12 @@ const AdminUsersPage = async () => {
         <SendMailToAll />
       </div> */}
       <Separator />
-
-      <AdminUserDataTable columns={columns} data={users} />
+ <DataTable data={users} columns={columns} 
+        filters={[
+                            { name: "name", isInput: true }, // Input search
+                            { name: "userStatus", options: statuses },
+                            { name: "is_admin", options: isAdmin },
+                          ]} />
     </Container>
   );
 };
