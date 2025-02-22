@@ -1,21 +1,75 @@
-import React from 'react';
+"use client"
+import React, { useState } from "react";
 import Image from "next/image";
+import AddToolModal from "./components/AddToolModal";
+import { toast } from "react-toastify";
 
 const toolsData = [
-    { name: "Canva", image: "/images/canva.png" },
-    { name: "Envato", image: "/images/Envato-Logo.webp" },
-    { name: "ChatGPT", image: "/images/chatgpt.png" },
-    { name: "ElevenLabs", image: "/images/voiceAi.png", subtitle: "Generative Voice AI" },
-    { name: "Adobe Suite", image: "/images/adobe-suite.png" },
+    { name: "Canva", image: "/images/canva.png", username: "user_canva", password: "pass123" },
+    { name: "Envato", image: "/images/Envato-Logo.webp", username: "user_envato", password: "envato456" },
+    { name: "ChatGPT", image: "/images/chatgpt.png", username: "user_chatgpt", password: "chatgpt789" },
+    { name: "ElevenLabs", image: "/images/voiceAi.png", subtitle: "Generative Voice AI", username: "user_eleven", password: "voiceAI111" },
+    { name: "Adobe Suite", image: "/images/adobe-suite.png", username: "user_adobe", password: "adobeSuite999" },
 ];
 
 const page = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        title: "",
+        department: "Web Developer",
+        image: "",
+        creds: { platform: "", password: "" },
+    });
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleCredsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            creds: { ...prev.creds, [name]: value },
+        }));
+    };
+
+    const handleCopy = (text: string) => {
+        navigator.clipboard.writeText(text);
+        toast.success("Copied to clipboard!");
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFormData((prev) => ({
+                ...prev,
+                image: URL.createObjectURL(file),
+            }));
+        }
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log("Submitted Data:", formData);
+        setIsModalOpen(false);
+    };
+
     return (
         <>
-            <div className='px-6 py-6 mx-16'>
-                <h1 className="text-xl font-bold text-left">TOOLS</h1>
-                <h2 className="text-2xl mt-4 text-center font-semibold">Paid Tools By DolceFrutti</h2>
+            <div className="flex justify-between items-center px-6 py-6 mx-16">
+                <h1 className="text-xl font-bold">TOOLS</h1>
+                <button
+                    className="bg-black text-gold px-4 py-2 rounded-md hover:bg-gold hover:text-black font-semibold"
+                    onClick={() => setIsModalOpen(true)}
+                >
+                    Add Tools
+                </button>
             </div>
+            <h2 className="text-2xl mt-4 text-center font-semibold">Paid Tools By DolceFrutti</h2>
             <main className="px-4 sm:px-8 md:px-16">
                 <section className="max-w-3xl mx-auto">
                     <h2 className="text-2xl text-left">
@@ -59,13 +113,33 @@ const page = () => {
                                 <p className="text-sm text-gray-600">{tool.subtitle}</p>
                             )}
                             <div className="mt-4">
-                                <p className="text-sm text-gray-500">User Name</p>
-                                <p className="text-sm text-gray-500">Password</p>
+                                <p
+                                    className="text-sm text-gray-500 cursor-pointer hover:text-black"
+                                    onClick={() => handleCopy(tool.username)}
+                                >
+                                    User Name: <span className="font-semibold">{tool.username}</span>
+                                </p>
+                                <p
+                                    className="text-sm text-gray-500 cursor-pointer hover:text-black"
+                                    onClick={() => handleCopy(tool.password)}
+                                >
+                                    Password: <span className="font-semibold">{tool.password}</span>
+                                </p>
                             </div>
                         </div>
                     ))}
                 </section>
             </main>
+            {/* Modal Component */}
+            <AddToolModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                formData={formData}
+                handleInputChange={handleInputChange}
+                handleCredsChange={handleCredsChange}
+                handleImageChange={handleImageChange}
+                handleSubmit={handleSubmit}
+            />
         </>
     )
 }

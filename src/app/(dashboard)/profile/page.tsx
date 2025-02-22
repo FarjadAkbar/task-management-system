@@ -5,8 +5,10 @@ import { ProfilePhotoForm } from "./components/ProfilePhotoForm";
 import Container from "../components/ui/Container";
 import H4Title from "@/components/typography/h4";
 
+
 export default async function Profile() {
   const data = await getUser();
+  console.log("user data", data.first_name)
 
   if (!data) {
     return <div>No user data.</div>;
