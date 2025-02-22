@@ -175,11 +175,11 @@ const NewTaskDialog = ({ users, boards }: Props) => {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>New task name</FormLabel>
+                        <FormLabel>Title</FormLabel>
                         <FormControl>
                           <Input
                             disabled={isLoading}
-                            placeholder="Enter task name"
+                            placeholder="Enter title"
                             {...field}
                           />
                         </FormControl>
@@ -192,11 +192,11 @@ const NewTaskDialog = ({ users, boards }: Props) => {
                     name="content"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Task description</FormLabel>
+                        <FormLabel>Description</FormLabel>
                         <FormControl>
                           <Textarea
                             disabled={isLoading}
-                            placeholder="Enter task description"
+                            placeholder="Enter description"
                             {...field}
                           />
                         </FormControl>
@@ -285,14 +285,14 @@ const NewTaskDialog = ({ users, boards }: Props) => {
                     name="priority"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Choose task priority</FormLabel>
+                        <FormLabel>Choose priority</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select tasks priority" />
+                              <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

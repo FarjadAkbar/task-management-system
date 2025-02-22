@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
   }
 
-  const note = await prismadb.note.create({
+  const note = await prismadb.notes.create({
     data: { title, content, authorId: userId },
   })
 

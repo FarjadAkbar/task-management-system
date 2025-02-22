@@ -149,7 +149,7 @@ const UpdateTaskDialog = ({
                   <FormControl>
                     <Input
                       disabled={isLoading}
-                      placeholder="Enter task name"
+                      placeholder="Enter title"
                       {...field}
                     />
                   </FormControl>
@@ -162,11 +162,11 @@ const UpdateTaskDialog = ({
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Task description</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
                       disabled={isLoading}
-                      placeholder="Enter task description"
+                      placeholder="Enter description"
                       {...field}
                     />
                   </FormControl>
@@ -232,14 +232,14 @@ const UpdateTaskDialog = ({
               name="priority"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Choose task priority</FormLabel>
+                  <FormLabel>Choose priority</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select tasks priority" />
+                        <SelectValue placeholder="Select priority" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
