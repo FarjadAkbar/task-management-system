@@ -100,9 +100,9 @@ export function ViewEvent({ event }: CalendarViewProps) {
             <p className="text-sm text-muted-foreground">You and {event.participants[0].name}</p>
           </div>
           <div className="col-span-2 flex justify-end space-x-2">
-            <Button type="button" asChild>
+            {/* <Button type="button" asChild>
               <Link href={`/event/${event.metadata.eventId}`}>Edit</Link>
-            </Button>
+            </Button> */}
             <FormField
               control={form.control}
               name="eventId"
