@@ -35,9 +35,9 @@ const TasksPage = async () => {
       <div>
         <DataTable data={tasks} columns={columns} 
         filters={[
-                            { name: "title", isInput: true }, // Input search
-                            { name: "taskStatus", options: statuses },
-                            { name: "priority", options: priorities },
+                            { label: "Title", name: "title", isInput: true }, // Input search
+                            { label: "Status", name: "taskStatus", options: statuses },
+                            { label: "Priority", name: "priority", options: priorities },
                           ]} />
       </div>
     </Suspense>

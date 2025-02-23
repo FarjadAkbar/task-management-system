@@ -67,7 +67,7 @@ const UpdateTaskDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [checklistItems, setChecklistItems] = useState<IChecklistItem[]>(
-    initialData.checklist
+    initialData.checklist ?? []
   );
 
   const router = useRouter();
@@ -79,7 +79,7 @@ const UpdateTaskDialog = ({
     dueDateAt: z.date(),
     priority: z.string().min(3).max(10),
     content: z.string().min(3).max(500),
-    boardId: z.string().min(3).max(255),
+    // boardId: z.string().min(3).max(255),
   });
 
   type UpdatedTaskForm = z.infer<typeof formSchema>;
@@ -92,7 +92,7 @@ const UpdateTaskDialog = ({
       dueDateAt: initialData.dueDateAt,
       priority: initialData.priority,
       content: initialData.content,
-      boardId: boardId,
+      // boardId: boardId,
     },
   });
 
@@ -105,14 +105,19 @@ const UpdateTaskDialog = ({
   }
 
   //Actions
-  console.log("BoardId:", boardId);
+  console.log("BoardId:", initialData);
 
   const onSubmit = async (data: UpdatedTaskForm) => {
     setIsLoading(true);
     try {
       await axios.put(
         `/api/projects/tasks/update-task/${initialData.id}`,
-        data
+        {
+          board: boards,
+          bordId: boardId,
+          checklist: checklistItems,
+          ...data
+        }
       );
       toast({
         title: "Success",
@@ -297,12 +302,8 @@ const UpdateTaskDialog = ({
             </div>
           </div>
           <div className="flex w-full justify-end space-x-2 pt-2">
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <Icons.spinner className="animate-spin" />
-              ) : (
-                "Update"
-              )}
+            <Button disabled={isLoading}>
+              {isLoading ? "Updating..." : "Update"}
             </Button>
           </div>
         </form>

@@ -51,8 +51,8 @@ const ProjectsView = async () => {
         </div>
         <DataTable data={boards} columns={columns}
         filters={[
-                    { name: "title", isInput: true }, // Input search
-                    { name: "visibility", options: visibility },
+                    { label: "Title", name: "title", isInput: true }, // Input search
+                    { label: "Visibility", name: "visibility", options: visibility },
                   ]}/>
       </div>
     </>

@@ -33,8 +33,8 @@ const TicketsView = async () => {
         </div>
         <DataTable data={tickets} columns={columns} 
           filters={[
-            { name: "title", isInput: true }, // Input search
-            { name: "priority", options: priorities },
+            { label: "Title", name: "title", isInput: true }, // Input search
+            { label: "Priority", name: "priority", options: priorities },
           ]} />
       </div>
     </>

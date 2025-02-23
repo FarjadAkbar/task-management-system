@@ -23,7 +23,7 @@ export function DataTableToolbar<TData>({
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
-      {filters.map(({ name, options, isInput }) => {
+      {filters.map(({ name, label, options, isInput }) => {
           const column = table.getColumn(name);
           if (!column) return null; // Ensure column exists before rendering
 
@@ -39,7 +39,7 @@ export function DataTableToolbar<TData>({
             <DataTableFacetedFilter
               key={name}
               column={column}
-              title={name}
+              title={label}
               options={options || []}
             />
           );

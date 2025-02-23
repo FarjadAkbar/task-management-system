@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
-import { checkedListItem } from "@/actions/projects/checked-llist-item"
+import { checkedListItem } from "@/actions/projects/checked-list-item"
 
 interface ChecklistItem {
   id: string
@@ -27,7 +27,7 @@ export function TaskChecklist({ taskId, initialChecklist }: TaskChecklistProps) 
 
   return (
     <div className="space-y-2">
-      {checklist.map((item) => (
+      {checklist?.map((item) => (
         <div key={item.id} className="flex items-center space-x-2">
           <Checkbox
             id={item.id}

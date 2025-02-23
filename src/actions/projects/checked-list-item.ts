@@ -11,7 +11,8 @@ export async function checkedListItem(taskId: string, itemId: string, checked: b
 
     if (!task) throw new Error("Task not found")
 
-    const updatedChecklist = (JSON.parse(task.checklist as string)).map((item: any) => {
+    const list  = Array.isArray(task.checklist) ? task.checklist : JSON.parse(task.checklist as string);
+    const updatedChecklist = list.map((item: any) => {
       if (item.id === itemId) {
         return { ...item, checked }
       }
