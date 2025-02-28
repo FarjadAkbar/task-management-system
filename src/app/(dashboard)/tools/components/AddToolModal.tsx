@@ -1,117 +1,109 @@
 import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
-    formData: {
-        title: string;
-        department: string;
-        image: string;
-        creds: { platform: string; password: string };
-    };
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    handleCredsChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleSubmit: (e: React.FormEvent) => void;
+    onSubmit: (data: FormData) => void;
 }
 
-const AddToolModal: React.FC<ModalProps> = ({
-    isOpen,
-    onClose,
-    formData,
-    handleInputChange,
-    handleCredsChange,
-    handleImageChange,
-    handleSubmit,
-}) => {
-    if (!isOpen) return null;
+const formSchema = z.object({
+    title: z.string().min(2, "Title must be at least 2 characters."),
+    department: z.string().nonempty("Department is required."),
+    image: z.any().refine((file) => file instanceof File, "Image is required."),
+    platform: z.string().min(2, "Platform name must be at least 2 characters."),
+    password: z.string().min(6, "Password must be at least 6 characters."),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+const AddToolModal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm<FormData>({
+        resolver: zodResolver(formSchema),
+    });
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center">
-            <div className="bg-white text-black border border-gray-600 p-8 rounded-xl shadow-lg w-[600px]">
-                {/* Header */}
-                <div className="flex justify-between items-center border-b border-gray-500 pb-3">
-                    <h2 className="text-2xl font-bold">Add New Tool</h2>
-                    <button onClick={onClose} className="text-black hover:text-gold text-xl">&times;</button>
-                </div>
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="bg-gray-50 text-black border p-8  shadow-lg w-[550px]">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold border-b border-gray-500 pb-3">Add New Tool</DialogTitle>
+                </DialogHeader>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mt-4">
-                    <div className="col-span-2">
-                        <label className="block text-sm font-semibold text-black">Title:</label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={formData.title}
-                            onChange={handleInputChange}
-                            required
-                            className="w-full px-3 py-2 bg-gray-100 text-black border border-gray-600 rounded-md focus:outline-none focus:border-gold"
-                        />
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+                    <div>
+                        <Label htmlFor="title">Title</Label>
+                        <Input id="title" {...register("title")}
+                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0" />
+                        {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
                     </div>
-                    <div className="col-span-1">
-                        <label className="block text-sm font-semibold text-black">Department:</label>
-                        <select
-                            name="department"
-                            value={formData.department}
-                            onChange={handleInputChange}
-                            required
-                            className="w-full px-3 py-2 bg-gray-100 text-black border border-gray-600 rounded-md focus:outline-none focus:border-gold"
-                        >
-                            <option value="Web Developer">Web Developer</option>
-                            <option value="Graphic Designer">Graphic Designer</option>
-                            <option value="SEO Content Writer">SEO Content Writer</option>
-                            <option value="SEO Specialist">SEO Specialist</option>
-                        </select>
+
+                    <div>
+                        <Label htmlFor="department">Department</Label>
+                        <Select onValueChange={(val) => setValue("department", val)}>
+                            <SelectTrigger className="w-full py-1 bg-white text-black rounded-md border border-gray-300 focus:ring-0 focus:border-gold focus-visible:ring-transparent focus-visible:ring-offset-0">
+                                <SelectValue placeholder="Select a department" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Web Developer">Web Developer</SelectItem>
+                                <SelectItem value="Graphic Designer">Graphic Designer</SelectItem>
+                                <SelectItem value="SEO Content Writer">SEO Content Writer</SelectItem>
+                                <SelectItem value="SEO Specialist">SEO Specialist</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        {errors.department && <p className="text-red-500 text-sm">{errors.department.message}</p>}
                     </div>
-                    <div className="col-span-1">
-                        <label className="block text-sm font-semibold text-black">Upload Image:</label>
-                        <input
+
+                    <div>
+                        <Label htmlFor="image">Upload Image</Label>
+                        <Input
+                            id="image"
                             type="file"
                             accept="image/*"
-                            onChange={handleImageChange}
-                            className="w-full bg-white h-10 p-1 text-black border border-gray-600 rounded-md cursor-pointer"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    setValue("image", file);
+                                }
+                            }}
+                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0"
                         />
                     </div>
-                    <div className="col-span-1">
-                        <label className="block text-sm font-semibold text-black">Platform:</label>
-                        <input
-                            type="text"
-                            name="platform"
-                            value={formData.creds.platform}
-                            onChange={handleCredsChange}
-                            required
-                            className="w-full px-3 py-2 bg-gray-100 text-black border border-gray-600 rounded-md focus:outline-none focus:border-gold"
-                        />
+
+                    <div>
+                        <Label htmlFor="platform">Platform</Label>
+                        <Input id="platform" {...register("platform")}
+                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0" />
+                        {errors.platform && <p className="text-red-500 text-sm">{errors.platform.message}</p>}
                     </div>
-                    <div className="col-span-1">
-                        <label className="block text-sm font-semibold text-black">Password:</label>
-                        <input
-                            type="text"
-                            name="creds"
-                            value={formData.creds.password}
-                            onChange={handleCredsChange}
-                            required
-                            className="w-full px-3 py-2 bg-gray-100 text-black border border-gray-600 rounded-md focus:outline-none focus:border-gold"
-                        />
+
+                    <div>
+                        <Label htmlFor="password">Password</Label>
+                        <Input id="password" type="password" {...register("password")}
+                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0" />
+                        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                     </div>
-                    <div className="col-span-2 flex justify-end gap-3 mt-4">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition"
-                        >
+
+                    <DialogFooter className="mt-4">
+                        <Button type="button" className="bg-gray-200 text-black hover:bg-gray-300 font-bold" onClick={onClose}>
                             Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className="bg-gold text-black px-4 py-2 rounded-md hover:bg-black hover:text-gold transition font-semibold"
-                        >
-                            Submit
-                        </button>
-                    </div>
+                        </Button>
+                        <Button type="submit" className="bg-black text-gold hover:text-black hover:bg-gold font-bold">Submit</Button>
+                    </DialogFooter>
                 </form>
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 };
 
