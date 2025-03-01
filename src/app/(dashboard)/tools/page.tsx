@@ -14,12 +14,6 @@ const toolsData = [
 
 const Page = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // const [formData, setFormData] = useState({
-    //     title: "",
-    //     department: "Web Developer",
-    //     image: "",
-    //     creds: { platform: "", password: "" },
-    // });
 
     const handleFormSubmit = (data: any) => {
         console.log("Form Submitted:", data);

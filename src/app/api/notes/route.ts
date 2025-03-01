@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "User ID is required" }, { status: 400 })
   }
 
-  const notes = await prismadb.notes.findMany({
+  const notes = await prismadb.note.findMany({
     where: { authorId: userId },
     orderBy: { updatedAt: "desc" },
   })
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
   }
 
-  const note = await prismadb.notes.create({
+  const note = await prismadb.note.create({
     data: { title, content, authorId: userId },
   })
 
