@@ -1,15 +1,29 @@
 "use client"
 
 import React from "react"
-import FullCalendar from "@fullcalendar/react"
-import dayGridPlugin from "@fullcalendar/daygrid"
-import timeGridPlugin from "@fullcalendar/timegrid"
-import interactionPlugin from "@fullcalendar/interaction"
+import dynamic from "next/dynamic"
 import { Card } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { ViewEvent } from "./ViewEvent"
 import { fromUnixTime } from "date-fns"
-import { IEventProps } from "@/types/event";
+import type { IEventProps } from "@/types/event"
+import { CalendarSkeleton } from "./CalendarSkeleton"
+import dayGridPlugin from "@fullcalendar/daygrid"
+import timeGridPlugin from "@fullcalendar/timegrid"
+import interactionPlugin from "@fullcalendar/interaction"
+
+// Dynamically import only the FullCalendar component
+// Move the dynamic import to a separate variable
+const FullCalendarComponent = dynamic(
+  () =>
+    import("@fullcalendar/react").then((mod) => {
+      return { default: mod.default }
+    }),
+  {
+    ssr: false,
+    loading: () => <CalendarSkeleton />,
+  },
+)
 
 interface CalendarViewProps {
   events: IEventProps[]
@@ -18,22 +32,26 @@ interface CalendarViewProps {
 export function CalendarView({ events }: CalendarViewProps) {
   const [selectedEvent, setSelectedEvent] = React.useState<IEventProps | null>(null)
 
-  // Transform events for FullCalendar
-  const calendarEvents = events.map((event) => ({
-    id: event.id,
-    title: event.title,
-    start: fromUnixTime(event.when.startTime),
-    end: fromUnixTime(event.when.endTime),
-    extendedProps: event,
-  }))
+  // Memoize calendar events transformation
+  const calendarEvents = React.useMemo(
+    () =>
+      events.map((event) => ({
+        id: event.id,
+        title: event.title,
+        start: fromUnixTime(event.when.startTime),
+        end: fromUnixTime(event.when.endTime),
+        extendedProps: event,
+      })),
+    [events],
+  )
 
-  const handleEventClick = (info: any) => {
+  const handleEventClick = React.useCallback((info: any) => {
     setSelectedEvent(info.event.extendedProps)
-  }
+  }, [])
 
   return (
     <Card className="p-4">
-      <FullCalendar
+      <FullCalendarComponent
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
         headerToolbar={{
@@ -64,7 +82,7 @@ export function CalendarView({ events }: CalendarViewProps) {
         nowIndicator={true}
         selectMirror={true}
         businessHours={{
-          daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
+          daysOfWeek: [1, 2, 3, 4, 5],
           startTime: "09:00",
           endTime: "17:00",
         }}

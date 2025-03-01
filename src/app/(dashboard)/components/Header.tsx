@@ -29,7 +29,7 @@ const Header = ({ id, name, email, avatar }: Props) => {
           <Link href="/tools" passHref>
             <span className="hover:text-gold font-semibold text-lg">Tools</span>
           </Link>
-          <Link href="/guidelines" passHref>
+          <Link href="/guideline" passHref>
             <span className="hover:text-gold font-semibold text-lg">
               Guidelines
             </span>

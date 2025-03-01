@@ -18,18 +18,18 @@ export async function PUT(req: Request, props: { params: Promise<{ taskId: strin
   // const resend = await resendHelper();
   const session = await getServerSession(authOptions);
   const body = await req.json();
-  //console.log(body, "body");
   const {
     title,
     user,
     board,
-    boardId,
+    checklist,
     priority,
     content,
     notionUrl,
     dueDateAt,
   } = body;
 
+  const boardId = board[0].id;
   const taskId = params.taskId;
 
   if (!taskId) {
@@ -48,7 +48,7 @@ export async function PUT(req: Request, props: { params: Promise<{ taskId: strin
     //Get first section from board where position is smallest
     const sectionId = await prismadb.sections.findFirst({
       where: {
-        board: board,
+        board: boardId
       },
       orderBy: {
         position: "asc",
@@ -59,11 +59,11 @@ export async function PUT(req: Request, props: { params: Promise<{ taskId: strin
       return new NextResponse("No section found", { status: 400 });
     }
 
-    const tasksCount = await prismadb.tasks.count({
-      where: {
-        section: sectionId.id,
-      },
-    });
+    // const tasksCount = await prismadb.tasks.count({
+    //   where: {
+    //     section: sectionId.id,
+    //   },
+    // });
 
     let contentUpdated = content;
 
@@ -71,6 +71,7 @@ export async function PUT(req: Request, props: { params: Promise<{ taskId: strin
       contentUpdated = content + "\n\n" + notionUrl;
     }
 
+    console.log(checklist, "check")
     const task = await prismadb.tasks.update({
       where: {
         id: taskId,
@@ -82,6 +83,7 @@ export async function PUT(req: Request, props: { params: Promise<{ taskId: strin
         updatedBy: user,
         dueDateAt: dueDateAt,
         user: user,
+        checklist: checklist
       },
     });
 

@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CalendarView } from "./_components/CalendarView";
 import NewEventDialog from "./dialogs/NewEvent";
 import { IEventProps } from "@/types/event";
+import { ViewEvent } from "./_components/ViewEvent";
+import { Separator } from "@/components/ui/separator";
 
 const EventPage = async () => {
   const user = await requireUser();
@@ -52,7 +54,15 @@ const EventPage = async () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-          <CalendarView events={events.data as IEventProps[]} />
+          {/* <CalendarView events={events.data as IEventProps[]} /> */}
+          {
+            events.data.map((event: any) => (
+              <div key={event.id}>
+                <ViewEvent event={event} />
+                <Separator />
+                </div>
+            ))
+          }
           </CardContent>
         </Card>
       )}

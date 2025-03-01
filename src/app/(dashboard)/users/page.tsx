@@ -46,9 +46,9 @@ const AdminUsersPage = async () => {
       <Separator />
  <DataTable data={users} columns={columns} 
         filters={[
-                            { name: "name", isInput: true }, // Input search
-                            { name: "userStatus", options: statuses },
-                            { name: "is_admin", options: isAdmin },
+                            { label: "Name", name: "name", isInput: true }, // Input search
+                            { label: "Status", name: "userStatus", options: statuses },
+                            { label: "Admin", name: "is_admin", options: isAdmin },
                           ]} />
     </Container>
   );

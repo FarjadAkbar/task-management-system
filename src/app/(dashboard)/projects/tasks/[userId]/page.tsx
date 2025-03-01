@@ -28,9 +28,9 @@ const TaskDetailPage = async (props: TaskDetailPageProps) => {
     >
  <DataTable data={tasks} columns={columns} 
         filters={[
-                            { name: "title", isInput: true }, // Input search
-                            { name: "taskStatus", options: statuses },
-                            { name: "priority", options: priorities },
+                            { label: "Title", name: "title", isInput: true }, // Input search
+                            { label: "Status", name: "taskStatus", options: statuses },
+                            { label: "Priority", name: "priority", options: priorities },
                           ]} />
     </Container>
   );

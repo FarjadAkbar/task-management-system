@@ -151,7 +151,7 @@ export function DataTableRowActions<TData>({
             Edit
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={onWatch}>
+          {/* <DropdownMenuItem onClick={onWatch}>
             <Eye className="mr-2 w-4 h-4" />
             Watch project
           </DropdownMenuItem>
@@ -159,7 +159,7 @@ export function DataTableRowActions<TData>({
             <EyeOff className="mr-2 w-4 h-4" />
             Stop watching project
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator /> */}
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash className="mr-2 w-4 h-4" />
             Delete

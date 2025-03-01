@@ -117,11 +117,11 @@ const NewProjectDialog = () => {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>New project name</FormLabel>
+                        <FormLabel>Title</FormLabel>
                         <FormControl>
                           <Input
                             disabled={isLoading}
-                            placeholder="Enter project name"
+                            placeholder="Enter title"
                             {...field}
                           />
                         </FormControl>
@@ -134,11 +134,11 @@ const NewProjectDialog = () => {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project description</FormLabel>
+                        <FormLabel>Description</FormLabel>
                         <FormControl>
                           <Textarea
                             disabled={isLoading}
-                            placeholder="Enter project description"
+                            placeholder="Enter description"
                             {...field}
                           />
                         </FormControl>
@@ -151,14 +151,14 @@ const NewProjectDialog = () => {
                     name="visibility"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project visibility</FormLabel>
+                        <FormLabel>Visibility</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select projects visibility" />
+                              <SelectValue placeholder="Select visibility" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
