@@ -13,6 +13,7 @@ export const statuses = [
     label: "Pending",
   },
 ];
+
 export const isAdmin = [
   {
     value: "true",
