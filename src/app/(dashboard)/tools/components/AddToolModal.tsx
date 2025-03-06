@@ -1,107 +1,156 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Input } from "@/components/ui/input";
+"use client";
+
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-interface ModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSubmit: (data: FormData) => void;
-}
+import { Form, FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const formSchema = z.object({
-    title: z.string().min(2, "Title must be at least 2 characters."),
-    department: z.string().nonempty("Department is required."),
-    image: z.any().refine((file) => file instanceof File, "Image is required."),
-    platform: z.string().min(2, "Platform name must be at least 2 characters."),
+    name: z.string().min(2, "Tool name must be at least 2 characters."),
+    image: z.custom<FileList>((file) => typeof window !== "undefined" && file instanceof FileList, {
+        message: "Image is required.",
+    }),
+    username: z.string().email("Enter a valid email."),
     password: z.string().min(6, "Password must be at least 6 characters."),
+    department: z.string().nonempty("Department is required."),
 });
 
-type FormData = z.infer<typeof formSchema>;
+const AddToolModal = ({ isOpen, onClose, onSubmit }: { isOpen: boolean; onClose: () => void; onSubmit: (data: any) => void }) => {
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-const AddToolModal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        formState: { errors },
-    } = useForm<FormData>({
+    const form = useForm({
         resolver: zodResolver(formSchema),
+        defaultValues: { name: "", image: undefined, username: "", password: "", department: "" },
     });
+
+    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => setPreviewImage(reader.result as string);
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const onFormSubmit = (values: any) => {
+        const file = values.image[0];
+        const imageUrl = URL.createObjectURL(file);
+        onSubmit({ ...values, image: imageUrl });
+        toast.success("Tool added successfully!");
+        onClose();
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="bg-gray-50 text-black border p-8  shadow-lg w-[550px]">
+            <DialogContent>
                 <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold border-b border-gray-500 pb-3">Add New Tool</DialogTitle>
+                    <DialogTitle>Add New Tool</DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-                    <div>
-                        <Label htmlFor="title">Title</Label>
-                        <Input id="title" {...register("title")}
-                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0" />
-                        {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
-                    </div>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
 
-                    <div>
-                        <Label htmlFor="department">Department</Label>
-                        <Select onValueChange={(val) => setValue("department", val)}>
-                            <SelectTrigger className="w-full py-1 bg-white text-black rounded-md border border-gray-300 focus:ring-0 focus:border-gold focus-visible:ring-transparent focus-visible:ring-offset-0">
-                                <SelectValue placeholder="Select a department" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Web Developer">Web Developer</SelectItem>
-                                <SelectItem value="Graphic Designer">Graphic Designer</SelectItem>
-                                <SelectItem value="SEO Content Writer">SEO Content Writer</SelectItem>
-                                <SelectItem value="SEO Specialist">SEO Specialist</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        {errors.department && <p className="text-red-500 text-sm">{errors.department.message}</p>}
-                    </div>
-
-                    <div>
-                        <Label htmlFor="image">Upload Image</Label>
-                        <Input
-                            id="image"
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                    setValue("image", file);
-                                }
-                            }}
-                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0"
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Label>Tool Name</Label>
+                                    <FormControl>
+                                        <Input placeholder="Enter tool name" {...field}
+                                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                    </div>
 
-                    <div>
-                        <Label htmlFor="platform">Platform</Label>
-                        <Input id="platform" {...register("platform")}
-                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0" />
-                        {errors.platform && <p className="text-red-500 text-sm">{errors.platform.message}</p>}
-                    </div>
+                        <FormField
+                            control={form.control}
+                            name="username"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Label>Username</Label>
+                                    <FormControl>
+                                        <Input type="email" placeholder="Enter email" {...field}
+                                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                    <div>
-                        <Label htmlFor="password">Password</Label>
-                        <Input id="password" type="password" {...register("password")}
-                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0" />
-                        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
-                    </div>
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Label>Password</Label>
+                                    <FormControl>
+                                        <Input type="password" placeholder="Enter password" {...field}
+                                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                    <DialogFooter className="mt-4">
-                        <Button type="button" className="bg-gray-200 text-black hover:bg-gray-300 font-bold" onClick={onClose}>
-                            Cancel
-                        </Button>
-                        <Button type="submit" className="bg-black text-gold hover:text-black hover:bg-gold font-bold">Submit</Button>
-                    </DialogFooter>
-                </form>
+                        <FormField
+                            control={form.control}
+                            name="department"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Label>Department</Label>
+                                    <Select onValueChange={field.onChange}>
+                                        <FormControl>
+                                            <SelectTrigger className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0">
+                                                <SelectValue placeholder="Select department" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="Web Developer">Web Developer</SelectItem>
+                                            <SelectItem value="Graphic Designer">Graphic Designer</SelectItem>
+                                            <SelectItem value="SEO Content Writer">SEO Content Writer</SelectItem>
+                                            <SelectItem value="SEO Specialist">SEO Specialist</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="image"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Label>Tool Image</Label>
+                                    <FormControl>
+                                        <Input type="file" accept="image/*" onChange={(e) => {
+                                            field.onChange(e.target.files);
+                                            handleImageUpload(e);
+                                        }}
+                                            className="w-full py-1 bg-white text-black rounded-md focus:border-gold  focus-visible:ring-transparent focus-visible:ring-offset-0" />
+                                    </FormControl>
+                                    {previewImage && <img src={previewImage} alt="Preview" className="mt-2 w-24 h-24 rounded-md" />}
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <DialogFooter className="mt-4">
+                            <Button type="button" className="bg-gray-200 text-black hover:bg-gray-300 font-bold" onClick={onClose}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" className="bg-black text-gold hover:text-black hover:bg-gold font-bold">Submit</Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
             </DialogContent>
         </Dialog>
     );
