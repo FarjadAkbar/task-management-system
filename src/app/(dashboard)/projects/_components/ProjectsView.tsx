@@ -27,7 +27,6 @@ const ProjectsView = async () => {
 
   const users = await getActiveUsers();
   const boards: any = await getBoards(userId!);
-  console.log(boards, "boards");
   
   return (
     <>
