@@ -221,6 +221,9 @@ model Users {
   tickets              Ticket[]            
   assigned_tickets     Ticket[]          @relation(name: "assigned_ticket") 
   watching_boards      Boards[]          @relation(name: "watching_users", fields: [watching_boardsIDs], references: [id])
+  sentMessages         ChatMessage[]
+  createdRooms         ChatRoom[]        @relation("room_creator")
+  chatParticipations   ChatParticipant[]
   notes                Notes[]
   feedback             Feedback[]
   eventsParticipated   EventParticipant[]
@@ -336,4 +339,45 @@ model Tools {
   // Relations
   document   Documents @relation(fields: [documentID], references: [id])
   created_by Users?    @relation(fields: [user], references: [id])
+}
+
+
+
+model ChatRoom {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String?
+  isGroup     Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  createdBy   String         @db.ObjectId
+  creator     Users          @relation("room_creator", fields: [createdBy], references: [id])
+  messages    ChatMessage[]
+  participants ChatParticipant[]
+}
+
+model ChatMessage {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  content     String
+  senderId    String    @db.ObjectId
+  roomId      String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isRead      Boolean   @default(false)
+  
+  sender      Users     @relation(fields: [senderId], references: [id])
+  room        ChatRoom  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+model ChatParticipant {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  roomId      String    @db.ObjectId
+  joinedAt    DateTime  @default(now())
+  lastSeen    DateTime  @default(now())
+  unreadCount Int       @default(0)
+  
+  user        Users     @relation(fields: [userId], references: [id])
+  room        ChatRoom  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roomId])
 }

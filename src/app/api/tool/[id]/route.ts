@@ -19,7 +19,7 @@ export async function PUT(
     const body: UpdateToolPayloadType = await req.json();
 
     const updatedTool = await prismadb.tools.update({
-      where: { id: body.id },
+      where: { id: id },
       data: {
         name: body.name,
         username: body.username,
