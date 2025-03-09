@@ -1,40 +1,27 @@
 "use client"
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteToolMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import SuspenseLoading from "@/components/loadings/suspense";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { FaEllipsisV, FaRegEdit } from "react-icons/fa";
-import { GrView } from "react-icons/gr";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ToolType } from "@/types/api.type";
 import DeleteConfirmationDialog from "@/components/modals/delete-confitmation";
-import useGetToolsQuery from "@/hooks/api/use-get-tools";
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Edit, Eye, MoreVertical } from "lucide-react";
+import { useDeleteToolMutation, useGetToolsQuery } from "@/service/tools";
+import EditToolDialog from "./edit-tool";
 
 const AllTools = () => {
   const [pageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const queryClient = useQueryClient();
   const { data, isPending } = useGetToolsQuery({ pageSize, pageNumber });
   const tools = data?.tools || [];
 
-  console.log(tools);
-  const { mutate, isPending: isLoading } = useMutation({
-    mutationFn: deleteToolMutationFn,
-  });
+  const { mutate, isPending: isLoading } = useDeleteToolMutation();
 
   const onDelete = (toolId: string) => {
     mutate(toolId, {
-        onSuccess: (data) => {
-          queryClient.invalidateQueries({
-            queryKey: ["tools"],
-          });
-        },
         onError: (error) => {
           toast({
             title: "Error",
@@ -97,7 +84,7 @@ const AllTools = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>
-                      <Edit className="mr-2 h-4 w-4" /> Edit
+                      <EditToolDialog tool={tool} />
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DeleteConfirmationDialog name={tool.name} onDelete={() => onDelete(tool.id)} />
@@ -126,13 +113,13 @@ const AllTools = () => {
               <div className="w-full p-2 rounded-md bg-muted/50 text-sm">
                 <div className="flex justify-between">
                   <span className="font-medium">User Email:</span>
-                  <span className="text-muted-foreground" onClick={() => handleCopy(tool.name)}>{tool.username}</span>
+                  <span className="text-muted-foreground cursor-pointer" onClick={() => handleCopy(tool.name)}>{tool.username}</span>
                 </div>
               </div>
               <div className="w-full p-2 rounded-md bg-muted/50 text-sm">
                 <div className="flex justify-between">
                   <span className="font-medium">Password:</span>
-                  <span className="text-muted-foreground" onClick={() => handleCopy(tool.password)}>{tool.password}</span>
+                  <span className="text-muted-foreground cursor-pointer" onClick={() => handleCopy(tool.password)}>{tool.password}</span>
                 </div>
               </div>
             </CardFooter>

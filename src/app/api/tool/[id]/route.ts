@@ -1,6 +1,7 @@
 import { prismadb } from "@/lib/prisma";
+import { UpdateToolPayloadType } from "@/service/tools/type";
 import { NextResponse } from "next/server";
-import { UpdateToolPayloadType } from "@/types/api.type";
+
 
 // ********** PUT: Update a Tool **********
 export async function PUT(

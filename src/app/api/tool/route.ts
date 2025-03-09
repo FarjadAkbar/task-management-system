@@ -1,8 +1,7 @@
 import { prismadb } from "@/lib/prisma";
+import { CreateToolPayloadType } from "@/service/tools/type";
 import { NextResponse } from "next/server";
-import {
-  CreateToolPayloadType,
-} from "@/types/api.type";
+
 
 // ********** GET: Fetch All Tools **********
 export async function GET(req: Request) {
