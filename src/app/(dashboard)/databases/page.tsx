@@ -34,7 +34,7 @@ export default function Databases() {
   }, []);
 
   const fetchNotes = async () => {
-    const res = await fetch("/api/notes?userId=user123");
+    const res = await fetch("/api/notes");
     const data: Note[] = await res.json();
     setNotes(data);
   };
