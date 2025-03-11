@@ -65,19 +65,6 @@ export type ChatMessageType = {
   room: ChatRoomType;
 };
 
-export type ChatUserType = {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  role: string;
-};
-
-export type ChatUsersResponseType = {
-  message: string;
-  users: ChatUserType[];
-};
-
 
 export type SendMessagePayloadType = {
   content: string;

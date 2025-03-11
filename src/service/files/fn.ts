@@ -1,4 +1,5 @@
 import API from "@/lib/axios-client";
+import { FileQueryParams, FilesResponseType, ShareFilePayload } from "./type";
 
 export const deleteFileMutationFn = async (
     fileId: string
@@ -6,3 +7,46 @@ export const deleteFileMutationFn = async (
     const response = await API.delete(`/uploadthing/${fileId}`);
     return response.data;
   };
+
+
+  export const  getPrivarteFilesQueryFn = async (
+    params: FileQueryParams
+  ): Promise<FilesResponseType> => {
+    const { search = "", type = "", sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 20 } = params;
+    const response = await API.get(
+      `/api/files/private?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
+    );
+    return response.data;
+  }
+
+
+  export const  getSharedFilesQueryFn = async (
+    params: FileQueryParams
+  ): Promise<FilesResponseType> => {
+    const { search = "", type = "", sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 20 } = params;
+    const response = await API.get(
+      `/api/files/shared?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
+    );
+    return response.data;
+  }
+
+  export const  getFilesSharedWithMeFn = async (
+    params: FileQueryParams
+  ): Promise<FilesResponseType> => {
+    const { search = "", type = "", sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 20 } = params;
+    const response = await API.get(
+      `/api/files/shared-with-me?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
+    );
+    return response.data;
+  }
+
+
+  export const addShareMutationFn = async (data: ShareFilePayload) => {
+    const response = await API.post("/api/files/share", data)
+    return response.data
+  }
+
+  export const removeShareMutationFn = async ({ fileId, userId }: { fileId: string; userId: string }) => {
+    const response = await API.delete(`/api/files/share?fileId=${fileId}&userId=${userId}`)
+    return response.data
+  }

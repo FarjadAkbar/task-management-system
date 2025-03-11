@@ -10,8 +10,8 @@ const cards = [
   { title: "Ticket", src: "/images/ticket.png", href: "/tickets", allowedUser: true },
   { title: "Events and Meeting", src: "/images/meetings.png", href: "/event", allowedUser: true },
   { title: "Messages", src: "/images/messages.png", href: "/chat", allowedUser: true },
-  { title: "Personal Folder", src: "/images/personalfolder.png", href: "/personal-documents", allowedUser: true },
-  { title: "Share Folder", src: "/images/sharedfolder.png", href: "/shared-documents", allowedUser: true },
+  { title: "Personal Folder", src: "/images/personalfolder.png", href: "/files", allowedUser: true },
+  { title: "Share Folder", src: "/images/sharedfolder.png", href: "/files/shared", allowedUser: true },
 ];
 
 export default async function Dashboard() {

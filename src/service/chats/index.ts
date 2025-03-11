@@ -10,8 +10,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { createChatMutationFn, getChatRoomsFn, getChatUserFn, getRoomFn, sendMessageFn } from "./fn";
-import { AllChatRoomPayloadType, ChatUsersResponseType, GetRoomPayloadType, TypingUserType } from "./type";
+import { createChatMutationFn, getChatRoomsFn, getRoomFn, sendMessageFn } from "./fn";
+import { AllChatRoomPayloadType, GetRoomPayloadType, TypingUserType } from "./type";
 
 export const useChatSocket = (activeUser: User, roomId?: string) => {
   const socket = useRef<Socket | null>(null);
@@ -212,13 +212,3 @@ export const useSendMessageMutation = (activeUser: User, roomId: string) => {
     })
   }
   
-  
-
-//   CHAT USER
-export const useGetChatUsersQuery = ({ search = "" }: { search: string }) => {
-  return useQuery<ChatUsersResponseType>({
-    queryKey: ["chatUsers", search],
-    queryFn: () => getChatUserFn(search), // Call the function properly
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-};

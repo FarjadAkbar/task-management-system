@@ -65,24 +65,24 @@ model Documents {
   tasks                  Tasks[]             @relation(fields: [tasksIDs], references: [id])
   created_by             Users?              @relation(name: "created_by_user", fields: [created_by_user], references: [id])
   assigned_to_user       Users?              @relation(name: "assigned_to_user", fields: [assigned_user], references: [id])
-  documents_type         Documents_Types?    @relation(fields: [document_type], references: [id])
   tools                  Tools[]             // Fixed: One-to-many relation
-  document_system_type   DocumentSystemType? @default(OTHER)
+  sharedWith             FileShare[]
 }
 
-enum DocumentSystemType {
-  INVOICE
-  RECEIPT
-  CONTRACT
-  OFFER
-  OTHER
-}
 
-model Documents_Types {
-  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
-  v                  Int         @map("__v")
-  name               String
-  assigned_documents Documents[]
+model FileShare {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  fileId      String    @db.ObjectId
+  sharedById  String    @db.ObjectId
+  sharedWithId String   @db.ObjectId
+  createdAt   DateTime  @default(now())
+  permissions String    @default("view") // "view" or "edit"
+  
+  file        Documents @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  sharedBy    Users     @relation("shared_by", fields: [sharedById], references: [id])
+  sharedWith  Users     @relation("shared_with", fields: [sharedWithId], references: [id])
+  
+  @@unique([fileId, sharedWithId])
 }
 
 model Sections {
@@ -229,6 +229,10 @@ model Users {
   eventsParticipated   EventParticipant[]
   events               Event[]           
   availability         Availability[] 
+  
+  // Add these relations
+  filesSharedByMe     FileShare[] @relation("shared_by")
+  filesSharedWithMe   FileShare[] @relation("shared_with")
 }
 
 model Event {
