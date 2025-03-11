@@ -14,7 +14,7 @@ export const deleteFileMutationFn = async (
   ): Promise<FilesResponseType> => {
     const { search = "", type = "", sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 20 } = params;
     const response = await API.get(
-      `/api/files/private?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
+      `/files/private?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
     );
     return response.data;
   }
@@ -25,7 +25,7 @@ export const deleteFileMutationFn = async (
   ): Promise<FilesResponseType> => {
     const { search = "", type = "", sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 20 } = params;
     const response = await API.get(
-      `/api/files/shared?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
+      `/files/shared?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
     );
     return response.data;
   }
@@ -35,18 +35,18 @@ export const deleteFileMutationFn = async (
   ): Promise<FilesResponseType> => {
     const { search = "", type = "", sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 20 } = params;
     const response = await API.get(
-      `/api/files/shared-with-me?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
+      `/files/shared-with-me?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
     );
     return response.data;
   }
 
 
   export const addShareMutationFn = async (data: ShareFilePayload) => {
-    const response = await API.post("/api/files/share", data)
+    const response = await API.post("/files/share", data)
     return response.data
   }
 
   export const removeShareMutationFn = async ({ fileId, userId }: { fileId: string; userId: string }) => {
-    const response = await API.delete(`/api/files/share?fileId=${fileId}&userId=${userId}`)
+    const response = await API.delete(`/files/share?fileId=${fileId}&userId=${userId}`)
     return response.data
   }

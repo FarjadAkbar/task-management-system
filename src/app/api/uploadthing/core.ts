@@ -55,6 +55,7 @@ export const ourFileRouter = {
         size: file.size,
         document_file_mimeType: mimeType,
         createdBy: metadata.userId,
+        created_by_user: metadata.userId,
         assigned_user: metadata.userId,
       },
     });

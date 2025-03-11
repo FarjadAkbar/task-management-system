@@ -21,13 +21,33 @@ export async function GET(req: Request) {
 
     const skip = (page - 1) * limit
 
-    // Get files that the user has shared with others
-    const filesQuery = {
+
+    // Get total count for pagination
+    const totalCount = await prismadb.documents.count({
       where: {
         created_by_user: userId,
-        sharedWith: {
-          some: {},
-        },
+        // sharedWith: {
+        //   some: {},
+        // },
+        ...(search
+          ? {
+              OR: [
+                { document_name: { contains: search, mode: "insensitive" } },
+                { description: { contains: search, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+        ...(type ? { document_file_mimeType: { contains: type, mode: "insensitive" } } : {}),
+      }
+    })
+
+    // Get files with pagination, sorting, and filtering
+    const files = await prismadb.documents.findMany({
+      where: {
+        created_by_user: userId,
+        // sharedWith: {
+        //   some: {},
+        // },
         ...(search
           ? {
               OR: [
@@ -47,31 +67,25 @@ export async function GET(req: Request) {
             avatar: true,
           },
         },
-        sharedWith: {
-          include: {
-            sharedWith: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                avatar: true,
-              },
-            },
-          },
-        },
+        // sharedWith: {
+        //   include: {
+        //     sharedWith: {
+        //       select: {
+        //         id: true,
+        //         name: true,
+        //         email: true,
+        //         avatar: true,
+        //       },
+        //     },
+        //   },
+        // },
       },
       orderBy: {
         [sortBy]: sortOrder,
       },
       skip,
       take: limit,
-    }
-
-    // Get total count for pagination
-    const totalCount = await prismadb.documents.count({ where: filesQuery.where })
-
-    // Get files with pagination, sorting, and filtering
-    const files = await prismadb.documents.findMany(filesQuery)
+    })
 
     return NextResponse.json(
       {

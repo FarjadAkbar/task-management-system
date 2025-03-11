@@ -21,26 +21,37 @@ export async function GET(req: Request) {
 
     const skip = (page - 1) * limit
 
-    // Build the where clause
-    const where = {
-      created_by_user: userId,
-      ...(search
-        ? {
-            OR: [
-              { document_name: { contains: search, mode: "insensitive" } },
-              { description: { contains: search, mode: "insensitive" } },
-            ],
-          }
-        : {}),
-      ...(type ? { document_file_mimeType: { contains: type, mode: "insensitive" } } : {}),
-    }
 
     // Get total count for pagination
-    const totalCount = await prismadb.documents.count({ where })
+    const totalCount = await prismadb.documents.count({
+      where: {
+        created_by_user: userId,
+        ...(search
+          ? {
+              OR: [
+                { document_name: { contains: search, mode: "insensitive" } },
+                { description: { contains: search, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+        ...(type ? { document_file_mimeType: { contains: type, mode: "insensitive" } } : {}),
+      },
+    })
 
     // Get files with pagination, sorting, and filtering
     const files = await prismadb.documents.findMany({
-      where,
+      where: {
+        created_by_user: userId,
+        ...(search
+          ? {
+              OR: [
+                { document_name: { contains: search, mode: "insensitive" } },
+                { description: { contains: search, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+        ...(type ? { document_file_mimeType: { contains: type, mode: "insensitive" } } : {}),
+      },
       include: {
         created_by: {
           select: {
@@ -48,18 +59,6 @@ export async function GET(req: Request) {
             name: true,
             email: true,
             avatar: true,
-          },
-        },
-        sharedWith: {
-          include: {
-            sharedWith: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                avatar: true,
-              },
-            },
           },
         },
       },
