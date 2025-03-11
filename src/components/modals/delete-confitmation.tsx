@@ -34,8 +34,8 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ nam
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => onDelete(name)}>Delete</AlertDialogAction>
+                    <AlertDialogCancel className="mt-0 bg-gray-100 hover:bg-gray-200">Cancel</AlertDialogCancel>
+                    <AlertDialogAction className="text-gold hover:bg-gold hover:text-black" onClick={() => onDelete(name)}>Delete</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/user"
 
 export async function GET(req: Request) {
   const auth = await requireUser();
+  console.log("Request received:", req);
 const userId = auth?.id;
   if (!userId) {
     return NextResponse.json({ error: "User ID is required" }, { status: 400 })
@@ -11,7 +12,7 @@ const userId = auth?.id;
 
   const user = await prismadb.users.findUnique({
     where: { id: userId },
-    include: { sharedNoteAccess: true },
+    include: { sharedNotes: true },
   })
 
   if (!user) {

@@ -42,7 +42,7 @@ export default function NewToolDialog({ userId }: { userId: string }) {
     Array<{ id: string; name: string; url: string }>
   >([]);
 
-  
+
   const { mutate, isPending } = useCreateToolMutation();
   const { mutate: fileMutate } = useDeleteFileMutation();
 
@@ -117,9 +117,9 @@ export default function NewToolDialog({ userId }: { userId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="px-2">New Tool</Button>
+        <Button className="bg-black text-gold font-bold hover:bg-gold hover:text-black px-5 py-2 rounded-lg shadow-lg hover:scale-105 transition duration-300">+ New Tool</Button>
       </DialogTrigger>
-      <DialogContent className="">
+      <DialogContent className="w-[600px] max-h-[80vh] overflow-y-auto bg-white shadow-xl rounded-none">
         <DialogHeader>
           <DialogTitle className="p-2">New Tool</DialogTitle>
           <DialogDescription className="p-2">

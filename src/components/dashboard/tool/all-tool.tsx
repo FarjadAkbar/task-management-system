@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Edit, Eye, MoreVertical } from "lucide-react";
 import { useDeleteToolMutation, useGetToolsQuery } from "@/service/tools";
 import EditToolDialog from "./edit-tool";
+import { ToolType } from "@/service/tools/type";
 
 const AllTools = () => {
   const [pageNumber] = useState(1);
@@ -20,32 +21,39 @@ const AllTools = () => {
 
   const { mutate, isPending: isLoading } = useDeleteToolMutation();
 
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<ToolType | null>(null);
+
   const onDelete = (toolId: string) => {
     mutate(toolId, {
-        onError: (error) => {
-          toast({
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        },
-      });
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   const handleCopy = (text: string) => {
-      navigator.clipboard.writeText(text);
-      toast({
-        title: "Copied",
-        description: "The URL has been copied to your clipboard.",
-      });
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copied",
+      description: "The URL has been copied to your clipboard.",
+    });
   };
 
+  const handleEditClick = (tool: ToolType) => {
+    setSelectedTool(tool);
+    setEditModalOpen(true);
+  };
 
   return (
-    <main className="container mx-auto px-4 py-12">
-      <h2 className="text-3xl font-bold text-center mb-8">Paid Tools By DolceFrutti</h2>
+    <main className="container mx-auto px-4 py-6">
+      <h2 className="text-3xl mb-8 text-center font-bold text-gray-800">Paid Tools By DolceFrutti</h2>
 
-      <Card className="max-w-3xl mx-auto mb-12 border-l-4 border-l-primary">
+      <Card className="max-w-3xl mx-auto mb-12 shadow-lg rounded-xl bg-white border-0">
         <CardContent className="pt-6">
           <h2 className="text-xl font-bold mb-4">For Better Implementation and Efficiency</h2>
           <p className="text-muted-foreground mb-6">
@@ -57,7 +65,7 @@ const AllTools = () => {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Important Notes</AlertTitle>
             <AlertDescription>
-              <ul className="list-disc pl-5 space-y-2 mt-2">
+              <ul className="list-disc pl-4 space-y-2 mt-2 ">
                 <li>All tools and accounts provided by Dolce Frutti are strictly for company use.</li>
                 <li>These tools are licensed and paid by the company. Misuse may result in penalties.</li>
                 <li>Ensure that you log out after using shared accounts.</li>
@@ -83,8 +91,8 @@ const AllTools = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <EditToolDialog tool={tool} />
+                    <DropdownMenuItem onClick={() => handleEditClick(tool)}>
+                      <Edit className="mr-2 h-4 w-4" /> Edit
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DeleteConfirmationDialog name={tool.name} onDelete={() => onDelete(tool.id)} />
@@ -126,6 +134,14 @@ const AllTools = () => {
           </Card>
         ))}
       </div>
+      {/* Edit Tool Dialog */}
+      {selectedTool && editModalOpen && (
+        <EditToolDialog
+          tool={selectedTool}
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+        />
+      )}
     </main>
   );
 };

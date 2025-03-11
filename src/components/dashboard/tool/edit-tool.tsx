@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,8 +35,15 @@ import { useUpdateToolMutation } from "@/service/tools";
 import { useDeleteFileMutation } from "@/service/files";
 import { ToolType } from "@/service/tools/type";
 
-export default function EditToolDialog({ tool }: { tool: ToolType }) {
-  const [open, setOpen] = useState(false)
+interface EditToolDialogProps {
+  tool: ToolType;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+
+export default function EditToolDialog({ tool, open, onOpenChange }: EditToolDialogProps) {
+  // const [open, setOpen] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ id: string; name: string; url: string }>>([
     {
       id: tool.document.id,
@@ -65,7 +72,6 @@ export default function EditToolDialog({ tool }: { tool: ToolType }) {
     },
   })
 
-
   const handleFileUpload = (files: Array<{ id: string; name: string; url: string }>) => {
     setUploadedFiles([...files])
   }
@@ -93,7 +99,7 @@ export default function EditToolDialog({ tool }: { tool: ToolType }) {
       id: tool.id,
       ...values,
       documentID: uploadedFiles[0]?.id,
-      userId: tool.createdBy.id,
+      userId: tool.user,
     }
 
     mutate(payload, {
@@ -102,7 +108,7 @@ export default function EditToolDialog({ tool }: { tool: ToolType }) {
           title: "Success",
           description: "Tool updated successfully",
         })
-        setTimeout(() => setOpen(false), 500)
+        onOpenChange(false);
       },
       onError: (error: any) => {
         toast({
@@ -115,12 +121,12 @@ export default function EditToolDialog({ tool }: { tool: ToolType }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="link" className="p-0" size="sm">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* <DialogTrigger asChild>
+        <Button variant="link" className="p-0" size="sm" onClick={() => setOpen(true)}>
           <Edit /> Edit
         </Button>
-      </DialogTrigger>
+      </DialogTrigger> */}
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="p-2">Edit Tool</DialogTitle>
@@ -217,21 +223,23 @@ export default function EditToolDialog({ tool }: { tool: ToolType }) {
                   <div className="mt-2">
                     <p className="text-sm font-medium">Uploaded files:</p>
                     <ul className="mt-2 space-y-2">
-                      {uploadedFiles.map((file) => (
-                        <li key={file.id} className="flex items-center justify-between rounded-md border p-2">
-                          <span className="text-sm truncate max-w-[200px]">{file.name}</span>
-                          <Button type="button" onClick={() => removeFile(file.id)} variant="ghost" size="sm">
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </li>
-                      ))}
+                      {uploadedFiles.map((file, index) => {
+                        return (
+                          <li key={file.id || index} className="flex items-center justify-between rounded-md border p-2">
+                            <span className="text-sm truncate max-w-[200px]">{file.name}</span>
+                            <Button type="button" onClick={() => removeFile(file.id)} variant="ghost" size="sm">
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 )}
               </div>
 
               <div className="flex w-full justify-end space-x-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                   Cancel
                 </Button>
                 <Button disabled={isPending} type="submit">
@@ -249,6 +257,12 @@ export default function EditToolDialog({ tool }: { tool: ToolType }) {
           </Form>
         </div>
       </DialogContent>
-    </Dialog>
+    </Dialog >
   )
 }
+
+
+
+
+
+// setTimeout(() => setOpen(false), 500)

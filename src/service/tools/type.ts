@@ -44,6 +44,7 @@ export type ToolType = {
   };
   createdAt: string;
   updatedAt?: string;
+  user: string;
 };
 
 export type AllToolsResponseType = {

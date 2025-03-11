@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { FaRegEdit } from "react-icons/fa";
-import AddNoteForm from "./components/AddNoteForm";
+import AddNoteForm from "@/components/dashboard/databases/AddNoteForm";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FaEllipsisV } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
-import EditNoteModal from "./components/EditModal";
-import DeleteNoteDialog from "./components/DeleteNoteDailog";
+import EditNoteModal from "@/components/dashboard/databases/EditModal";
+import DeleteNoteDialog from "@/components/dashboard/databases/DeleteNoteDailog";
 
 interface Note {
   id: string;
@@ -36,6 +36,7 @@ export default function Databases() {
   const fetchNotes = async () => {
     const res = await fetch("/api/notes?userId=user123");
     const data: Note[] = await res.json();
+    console.log("all notes", data)
     setNotes(data);
   };
 
