@@ -3,7 +3,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useCreateChatRoomMutation, useGetChatUsersQuery } from "@/service/chats"
+import { useCreateChatRoomMutation } from "@/service/chats"
+import { useGetUsersQuery } from "@/service/users"
 import { MessageSquare } from "lucide-react"
 
 interface ChatUsersListProps {
@@ -12,7 +13,7 @@ interface ChatUsersListProps {
 }
 
 export function ChatUsersList({ search, onUserSelect }: ChatUsersListProps) {
-  const { data, isLoading, isError } = useGetChatUsersQuery({search})
+  const { data, isLoading, isError } = useGetUsersQuery({search})
   const { mutate: createRoom, isPending } = useCreateChatRoomMutation()
 
   const handleUserClick = (userId: string) => {

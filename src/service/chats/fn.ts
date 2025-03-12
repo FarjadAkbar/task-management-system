@@ -5,7 +5,6 @@ import {
   ChatMessagesResponseType,
   ChatMessageType,
   ChatRoomType,
-  ChatUsersResponseType,
   CreateRoomPayloadType,
   GetRoomPayloadType,
   RoomResponseType,
@@ -45,13 +44,5 @@ export const sendMessageFn = async (
   data: SendMessagePayloadType
 ): Promise<ChatMessagesResponseType> => {
   const response = await API.post(`/chat/messages`, data);
-  return response.data;
-};
-
-//   CHAT USER
-export const getChatUserFn = async (
-  search: string
-): Promise<ChatUsersResponseType> => {
-  const response = await API.get(`/chat/users?search=${search}`);
   return response.data;
 };
