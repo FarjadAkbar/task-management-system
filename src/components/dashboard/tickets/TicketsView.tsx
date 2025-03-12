@@ -2,17 +2,12 @@ import React from "react";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { getTickets } from "@/actions/tickets/get-tickets";
-
 import { authOptions } from "@/lib/auth";
-
-import NewTicketDialog from "../dialogs/NewTicket";
-
-import { Button } from "@/components/ui/button";
 import H2Title from "@/components/typography/h2";
-
-import { DataTable } from "../../components/table-components/data-table";
-import { columns } from "../table-components/columns";
-import { priorities } from "../data/data";
+import NewTicketDialog from "@/app/(dashboard)/tickets/dialogs/NewTicket";
+import { DataTable } from "@/app/(dashboard)/components/table-components/data-table";
+import { columns } from "@/app/(dashboard)/tickets/table-components/columns";
+import { priorities } from "@/app/(dashboard)/tickets/data/data";
 
 const TicketsView = async () => {
   const session = await getServerSession(authOptions);
