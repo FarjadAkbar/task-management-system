@@ -1,4 +1,5 @@
 import { PaginationType } from "@/types";
+import { UserType } from "../users/type";
 
 export type CreateToolPayloadType = {
   name: string;
@@ -38,10 +39,7 @@ export type ToolType = {
     name: string;
     document_file_url: string;
   };
-  createdBy: {
-    id: string;
-    name: string;
-  };
+  createdBy: UserType;
   createdAt: string;
   updatedAt?: string;
   user: string;

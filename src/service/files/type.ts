@@ -1,3 +1,6 @@
+import { PaginationType } from "@/types";
+import { UserType } from "../users/type";
+
 // Types
 export type FileType = {
   id: string;
@@ -7,12 +10,7 @@ export type FileType = {
   description?: string;
   createdAt: string;
   size?: number;
-  created_by?: {
-    id: string;
-    name: string;
-    email: string;
-    avatar?: string;
-  };
+  created_by?: UserType;
   sharedWith?: Array<{
     id: string;
     permissions: string;
@@ -34,13 +32,8 @@ export type FileType = {
 
 export type FilesResponseType = {
   message: string;
-  files: File[];
-  pagination: {
-    totalCount: number;
-    pageSize: number;
-    currentPage: number;
-    totalPages: number;
-  };
+  files: FileType[];
+  pagination: PaginationType;
 }
 
 export type FileQueryParams = {

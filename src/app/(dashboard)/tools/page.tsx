@@ -1,4 +1,4 @@
-import { getUser } from "@/actions/get-user";
+import { getUser } from "@/lib/get-user";
 import AllTools from "@/components/dashboard/tool/all-tool";
 import NewToolDialog from "@/components/dashboard/tool/new-tool";
 import H2Title from "@/components/typography/h2";

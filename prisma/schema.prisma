@@ -33,9 +33,6 @@ model Boards {
   sections         Sections[]
 }
 
-model ImageUpload {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-}
 
 model Documents {
   id                     String              @id @default(auto()) @map("_id") @db.ObjectId
@@ -204,8 +201,13 @@ model Users {
   last_name            String?
   password             String?
   username             String?
-  grantId              String?
-  grantEmail           String?
+  
+  // Google OAuth fields
+  googleRefreshToken   String?
+  googleAccessToken    String?
+  googleTokenExpiry    DateTime?
+  googleCalendarId     String?
+
   userStatus           ActiveStatus      @default(PENDING)
   role                 RoleEnum          @default(DEVELOPER)
   watching_boardsIDs   String[]          @db.ObjectId
@@ -226,66 +228,121 @@ model Users {
   chatParticipations   ChatParticipant[]
   notes                Notes[]
   feedback             Feedback[]
-  eventsParticipated   EventParticipant[]
-  events               Event[]           
-  availability         Availability[] 
+  
+  // Calendar relations
+  calendarEvents       CalendarEvent[]    @relation("event_creator")
+  attendingEvents      EventAttendee[]
+  availability         Availability[]
+  meetingRooms         MeetingRoom[]
   
   // Add these relations
   filesSharedByMe     FileShare[] @relation("shared_by")
   filesSharedWithMe   FileShare[] @relation("shared_with")
 }
 
-model Event {
-  id                String              @id @default(auto()) @map("_id") @db.ObjectId
+
+model CalendarEvent {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
   title             String
-  duration          Int
-  url               String
-  description       String
-  date              String
-  time              String
-  active            Boolean             @default(true)
-  videoCallSoftware String              @default("Google Meet")
-  userId            String              @db.ObjectId
-  createdAt         DateTime            @default(now())
+  description       String?
+  startTime         DateTime
+  endTime           DateTime
+  allDay            Boolean           @default(false)
+  location          String?
+  status            EventStatus       @default(CONFIRMED)
+  visibility        EventVisibility   @default(DEFAULT)
+  recurrence        String?           // RFC 5545 recurrence rule
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  // Google Calendar specific fields
+  googleEventId     String?           // ID in Google Calendar
+  googleCalendarId  String?           // Calendar where event is stored
+  colorId           String?           // Google Calendar color ID
   
   // Relations
-  user              Users               @relation(fields: [userId], references: [id])
-  participants      EventParticipant[]
+  creatorId         String            @db.ObjectId
+  creator           Users             @relation("event_creator", fields: [creatorId], references: [id])
+  attendees         EventAttendee[]
+  meetingRoom       MeetingRoom?
 }
 
-model EventParticipant {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  eventId   String   @db.ObjectId
-  userId    String   @db.ObjectId
+model EventAttendee {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  email             String
+  name              String?
+  responseStatus    ResponseStatus  @default(NEEDS_ACTION)
+  optional          Boolean         @default(false)
+  comment           String?
   
   // Relations
-  event     Event    @relation(fields: [eventId], references: [id])
-  user      Users    @relation(fields: [userId], references: [id])
+  eventId           String          @db.ObjectId
+  event             CalendarEvent   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId            String?         @db.ObjectId
+  user              Users?          @relation(fields: [userId], references: [id])
+  
+  @@unique([eventId, email])
+}
+
+model MeetingRoom {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  meetingCode       String?         // Google Meet code
+  meetingUrl        String          // Google Meet URL
+  joinUrl           String?         // URL for joining the meeting
+  createdAt         DateTime        @default(now())
+  
+  // Relations
+  eventId           String          @unique @db.ObjectId
+  event             CalendarEvent   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  creatorId         String          @db.ObjectId
+  creator           Users           @relation(fields: [creatorId], references: [id])
 }
 
 model Availability {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  day      Day
-  fromTime String    // e.g., '08:00'
-  tillTime String    // e.g., '18:00'
-  isActive Boolean   @default(true)
-  userId   String    @db.ObjectId
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  day               Day
+  startTime         String          // e.g., '08:00'
+  endTime           String          // e.g., '18:00'
+  isActive          Boolean         @default(true)
+  userId            String          @db.ObjectId
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
   
   // Relations
-  user     Users     @relation(fields: [userId], references: [id])
+  user              Users           @relation(fields: [userId], references: [id])
+  
+  @@unique([userId, day])
 }
 
 enum Day {
-  Monday
-  Tuesday
-  Wednesday
-  Thursday
-  Friday
-  Saturday
-  Sunday
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
 }
+
+enum EventStatus {
+  CONFIRMED
+  TENTATIVE
+  CANCELLED
+}
+
+enum EventVisibility {
+  DEFAULT
+  PUBLIC
+  PRIVATE
+}
+
+enum ResponseStatus {
+  NEEDS_ACTION
+  DECLINED
+  TENTATIVE
+  ACCEPTED
+}
+
 
 model Notes {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId

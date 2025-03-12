@@ -14,7 +14,7 @@ export const deleteFileMutationFn = async (
   ): Promise<FilesResponseType> => {
     const { search = "", type = "", sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 20 } = params;
     const response = await API.get(
-      `/files/private?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
+      `/files/private?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&pageSize=${page}&pageNumber=${limit}`,
     );
     return response.data;
   }
@@ -25,7 +25,7 @@ export const deleteFileMutationFn = async (
   ): Promise<FilesResponseType> => {
     const { search = "", type = "", sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 20 } = params;
     const response = await API.get(
-      `/files/shared?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
+      `/files/shared?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&pageSize=${page}&pageNumber=${limit}`,
     );
     return response.data;
   }
@@ -35,7 +35,7 @@ export const deleteFileMutationFn = async (
   ): Promise<FilesResponseType> => {
     const { search = "", type = "", sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 20 } = params;
     const response = await API.get(
-      `/files/shared-with-me?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}&limit=${limit}`,
+      `/files/shared-with-me?search=${search}&type=${type}&sortBy=${sortBy}&sortOrder=${sortOrder}&pageSize=${page}&pageNumber=${limit}`,
     );
     return response.data;
   }

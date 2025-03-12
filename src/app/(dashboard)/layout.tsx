@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
-import Header from "./components/Header";
-import { requireUser } from "@/lib/user";
-import Footer from "./components/Footer";
+import { Header } from "@/components/dashboard/header";
+import { Footer } from "@/components/dashboard/footer";
+import { getUser } from "@/lib/get-user";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -37,31 +37,25 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireUser();
+  const data = await getUser();
 
-  //   if (user?.userStatus === "PENDING") {
-  //     return redirect("/pending");
-  //   }
-
-  //   if (user?.userStatus === "INACTIVE") {
-  //     return redirect("/inactive");
-  //   }
-
+  if (!data) {
+    return <div>No user data.</div>;
+  }
 
   return (
     <>
-      <div className="flex">
-        <div className="flex flex-col h-full w-full overflow-hidden">
-          <Header
-            id={user.id as string}
-            name={user.name as string}
-            email={user.email as string}
-            avatar={user.image as string}
-          />
-          <div className="flex-1 space-y-4 p-8 pt-6 border-l min-h-screen h-full">{children}</div>
-        </div>
+      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+        <Header
+          id={data.id}
+          name={data.name || ""}
+          email={data.email}
+          avatar={data.avatar || "/images/avatar.png"}
+        />
+
+        <main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+        <Footer />
       </div>
-      <Footer />
     </>
   );
 }

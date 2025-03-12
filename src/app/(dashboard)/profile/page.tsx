@@ -1,4 +1,4 @@
-import { getUser } from "@/actions/get-user";
+import { getUser } from "@/lib/get-user";
 import { ProfileForm } from "@/components/dashboard/profile/ProfileForm";
 import { PasswordChangeForm } from "@/components/dashboard/profile/PasswordChangeForm";
 import { ProfilePhotoForm } from "@/components/dashboard/profile/ProfilePhotoForm";

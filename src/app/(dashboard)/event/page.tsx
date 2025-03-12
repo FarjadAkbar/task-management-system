@@ -1,73 +1,72 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import React from "react";
-import { CalendarCheck2 } from "lucide-react";
-import { requireUser } from "@/lib/user";
-import { getEvents } from "@/actions/events/get-events";
-import { EmptyState } from "./_components/EmptyState";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarView } from "./_components/CalendarView";
-import NewEventDialog from "./dialogs/NewEvent";
-import { IEventProps } from "@/types/event";
-import { ViewEvent } from "./_components/ViewEvent";
-import { Separator } from "@/components/ui/separator";
+import type { Metadata } from "next"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CalendarView } from "@/components/dashboard/events/calendar-view"
+import { AvailabilitySettings } from "@/components/dashboard/events/availability-settings"
+import { Button } from "@/components/ui/button"
+import { CalendarCheck2 } from "lucide-react"
+import { getUser } from "@/lib/get-user"
+import { SyncEventsButton } from "@/components/dashboard/events/sync-events-button"
 
-const EventPage = async () => {
-  const user = await requireUser();
-  const events = await getEvents(user?.id as string);
+export const metadata: Metadata = {
+  title: "Calendar",
+  description: "Manage your meetings and availability",
+}
+
+export default async function EventPage() {
+  const user = await getUser()
+  const isConnected = !!user?.googleRefreshToken
 
   return (
-    <>
-      <div className="flex items-center justify-between px-2">
-        <div className="sm:grid gap-1 hidden">
-          <h1 className="font-heading text-3xl md:text-4xl">Event Types</h1>
-          <p className="text-lg text-muted-foreground">
-            Create and manage your event types.
-          </p>
+    <div className="container mx-auto py-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Calendar</h1>
+          <p className="text-muted-foreground">Manage your meetings and availability</p>
         </div>
+
         <div className="flex gap-2">
-          <Button asChild variant={"outline"}>
-              <Link href="/api/auth">
-                <CalendarCheck2 className="size-4 mr-2" />
-                Connect Calender to Account
-              </Link>
+          {!isConnected ? (
+            <Button asChild>
+              <a href="/api/auth/google">
+                <CalendarCheck2 className="mr-2 h-4 w-4" />
+                Connect Google Calendar
+              </a>
             </Button>
-            {
-              user?.grantId && (
-                <NewEventDialog />
-              )
-            }
+          ) : (
+            <SyncEventsButton />
+          )}
         </div>
       </div>
-      {events.data.length === 0 ? (
-        <EmptyState
-          title="You have no Event"
-          description="You can create your first event by clicking the button below."
-          grantId={user?.grantId}
-        />
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Bookings</CardTitle>
-            <CardDescription>
-              See upcoming and past events booked through your event type links.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-          {/* <CalendarView events={events.data as IEventProps[]} /> */}
-          {
-            events.data.map((event: any) => (
-              <div key={event.id}>
-                <ViewEvent event={event} />
-                <Separator />
-                </div>
-            ))
-          }
-          </CardContent>
-        </Card>
-      )}
-    </>
-  );
-};
 
-export default EventPage;
+      {isConnected ? (
+        <Tabs defaultValue="calendar">
+          <TabsList>
+            <TabsTrigger value="calendar">Calendar</TabsTrigger>
+            <TabsTrigger value="availability">Availability</TabsTrigger>
+          </TabsList>
+          <TabsContent value="calendar" className="mt-6">
+            <CalendarView />
+          </TabsContent>
+          <TabsContent value="availability" className="mt-6">
+            <AvailabilitySettings />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <CalendarCheck2 className="h-16 w-16 text-muted-foreground mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Connect Your Google Calendar</h2>
+          <p className="text-muted-foreground max-w-md mb-6">
+            Connect your Google Calendar to manage your meetings, schedule events, and set your availability.
+          </p>
+          <Button asChild>
+            <a href="/api/auth/google">
+              <CalendarCheck2 className="mr-2 h-4 w-4" />
+              Connect Google Calendar
+            </a>
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
+
