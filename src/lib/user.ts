@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "./auth";
 import { getServerSession } from "next-auth";
 
+
 export async function requireUser() {
   const session = await getServerSession(authOptions);
 
