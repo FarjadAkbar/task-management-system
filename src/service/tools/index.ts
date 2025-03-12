@@ -4,7 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { AllToolsPayloadType } from "./type"; // Adjust import path accordingly
+import { AllToolsPayloadType } from "./type"; 
 import { createToolMutationFn, deleteToolMutationFn, editToolMutationFn, getAllToolsQueryFn } from "./fn";
 
 export const useGetToolsQuery = ({
