@@ -27,14 +27,14 @@ export function AvatarDropdown({ avatar, userId, name, email }: AvatarDropdownPr
 
   return (
     <div className="flex items-center gap-4">
-      <Button variant="ghost" size="icon" className="relative">
+      {/* <Button variant="ghost" size="icon" className="relative">
         <Bell className="h-5 w-5 text-white" />
         {notificationCount > 0 && (
           <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-amber-400 text-black">
             {notificationCount}
           </Badge>
         )}
-      </Button>
+      </Button> */}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

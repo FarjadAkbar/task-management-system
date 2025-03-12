@@ -33,9 +33,6 @@ model Boards {
   sections         Sections[]
 }
 
-model ImageUpload {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-}
 
 model Documents {
   id                     String              @id @default(auto()) @map("_id") @db.ObjectId

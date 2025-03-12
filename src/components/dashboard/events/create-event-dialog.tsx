@@ -22,6 +22,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { AttendeeSelector } from "./attendee-selector"
 import { useCreateEvent } from "@/service/events"
 import { toast } from "@/hooks/use-toast"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -130,6 +131,7 @@ export function CreateEventDialog({ open, onOpenChange, defaultValues }: CreateE
           <DialogDescription>Add a new event to your calendar</DialogDescription>
         </DialogHeader>
 
+        <ScrollArea className="max-h-[400px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -324,6 +326,7 @@ export function CreateEventDialog({ open, onOpenChange, defaultValues }: CreateE
             </DialogFooter>
           </form>
         </Form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   )

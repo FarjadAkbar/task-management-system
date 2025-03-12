@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { AttendeeSelector } from "./attendee-selector"
 import { useEvent, useUpdateEvent } from "@/service/events"
 import { toast } from "@/hooks/use-toast"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -170,6 +171,7 @@ export function EditEventDialog({ eventId, open, onOpenChange }: EditEventDialog
           <DialogDescription>Make changes to your event</DialogDescription>
         </DialogHeader>
 
+<ScrollArea className="max-h-[400px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -348,6 +350,7 @@ export function EditEventDialog({ eventId, open, onOpenChange }: EditEventDialog
             </DialogFooter>
           </form>
         </Form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   )
