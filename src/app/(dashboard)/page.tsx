@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getUser } from '@/actions/get-user';
+import { getUser } from '@/lib/get-user';
 
 const cards = [
   { title: "Database", src: "/images/database.png", href: "/databases", allowedUser: true },

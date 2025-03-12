@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prismadb } from "@/lib/prisma";
 import { CreateNotePayloadType } from "@/service/notes/type";
-import { getUser } from "@/actions/get-user";
+import { getUser } from "@/lib/get-user";
 
 export async function GET(req: Request) {
   try{

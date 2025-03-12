@@ -1,4 +1,4 @@
-import { getUser } from "@/actions/get-user";
+import { getUser } from "@/lib/get-user";
 import { ChatLayout } from "@/components/dashboard/chat/chat-layout";
 import { redirect } from "next/navigation";
 

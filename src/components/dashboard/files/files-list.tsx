@@ -12,17 +12,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
+import { PaginationType } from "@/types"
 
 interface FilesListProps {
   files: FileType[]
   isLoading: boolean
   isError: boolean
-  pagination?: {
-    totalCount: number
-    pageSize: number
-    currentPage: number
-    totalPages: number
-  }
+  pagination?: PaginationType
   onPageChange?: (page: number) => void
   onDelete?: (fileId: string) => void
   onShare?: (fileId: string) => void
@@ -91,7 +87,7 @@ export function FilesList({
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                onClick={() => onPageChange && onPageChange(pagination.currentPage - 1)}
+                onClick={() => onPageChange && onPageChange(pagination.pageNumber - 1)}
                 // disabled={pagination.currentPage === 1}
               />
             </PaginationItem>
@@ -101,7 +97,7 @@ export function FilesList({
               return (
                 <PaginationItem key={page}>
                   <PaginationLink
-                    isActive={pagination.currentPage === page}
+                    isActive={pagination.pageNumber === page}
                     onClick={() => onPageChange && onPageChange(page)}
                   >
                     {page}
@@ -110,7 +106,7 @@ export function FilesList({
               )
             })}
 
-            {pagination.totalPages > 5 && pagination.currentPage < pagination.totalPages - 2 && (
+            {pagination.totalPages > 5 && pagination.pageNumber < pagination.totalPages - 2 && (
               <PaginationItem>
                 <PaginationLink>...</PaginationLink>
               </PaginationItem>
@@ -119,7 +115,7 @@ export function FilesList({
             {pagination.totalPages > 5 && (
               <PaginationItem>
                 <PaginationLink
-                  isActive={pagination.currentPage === pagination.totalPages}
+                  isActive={pagination.pageNumber === pagination.totalPages}
                   onClick={() => onPageChange && onPageChange(pagination.totalPages)}
                 >
                   {pagination.totalPages}
@@ -129,7 +125,7 @@ export function FilesList({
 
             <PaginationItem>
               <PaginationNext
-                onClick={() => onPageChange && onPageChange(pagination.currentPage + 1)}
+                onClick={() => onPageChange && onPageChange(pagination.pageNumber + 1)}
                 // disabled={pagination.currentPage === pagination.totalPages}
               />
             </PaginationItem>

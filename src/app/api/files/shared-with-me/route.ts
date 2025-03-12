@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { prismadb } from "@/lib/prisma";
-import { getUser } from "@/actions/get-user";
+import { getUser } from "@/lib/get-user";
 
 export async function GET(req: Request) {
   try {
@@ -16,10 +16,11 @@ export async function GET(req: Request) {
     const type = searchParams.get("type") || ""
     const sortBy = searchParams.get("sortBy") || "createdAt"
     const sortOrder = searchParams.get("sortOrder") || "desc"
-    const page = Number.parseInt(searchParams.get("page") || "1")
-    const limit = Number.parseInt(searchParams.get("limit") || "20")
+    const pageSize = Number.parseInt(searchParams.get("pageSize") || "20")
+    const pageNumber = Number.parseInt(searchParams.get("pageNumber") || "1")
 
-    const skip = (page - 1) * limit
+    // Calculate pagination
+    const skip = (pageNumber - 1) * pageSize
 
     // Get files that have been shared with the user
 
@@ -90,7 +91,7 @@ export async function GET(req: Request) {
         [sortBy]: sortOrder,
       },
       skip,
-      take: limit,
+      take: pageSize,
     })
 
     return NextResponse.json(
@@ -99,9 +100,9 @@ export async function GET(req: Request) {
         files,
         pagination: {
           totalCount,
-          pageSize: limit,
-          currentPage: page,
-          totalPages: Math.ceil(totalCount / limit),
+          pageSize,
+          pageNumber,
+          totalPages: Math.ceil(totalCount / pageSize),
         },
       },
       { status: 200 },

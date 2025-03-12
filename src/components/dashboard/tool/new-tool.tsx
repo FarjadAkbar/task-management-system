@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Loader, X } from "lucide-react";
 import { FileUploaderDropzone } from "@/components/ui/file-uploader-dropzone";
-import { getUser } from "@/actions/get-user";
+import { getUser } from "@/lib/get-user";
 import {
   Dialog,
   DialogContent,
