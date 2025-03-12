@@ -42,6 +42,7 @@ export type ToolType = {
   createdBy: UserType;
   createdAt: string;
   updatedAt?: string;
+  user: string;
 };
 
 export type AllToolsResponseType = {

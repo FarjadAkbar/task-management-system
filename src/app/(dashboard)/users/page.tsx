@@ -1,11 +1,11 @@
 import { getUsers } from "@/actions/get-users";
 import React from "react";
-import { InviteForm } from "./components/InviteForm";
+import { InviteForm } from "@/components/dashboard/users/InviteForm";
 import { Separator } from "@/components/ui/separator";
 import { columns } from "./table-components/columns";
 import { Users } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import SendMailToAll from "./components/send-mail-to-all";
+import SendMailToAll from "@/components/dashboard/users/send-mail-to-all";
 import Container from "../components/ui/Container";
 import { requireUser } from "@/lib/user";
 import { DataTable } from "../components/table-components/data-table";
@@ -44,12 +44,12 @@ const AdminUsersPage = async () => {
         <SendMailToAll />
       </div> */}
       <Separator />
- <DataTable data={users} columns={columns} 
+      <DataTable data={users} columns={columns}
         filters={[
-                            { label: "Name", name: "name", isInput: true }, // Input search
-                            { label: "Status", name: "userStatus", options: statuses },
-                            { label: "Admin", name: "is_admin", options: isAdmin },
-                          ]} />
+          { label: "Name", name: "name", isInput: true }, // Input search
+          { label: "Status", name: "userStatus", options: statuses },
+          { label: "Admin", name: "is_admin", options: isAdmin },
+        ]} />
     </Container>
   );
 };

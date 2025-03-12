@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Session } from "next-auth";
 
-import TicketsView from "./_components/TicketsView";
+import TicketsView from "@/components/dashboard/tickets/TicketsView";
 import SuspenseLoading from "@/components/loadings/suspense";
 
 export const maxDuration = 300;

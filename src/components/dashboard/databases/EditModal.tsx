@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-
+import { toast } from "react-toastify";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -26,6 +26,7 @@ interface NoteModalProps {
 
 const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, mode, onUpdate }) => {
     const [editedNote, setEditedNote] = useState<Note | null>(null);
+    const [isUpdating, setIsUpdating] = useState(false);
 
     useEffect(() => {
         if (note) setEditedNote(note);
@@ -45,11 +46,28 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, mode, onUp
         }
     };
 
-    const handleSave = () => {
-        if (editedNote) {
-            onUpdate(editedNote);
-            onClose();
+    const handleSave = async () => {
+        if (!editedNote) return;
+        setIsUpdating(true);
+        const response = await fetch("/api/notes", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: editedNote.id,
+                title: editedNote.title,
+                content: editedNote.content,
+                visibility: editedNote.visibility,
+                creatorName: editedNote.creatorName,
+            }),
+        })
+        const data = await response.json();
+        if (!response.ok) {
+            console.log(data)
         }
+        toast.success("Note updated successfully!");
+        onUpdate(data.note);
+        onClose();
+        setIsUpdating(false);
     };
 
     return (

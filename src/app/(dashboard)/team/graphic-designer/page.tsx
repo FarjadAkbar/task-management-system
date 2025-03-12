@@ -1,4 +1,4 @@
-import EmployeeGuidelines from '@/app/(dashboard)/team/_components/EmployeeGuidelines'
+import EmployeeGuidelines from '@/components/dashboard/team/EmployeeGuidelines'
 import React from 'react'
 
 

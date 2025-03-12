@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { FaRegEdit } from "react-icons/fa";
-import AddNoteForm from "./components/AddNoteForm";
+import AddNoteForm from "@/components/dashboard/databases/AddNoteForm";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -11,45 +11,82 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FaEllipsisV } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
-import EditNoteModal from "./components/EditModal";
-import DeleteNoteDialog from "./components/DeleteNoteDailog";
+import EditNoteModal from "@/components/dashboard/databases/EditModal";
+import DeleteNoteDialog from "@/components/dashboard/databases/DeleteNoteDailog";
+import { toast } from "react-toastify";
+import { NoteType } from "@/service/notes/type"
+import { useGetAllNotesQuery } from "@/service/notes";
 
-interface Note {
-  id: string;
-  title: string;
-  content: string;
-  visibility: "shared" | "private";
-  creatorName?: string;
-}
 
 export default function Databases() {
-  const [notes, setNotes] = useState<Note[]>([]);;
+  const [notes, setNotes] = useState<NoteType[]>([]);
   const [activeTab, setActiveTab] = useState("shared");
-  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [selectedNote, setSelectedNote] = useState<NoteType | null>(null);
   const [modalMode, setModalMode] = useState<"view" | "edit">("view");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // const { data, isLoading, error } = useGetAllNotesQuery();
+  // const deleteNoteMutation = useDeleteNoteMutation();
+
+  // if (isLoading) return <SuspenseLoading />;
+  // if (error) return <p className="text-red-500">Error loading notes.</p>;
+
+  // const notes: NoteType[] = data?.notes || [];
 
   useEffect(() => {
     fetchNotes();
   }, []);
 
   const fetchNotes = async () => {
-    const res = await fetch("/api/notes");
-    const data: Note[] = await res.json();
-    setNotes(data);
+    try {
+      const res = await fetch("/api/notes");
+      const data = await res.json();
+      if (data.notes && Array.isArray(data.notes)) {
+        const formattedNotes = data.notes.map((note: any) => ({
+          id: note.id,
+          title: note.title,
+          content: note.content,
+          visibility: note.is_public ? "shared" : "private",
+          creatorName: note.authorId,
+        }));
+        setNotes(formattedNotes);
+      } else {
+        console.log("Invalid data format", data);
+        setNotes([]);
+      }
+    } catch (error) {
+      console.log("Failed to fetch notes:", error);
+      setNotes([]);
+    }
   };
-
-  const openModal = (note: Note, mode: "view" | "edit") => {
+  const openModal = (note: NoteType, mode: "view" | "edit") => {
     setSelectedNote(note);
     setModalMode(mode);
     setIsModalOpen(true);
   };
 
-  const handleUpdateNote = (updatedNote: Note) => {
-    setNotes(notes.map((note) => (note.id === updatedNote.id ? updatedNote : note)));
+  const handleUpdateNote = (updatedNote: NoteType) => {
+    setNotes(notes.map((note) => (note?.id === updatedNote.id ? updatedNote : note)));
   };
-  const handleDelete = (noteId: string) => {
-    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
+  const handleDelete = async (noteId: string) => {
+    try {
+      const res = await fetch(`/api/notes`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: noteId }),
+      });
+
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(`Failed to delete note: ${errorMessage}`);
+      }
+
+      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
+    } catch (error) {
+      console.error("Error deleting note:", error);
+    }
   };
 
   return (
@@ -82,7 +119,8 @@ export default function Databases() {
 
           {/*Notes Display */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {notes.filter((note) => activeTab === "shared" || note.visibility === "private")
+            {notes
+              .filter((note) => activeTab === "shared" || note.visibility === "private")
               .map((note) => (
                 <div
                   key={note.id}

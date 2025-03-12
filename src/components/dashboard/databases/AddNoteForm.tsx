@@ -21,6 +21,7 @@ import {
     SelectContent,
     SelectItem
 } from "@/components/ui/select";
+// import { useCreateNoteMutation } from "@/service/notes";
 
 const noteSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
@@ -37,6 +38,24 @@ export default function AddNoteForm({ onNoteAdded }: NoteFormProps) {
         resolver: zodResolver(noteSchema),
         defaultValues: { title: "", content: "", visibility: "" },
     });
+
+    // const { mutate, isPending } = useCreateNoteMutation();
+
+    // const onSubmit = (data: any) => {
+    //     mutate(
+    //         { ...data, userId: "user123" },
+    //         {
+    //             onSuccess: () => {
+    //                 toast.success("Note added successfully!");
+    //                 form.reset();
+    //             },
+    //             onError: (error) => {
+    //                 toast.error("Failed to add note.");
+    //                 console.error(error);
+    //             },
+    //         }
+    //     );
+    // };
 
     const onSubmit = async (data: any) => {
         const res = await fetch("/api/notes", {
