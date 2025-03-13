@@ -243,7 +243,7 @@ export async function updateEvent(userId: string, eventData: UpdateEventInputTyp
         attendees: true,
         meetingRoom: true,
       },
-    })) as EventWithRelations
+    })) as EventWithRelationsType
   }
 
   return updatedEvent
