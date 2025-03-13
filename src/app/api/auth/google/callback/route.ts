@@ -21,6 +21,7 @@ export async function GET(req: Request) {
     const tokens = await getTokens(code)
 
     if (!tokens.refresh_token) {
+      console.error("User not found during Google callback.");
       return NextResponse.redirect(new URL("/event?error=no_refresh_token", process.env.NEXT_PUBLIC_APP_URL!))
     }
 
