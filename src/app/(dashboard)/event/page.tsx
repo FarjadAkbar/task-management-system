@@ -25,16 +25,13 @@ export default async function EventPage() {
         </div>
 
         <div className="flex gap-2">
-          {!isConnected ? (
             <Button asChild>
               <a href="/api/auth/google">
                 <CalendarCheck2 className="mr-2 h-4 w-4" />
-                Connect Google Calendar
+                {!isConnected ? "Connect Google Calendar" :  "Reconnect Google Calendar"}
               </a>
             </Button>
-          ) : (
             <SyncEventsButton />
-          )}
         </div>
       </div>
 

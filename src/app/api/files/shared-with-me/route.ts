@@ -27,11 +27,11 @@ export async function GET(req: Request) {
     // Get total count for pagination
     const totalCount = await prismadb.documents.count({
       where: {
-        // sharedWith: {
-        //   some: {
-        //     sharedWithId: userId,
-        //   },
-        // },
+        sharedWith: {
+          some: {
+            sharedWithId: userId,
+          },
+        },
         ...(search
           ? {
               OR: [

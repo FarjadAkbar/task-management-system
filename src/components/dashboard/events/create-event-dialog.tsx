@@ -131,7 +131,7 @@ export function CreateEventDialog({ open, onOpenChange, defaultValues }: CreateE
           <DialogDescription>Add a new event to your calendar</DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[400px]">
+        <ScrollArea className="max-h-[400px] px-2">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField

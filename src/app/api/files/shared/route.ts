@@ -46,9 +46,9 @@ export async function GET(req: Request) {
     const files = await prismadb.documents.findMany({
       where: {
         created_by_user: userId,
-        // sharedWith: {
-        //   some: {},
-        // },
+        sharedWith: {
+          some: {},
+        },
         ...(search
           ? {
               OR: [
