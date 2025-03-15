@@ -12,4 +12,7 @@ module.exports = {
     images: {
       domains: ['utfs.io'],
     },
+    publicRuntimeConfig: {
+      apiUrl: process.env.API_URL,
+    },
   };

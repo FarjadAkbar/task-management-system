@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UsersResponseType } from "./type";
-import { getUserFn } from "./fn";
+import { deleteUserMutationFn, editUserStatusMutationFn, getUserFn, inviteUserMutationFn } from "./fn";
 
 
 export const useGetUsersQuery = ({ search = "" }: { search: string }) => {
@@ -11,3 +11,42 @@ export const useGetUsersQuery = ({ search = "" }: { search: string }) => {
     });
   };
   
+
+export const useInviteUserMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: inviteUserMutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
+    },
+  });
+};
+
+
+export const useDeleteUserMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteUserMutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
+    },
+  });
+};
+
+
+export const useUserUpdateStatusMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: editUserStatusMutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] })
+    },
+  })
+}

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { priorities } from "../data/data";
 import { Ticket } from "../data/schema";
-import { DataTableColumnHeader } from "../../components/table-components/data-table-column-header";
+import { DataTableColumnHeader } from "../../../../components/table-components/data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import moment from "moment";
 import Link from "next/link";

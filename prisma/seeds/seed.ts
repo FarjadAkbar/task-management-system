@@ -12,12 +12,10 @@ async function main() {
     data: {
       avatar: null,
       email: "admin@example.com",
-      is_admin: true,
       name: "Admin User",
       first_name: "Farjad",
       last_name: "Akbar",
       password: adminHashedPassword, // Use hashed password
-      username: "admin",
       userStatus: "ACTIVE",
       role: "ADMIN",
     },
@@ -29,10 +27,8 @@ async function main() {
     data: {
       avatar: null,
       email: "user@example.com",
-      is_admin: false,
       name: "Regular User",
       password: userHashedPassword, // Use hashed password
-      username: "user",
       userStatus: "ACTIVE",
       role: "DEVELOPER",
     },
@@ -50,8 +46,8 @@ async function main() {
     return prisma.availability.create({
       data: {
         day: day,
-        fromTime: "08:00",
-        tillTime: "18:00",
+        startTime: "08:00",
+        endTime: "18:00",
         user: {
           connect: {
             id: user.id,
@@ -67,8 +63,8 @@ async function main() {
     return prisma.availability.create({
       data: {
         day: day,
-        fromTime: "08:00",
-        tillTime: "18:00",
+        startTime: "08:00",
+        endTime: "18:00",
         user: {
           connect: {
             id: admin.id,

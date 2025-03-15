@@ -78,7 +78,7 @@ export const authOptions: NextAuthOptions = {
       session.user.avatar = user.avatar;
       session.user.grantId = user.grantId;
       session.user.grantEmail = user.grantEmail;
-      session.user.isAdmin = user.is_admin;
+      session.user.role = user.role;
       session.user.userStatus = user.userStatus;
       session.user.lastLoginAt = user.lastLoginAt;
 

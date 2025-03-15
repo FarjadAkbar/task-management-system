@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { getUser } from "@/lib/get-user"
-import { getEvent, updateEvent, deleteEvent } from "@/lib/google-calendar"
+import { getEvent, updateEvent, deleteEvent } from "@/actions/google-calendar"
 import { UpdateEventInputType } from "@/service/events/type"
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {

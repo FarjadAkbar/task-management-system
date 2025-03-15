@@ -6,6 +6,7 @@ import { Session } from "next-auth";
 
 import ProjectsView from "./_components/ProjectsView";
 import SuspenseLoading from "@/components/loadings/suspense";
+import { ProjectList } from "@/components/dashboard/projects/project-list";
 
 export const maxDuration = 300;
 
@@ -16,7 +17,7 @@ const ProjectsPage = async () => {
 
   return (
     <Suspense fallback={<SuspenseLoading />}>
-      <ProjectsView />
+      <ProjectList />
     </Suspense>
   );
 };

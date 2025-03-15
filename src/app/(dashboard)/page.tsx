@@ -66,7 +66,7 @@ export default async function Dashboard() {
   }
 
   // Dynamically filter cards based on allowedRoles
-  const filteredCards = data.is_admin
+  const filteredCards = data.role === "ADMIN"
     ? cards
     : cards.filter((card) => card.allowedUser);
 

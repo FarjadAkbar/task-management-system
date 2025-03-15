@@ -44,7 +44,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1">
+        <nav className="flex items-center space-x-1">
           {navItems.map((item) => (
             <Link 
               key={item.name} 
