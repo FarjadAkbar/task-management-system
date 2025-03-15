@@ -23,7 +23,7 @@ export function DashboardCard({ title, src, href, className }: DashboardCardProp
             />
           </div>
           <div className="w-full text-center">
-            <h3 className="font-medium text-gray-800 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+            <h3 className="font-medium text-gray-800 dark:text-white group-hover:text-gold dark:group-hover:text-gold transition-colors">
               {title}
             </h3>
           </div>

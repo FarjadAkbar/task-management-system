@@ -7,26 +7,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-
-interface Note {
-    id: string;
-    title: string;
-    content: string;
-    visibility: "shared" | "private";
-    creatorName?: string;
-}
+import { useUpdateNoteMutation } from "@/service/notes";
+import { NoteType } from "@/service/notes/type";
 
 interface NoteModalProps {
     isOpen: boolean;
     onClose: () => void;
-    note: Note | null;
+    note: NoteType | null;
     mode: "view" | "edit";
-    onUpdate: (updatedNote: Note) => void;
+    onUpdate: (updatedNote: NoteType) => void;
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, mode, onUpdate }) => {
-    const [editedNote, setEditedNote] = useState<Note | null>(null);
+    const [editedNote, setEditedNote] = useState<NoteType | null>(null);
     const [isUpdating, setIsUpdating] = useState(false);
+    const { mutate: updateNote, isPending: isMutating } = useUpdateNoteMutation();
 
     useEffect(() => {
         if (note) setEditedNote(note);
@@ -49,25 +44,19 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, mode, onUp
     const handleSave = async () => {
         if (!editedNote) return;
         setIsUpdating(true);
-        const response = await fetch("/api/notes", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id: editedNote.id,
-                title: editedNote.title,
-                content: editedNote.content,
-                visibility: editedNote.visibility,
-                creatorName: editedNote.creatorName,
-            }),
-        })
-        const data = await response.json();
-        if (!response.ok) {
-            console.log(data)
-        }
-        toast.success("Note updated successfully!");
-        onUpdate(data.note);
-        onClose();
-        setIsUpdating(false);
+
+        updateNote(editedNote, {
+            onSuccess: (data) => {
+                toast.success("Note updated successfully!");
+                onUpdate(data.note);
+                onClose();
+                setIsUpdating(false);
+            },
+            onError: (error: any) => {
+                toast.error(error.message || "Failed to update the note.");
+                setIsUpdating(false);
+            },
+        });
     };
 
     return (
@@ -111,7 +100,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, mode, onUp
                 <div className="flex justify-end space-x-2">
                     {mode === "edit" && (
                         <Button onClick={handleSave} className="bg-gold text-black hover:bg-black hover:text-gold">
-                            Save
+                            {isMutating ? "Updating..." : "Update"}
                         </Button>
                     )}
                     <DialogClose asChild>

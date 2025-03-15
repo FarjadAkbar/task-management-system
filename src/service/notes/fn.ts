@@ -19,7 +19,7 @@ export const createNoteMutationFn = async (
 export const editNoteMutationFn = async (
   data: UpdateNotePayloadType
 ): Promise<{ message: string; note: NoteType }> => {
-  const response = await API.put(`/notes/${data.id}`, data);
+  const response = await API.patch(`/notes`, data);
   return response.data;
 };
 
@@ -42,6 +42,8 @@ export const getNoteByIdQueryFn = async (
 export const deleteNoteMutationFn = async (
   noteId: string
 ): Promise<{ message: string }> => {
-  const response = await API.delete(`/notes/${noteId}`);
+  const response = await API.delete(`/notes`, {
+    data: { id: noteId }, 
+  });
   return response.data;
 };

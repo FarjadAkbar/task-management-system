@@ -5,9 +5,7 @@ export type NoteType = {
   content: string;
   visibility: "private" | "shared";
   creatorName?: string;
-  // createdAt: string;
-  // updatedAt: string;
-  // authorId: string;
+  authorId: string;
 };
 
 
@@ -32,10 +30,9 @@ export type AllNotesPayloadType = {
   pageNumber?: number;
 };
 
-// Response type when fetching multiple notes
 export type AllNotesResponseType = {
   notes: NoteType[];
-  total: number; // Total number of notes for pagination
+  total: number; 
   page: number;
   pageSize: number;
 };

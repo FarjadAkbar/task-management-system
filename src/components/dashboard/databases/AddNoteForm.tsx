@@ -21,7 +21,8 @@ import {
     SelectContent,
     SelectItem
 } from "@/components/ui/select";
-// import { useCreateNoteMutation } from "@/service/notes";
+import { useCreateNoteMutation } from "@/service/notes";
+import { toast } from "@/hooks/use-toast";
 
 const noteSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
@@ -30,7 +31,7 @@ const noteSchema = z.object({
 });
 
 interface NoteFormProps {
-    onNoteAdded: () => void;
+    onNoteAdded?: () => void;
 }
 
 export default function AddNoteForm({ onNoteAdded }: NoteFormProps) {
@@ -38,35 +39,22 @@ export default function AddNoteForm({ onNoteAdded }: NoteFormProps) {
         resolver: zodResolver(noteSchema),
         defaultValues: { title: "", content: "", visibility: "" },
     });
-
-    // const { mutate, isPending } = useCreateNoteMutation();
-
-    // const onSubmit = (data: any) => {
-    //     mutate(
-    //         { ...data, userId: "user123" },
-    //         {
-    //             onSuccess: () => {
-    //                 toast.success("Note added successfully!");
-    //                 form.reset();
-    //             },
-    //             onError: (error) => {
-    //                 toast.error("Failed to add note.");
-    //                 console.error(error);
-    //             },
-    //         }
-    //     );
-    // };
-
+    const { mutate, isPending } = useCreateNoteMutation();
     const onSubmit = async (data: any) => {
-        const res = await fetch("/api/notes", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...data, userId: "user123" }),
-        });
-
-        if (res.ok) {
+        try {
+            await mutate(data);
             form.reset();
-            onNoteAdded();
+            if (onNoteAdded) onNoteAdded();
+            toast({
+                title: "Success",
+                description: "Note has been created successfully!",
+            });
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Something went wrong while creating the note.",
+                variant: "destructive",
+            });
         }
     };
 

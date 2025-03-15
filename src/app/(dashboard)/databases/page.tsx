@@ -12,10 +12,11 @@ import {
 import { FaEllipsisV } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
 import EditNoteModal from "@/components/dashboard/databases/EditModal";
+import SuspenseLoading from "@/components/loadings/suspense";
 import DeleteNoteDialog from "@/components/dashboard/databases/DeleteNoteDailog";
-import { toast } from "react-toastify";
+import { toast } from "@/hooks/use-toast";
 import { NoteType } from "@/service/notes/type"
-import { useGetAllNotesQuery } from "@/service/notes";
+import { useGetAllNotesQuery, useDeleteNoteMutation } from "@/service/notes";
 
 
 export default function Databases() {
@@ -25,68 +26,39 @@ export default function Databases() {
   const [modalMode, setModalMode] = useState<"view" | "edit">("view");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // const { data, isLoading, error } = useGetAllNotesQuery();
-  // const deleteNoteMutation = useDeleteNoteMutation();
+  const { data, isLoading, error } = useGetAllNotesQuery();
+  const { mutate } = useDeleteNoteMutation();
 
-  // if (isLoading) return <SuspenseLoading />;
-  // if (error) return <p className="text-red-500">Error loading notes.</p>;
+  if (isLoading) return <SuspenseLoading />;
+  if (error) return <p className="text-red-500">Error loading notes.</p>;
 
-  // const notes: NoteType[] = data?.notes || [];
+  const nots = data?.notes || [];
 
-  useEffect(() => {
-    fetchNotes();
-  }, []);
-
-  const fetchNotes = async () => {
-    try {
-      const res = await fetch("/api/notes");
-      const data = await res.json();
-      if (data.notes && Array.isArray(data.notes)) {
-        const formattedNotes = data.notes.map((note: any) => ({
-          id: note.id,
-          title: note.title,
-          content: note.content,
-          visibility: note.is_public ? "shared" : "private",
-          creatorName: note.authorId,
-        }));
-        setNotes(formattedNotes);
-      } else {
-        console.log("Invalid data format", data);
-        setNotes([]);
-      }
-    } catch (error) {
-      console.log("Failed to fetch notes:", error);
-      setNotes([]);
-    }
-  };
   const openModal = (note: NoteType, mode: "view" | "edit") => {
     setSelectedNote(note);
     setModalMode(mode);
     setIsModalOpen(true);
   };
+  const onDelete = (noteId: string) => {
+    mutate(noteId, {
+      onSuccess: () => {
+        toast({
+          title: "Deleted",
+          description: "Note has been removed successfully.",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message || "Could not delete the note",
+          variant: "destructive",
+        });
+      },
+    });
+  };
 
   const handleUpdateNote = (updatedNote: NoteType) => {
-    setNotes(notes.map((note) => (note?.id === updatedNote.id ? updatedNote : note)));
-  };
-  const handleDelete = async (noteId: string) => {
-    try {
-      const res = await fetch(`/api/notes`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: noteId }),
-      });
-
-      if (!res.ok) {
-        const errorMessage = await res.text();
-        throw new Error(`Failed to delete note: ${errorMessage}`);
-      }
-
-      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
-    } catch (error) {
-      console.error("Error deleting note:", error);
-    }
+    setNotes((prevNotes) => prevNotes.map((note) => (note.id === updatedNote.id ? updatedNote : note)));
   };
 
   return (
@@ -94,7 +66,7 @@ export default function Databases() {
       <div className="w-full max-w-8xl grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-white p-6 shadow-lg py-12">
           <h1 className="text-3xl font-bold text-black mb-12 text-center">📝 Add a Note</h1>
-          <AddNoteForm onNoteAdded={fetchNotes} />
+          <AddNoteForm />
         </div>
         <div className="bg-white p-6 shadow-lg">
           <h2 className="text-2xl font-bold mb-4">📌 My Notes</h2>
@@ -119,7 +91,7 @@ export default function Databases() {
 
           {/*Notes Display */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {notes
+            {nots
               .filter((note) => activeTab === "shared" || note.visibility === "private")
               .map((note) => (
                 <div
@@ -130,7 +102,7 @@ export default function Databases() {
                   <p className="text-black mt-2">{note.content}</p>
 
                   {activeTab === "shared" && (
-                    <p className="text-gray-500 text-sm mt-2">Shared By: {note.creatorName}</p>
+                    <p className="text-gray-500 text-sm mt-2">Shared By: {note.authorId}</p>
                   )}
 
                   <div className="absolute top-4 right-2">
@@ -147,7 +119,7 @@ export default function Databases() {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-red-600" asChild>
-                          <DeleteNoteDialog noteId={note.id} onDelete={handleDelete} />
+                          <DeleteNoteDialog noteId={note.id} onDelete={onDelete} />
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
