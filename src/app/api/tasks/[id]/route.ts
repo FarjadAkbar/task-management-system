@@ -10,7 +10,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const taskId = params.id
+    const { id } = await params;
+    const taskId = id
 
     // Get task details
     const task = await getTaskDetails(taskId)

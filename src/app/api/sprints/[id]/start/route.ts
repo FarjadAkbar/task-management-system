@@ -9,7 +9,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const sprintId = params.id
+    const { id } = await params;
+    const sprintId = id
 
     // Get sprint
     const sprint = await prismadb.sprint.findUnique({

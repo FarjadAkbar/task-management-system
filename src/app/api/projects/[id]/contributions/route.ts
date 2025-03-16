@@ -10,7 +10,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const projectId = params.id
+    
+    const { id } = await params
+    const projectId = id
 
     // Check if user has access to the project
     const hasAccess =

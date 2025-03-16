@@ -10,10 +10,10 @@ export const useProjects = () => {
   });
 };
 
-export const useProject = (projectId: string | null) => {
+export const useProject = (projectId: string) => {
   return useQuery({
     queryKey: ["project", projectId],
-    queryFn: () => (projectId ? fetchProject(projectId) : null),
+    queryFn: () => fetchProject(projectId),
     enabled: !!projectId,
   });
 };

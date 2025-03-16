@@ -1,5 +1,5 @@
 import { prismadb } from "@/lib/prisma"
-import { TaskType } from "@/service/projects/tasks/type"
+import { TaskType } from "@/service/tasks/type"
 import { MemberContributionType, ProjectWithDetailsType, ProjectWithStatsType } from "@/service/projects/type"
 
 
@@ -201,7 +201,7 @@ export async function generateProjectReport(projectId: string) {
   const project = await getProjectWithDetails(projectId)
   if (!project) throw new Error("Project not found")
 
-  const contributions = await getMemberContributionTypes(projectId)
+  const contributions = await getMemberContribution(projectId)
 
   // Get sprint statistics
   const sprintStats = await Promise.all(
@@ -299,11 +299,15 @@ export async function getSprintTasks(sprintId: string) {
         },
       },
       documents: {
-        select: {
-          id: true,
-          document_name: true,
-          document_file_url: true,
-          document_file_mimeType: true,
+        include: {
+          document: {
+            select: {
+              id: true,
+              document_name: true,
+              document_file_url: true,
+              document_file_mimeType: true,
+            },
+          },
         },
       },
       comments: {
@@ -386,11 +390,15 @@ export async function getTaskDetails(taskId: string): Promise<TaskType | null> {
         },
       },
       documents: {
-        select: {
-          id: true,
-          document_name: true,
-          document_file_url: true,
-          document_file_mimeType: true,
+        include: {
+          document: {
+            select: {
+              id: true,
+              document_name: true,
+              document_file_url: true,
+              document_file_mimeType: true,
+            },
+          },
         },
       },
       comments: {

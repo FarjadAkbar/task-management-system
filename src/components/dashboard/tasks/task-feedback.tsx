@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -9,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Star, StarIcon, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { useAddTaskFeedback } from "@/service/tasks"
+import { toast } from "@/hooks/use-toast"
 
 interface TaskFeedbackProps {
   taskId: string
@@ -16,7 +16,6 @@ interface TaskFeedbackProps {
 }
 
 export function TaskFeedback({ taskId, feedback = [] }: TaskFeedbackProps) {
-  const { toast } = useToast()
   const [newFeedback, setNewFeedback] = useState("")
   const [rating, setRating] = useState(0)
   const [isPrivate, setIsPrivate] = useState(false)

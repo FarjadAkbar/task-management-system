@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -9,14 +8,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Plus, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { useAddChecklistItem, useCompleteChecklistItem } from "@/service/tasks"
+import { toast } from "@/hooks/use-toast"
+import { TaskCommentType } from "@/service/tasks/type"
 
 interface TaskChecklistProps {
   taskId: string
-  checklist: any[]
+  checklist: TaskCommentType[]
 }
 
 export function TaskChecklist({ taskId, checklist = [] }: TaskChecklistProps) {
-  const { toast } = useToast()
   const [newItemTitle, setNewItemTitle] = useState("")
 
   const { mutate: addChecklistItem, isPending: isAdding } = useAddChecklistItem()
@@ -24,14 +24,12 @@ export function TaskChecklist({ taskId, checklist = [] }: TaskChecklistProps) {
 
   const handleAddItem = () => {
     if (!newItemTitle.trim()) return
-
-    addChecklistItem(
-      {
-        taskId,
-        data: {
-          title: newItemTitle,
-        },
-      },
+    const payload = {
+      taskId,
+      title: newItemTitle,
+    };
+    
+    addChecklistItem(payload,
       {
         onSuccess: () => {
           setNewItemTitle("")

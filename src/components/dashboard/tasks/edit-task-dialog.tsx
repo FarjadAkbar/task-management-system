@@ -21,7 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CalendarIcon, Loader2 } from "lucide-react"
-import { MultiSelect } from "../ui/multi-select"
+import { MultiSelect } from "@/components/ui/multi-select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useTask, useUpdateTask } from "@/service/tasks"
 import { useGetUsersQuery } from "@/service/users"
@@ -50,7 +50,7 @@ interface EditTaskDialogProps {
 export function EditTaskDialog({ taskId, open, onOpenChange }: EditTaskDialogProps) {
   const { data: task, isLoading } = useTask(taskId)
   const { mutate: updateTask, isPending } = useUpdateTask()
-  const { data: usersData } = useGetUsersQuery("")
+  const { data: usersData } = useGetUsersQuery({ search: "" })
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

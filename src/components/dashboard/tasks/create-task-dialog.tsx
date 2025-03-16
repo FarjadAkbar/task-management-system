@@ -20,7 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CalendarIcon, Loader2 } from "lucide-react"
-import { MultiSelect } from "../ui/multi-select"
+import { MultiSelect } from "@/components/ui/multi-select"
 import { useGetUsersQuery } from "@/service/users"
 import { useCreateTask } from "@/service/tasks"
 import { toast } from "@/hooks/use-toast"
@@ -49,7 +49,7 @@ interface CreateTaskDialogProps {
 
 export function CreateTaskDialog({ open, onOpenChange, sectionId, sprintId, parentTaskId }: CreateTaskDialogProps) {
   const { mutate: createTask, isPending } = useCreateTask()
-  const { data: usersData } = useGetUsersQuery("")
+  const { data: usersData } = useGetUsersQuery({ search: ""})
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

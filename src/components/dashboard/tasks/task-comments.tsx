@@ -1,35 +1,33 @@
 "use client"
 
 import { useState } from "react"
-import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Send, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { useAddTaskComment } from "@/service/tasks"
+import { toast } from "@/hooks/use-toast"
+import { TaskCommentType } from "@/service/tasks/type"
 
 interface TaskCommentsProps {
   taskId: string
-  comments: any[]
+  comments: TaskCommentType[]
 }
 
 export function TaskComments({ taskId, comments = [] }: TaskCommentsProps) {
-  const { toast } = useToast()
   const [newComment, setNewComment] = useState("")
 
   const { mutate: addComment, isPending } = useAddTaskComment()
 
   const handleAddComment = () => {
     if (!newComment.trim()) return
+    const payload = {
+      taskId,
+      comment: newComment,
+    };
 
-    addComment(
-      {
-        taskId,
-        data: {
-          comment: newComment,
-        },
-      },
+    addComment(payload,
       {
         onSuccess: () => {
           setNewComment("")

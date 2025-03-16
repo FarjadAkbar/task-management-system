@@ -26,8 +26,8 @@ export function useCreateTask() {
   return useMutation({
     mutationFn: createTask,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.task.section] })
-      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.task.sprintId] })
+      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
+      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId] })
     },
   })
 }
@@ -39,9 +39,9 @@ export function useUpdateTask() {
   return useMutation({
     mutationFn:  updateTask,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["task", data.task.id] })
-      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.task.section] })
-      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.task.sprintId] })
+      queryClient.invalidateQueries({ queryKey: ["task", data.id] })
+      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
+      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId] })
     },
   })
 }
@@ -53,8 +53,8 @@ export function useDeleteTask() {
   return useMutation({
     mutationFn: deleteTask,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.task.section] })
-      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.task.sprintId] })
+      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
+      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId] })
     },
   })
 }
@@ -66,8 +66,8 @@ export function useMoveTask() {
   return useMutation({
     mutationFn: moveTask,
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.task.section] })
-      if (data.task.section !== variables.sectionId) {
+      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
+      if (data.section !== variables.sectionId) {
         queryClient.invalidateQueries({ queryKey: ["section-tasks", variables.sectionId] })
       }
     },
@@ -81,9 +81,9 @@ export function useCompleteTask() {
   return useMutation({
     mutationFn: completeTask,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["task", data.task.id] })
-      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.task.section] })
-      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.task.sprintId] })
+      queryClient.invalidateQueries({ queryKey: ["task", data.id] })
+      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
+      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId] })
     },
   })
 }
@@ -107,7 +107,7 @@ export function useCompleteSubtask() {
   return useMutation({
     mutationFn: completeSubtask,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["task", data.subtask.taskId] })
+      queryClient.invalidateQueries({ queryKey: ["task", data.taskId] })
     },
   })
 }
@@ -131,7 +131,7 @@ export function useCompleteChecklistItem() {
   return useMutation({
     mutationFn: completeChecklistItem,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["task", data.checklistItem.taskId] })
+      queryClient.invalidateQueries({ queryKey: ["task", data.taskId] })
     },
   })
 }

@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
-import { FileUploadDialog } from "@/components/files/file-upload-dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { FileText, Image, FileArchive, FileAudio, FileVideo, FileIcon, Download, ExternalLink } from "lucide-react"
 import { formatFileSize } from "@/lib/utils"
+import { FileUploadDialog } from "../files/file-upload-dialog"
+import { toast } from "@/hooks/use-toast"
 
 interface TaskAttachmentsProps {
   taskId: string
@@ -14,7 +14,6 @@ interface TaskAttachmentsProps {
 }
 
 export function TaskAttachments({ taskId, attachments = [] }: TaskAttachmentsProps) {
-  const { toast } = useToast()
   const [showUploadDialog, setShowUploadDialog] = useState(false)
 
   const getFileIcon = (mimeType: string) => {

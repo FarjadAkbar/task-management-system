@@ -1,7 +1,7 @@
 
 import axios from "axios";
 import type { Project, ProjectMember } from "@prisma/client";
-import { CreateProjectPayloadType, ProjectWithStatsType } from "./type";
+import { CreateProjectPayloadType, ProjectWithStatsType, ProjectType } from "./type";
 import API from "@/lib/axios-client";
 
 // Fetch all projects
@@ -11,8 +11,8 @@ export const fetchProjects = async (): Promise<ProjectWithStatsType[]> => {
 };
 
 // Fetch a single project
-export const fetchProject = async (projectId: string): Promise<any> => {
-  const response = await API.get<{ project: any }>(`/projects/${projectId}`);
+export const fetchProject = async (projectId: string): Promise<ProjectType> => {
+  const response = await API.get<{ project: ProjectType }>(`/projects/${projectId}`);
   return response.data.project;
 };
 

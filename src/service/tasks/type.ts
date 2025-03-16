@@ -1,23 +1,13 @@
-import type { Tasks, SubTask, ChecklistItem } from "@prisma/client"
+import type { Tasks, SubTask, ChecklistItem, Sprint, TaskFeedback, TasksComments } from "@prisma/client"
+import { UserType } from "../users/type";
 
 
-export type TaskType = {
-    id: string;
-    title: string;
-    content: string | null;
-    taskStatus: string;
-    priority: string;
-    position: number;
-    section: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-    createdBy: string | null;
-    parentTaskId: string | null;
-    assignees?: { userId: string }[]; // Add the assignees property
-    sprint?: { projectId: string };
-    task_feedback?: { isPrivate: boolean; userId: string }[];
+export type TaskType =  Tasks & {
+  assignees: UserType[];
+  sprint: Sprint;
+  task_feedback: TaskFeedback[]
+  subTasks: SubTask[];
 }
-
 export type CreateTaskPayloadType = {
   title: string
   content?: string
@@ -66,4 +56,17 @@ export type MoveTaskPayloadType = {
   taskId: string,
   sectionId: string,
   position: number
+}
+
+export type TaskCommentType = TasksComments & {
+  title: string;
+  completed: boolean
+  createdBy: UserType
+  completedBy: UserType
+  completedAt: Date
+  assigned_user: UserType
+}
+
+export type SubTaskType = SubTask & {
+  createdBy: UserType
 }

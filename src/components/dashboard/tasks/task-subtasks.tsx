@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -9,14 +9,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Plus, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { useAddSubtask, useCompleteSubtask } from "@/service/tasks"
+import { SubTaskType } from "@/service/tasks/type"
 
 interface TaskSubtasksProps {
   taskId: string
-  subtasks: any[]
+  subtasks: SubTaskType[]
 }
 
 export function TaskSubtasks({ taskId, subtasks = [] }: TaskSubtasksProps) {
-  const { toast } = useToast()
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("")
 
   const { mutate: addSubtask, isPending: isAdding } = useAddSubtask()
@@ -24,14 +24,11 @@ export function TaskSubtasks({ taskId, subtasks = [] }: TaskSubtasksProps) {
 
   const handleAddSubtask = () => {
     if (!newSubtaskTitle.trim()) return
-
-    addSubtask(
-      {
-        taskId,
-        data: {
-          title: newSubtaskTitle,
-        },
-      },
+    const payload = {
+      taskId,
+      title: newSubtaskTitle,
+    };
+    addSubtask(payload,
       {
         onSuccess: () => {
           setNewSubtaskTitle("")

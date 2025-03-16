@@ -1,5 +1,18 @@
 import type { Project, ProjectMember, Sprint } from "@prisma/client"
 
+
+export type ProjectType = Project & {
+  sprints: Sprint[];
+  members: ProjectMember[];
+  stats: {
+    totalTasks: number
+    completedTasks: number
+    completionPercentage: number
+    totalMembers: number
+    activeSprints: number
+  }
+}
+
 // Types
 export type CreateProjectPayloadType = {
   name: string
@@ -21,14 +34,7 @@ export type ProjectWithStatsType = Project & {
 }
 
 export type ProjectWithDetailsType = Project & {
-  members: (ProjectMember & {
-    user: {
-      id: string
-      name: string
-      email: string
-      avatar: string | null
-    }
-  })[]
+  members: ProjectMember[]
   sprints: Sprint[]
   stats: {
     totalTasks: number

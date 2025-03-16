@@ -1,14 +1,13 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { useProject } from "@/hooks/use-projects"
-import { useBoards } from "@/hooks/use-boards"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
-import { TaskBoard } from "@/components/tasks/task-board"
 import { Plus, KanbanSquare, Table2 } from "lucide-react"
+import { useProject } from "@/service/projects"
+import { TaskBoard } from "@/components/dashboard/tasks/task-board"
 
 export default function ProjectBoardPage() {
   const params = useParams()
