@@ -1,5 +1,10 @@
 // types.ts
-import type { Boards, Sections } from "@prisma/client";
+import type { Boards, Sections, Tasks } from "@prisma/client";
+
+
+export type SectionType = Sections & {
+  tasks: Tasks[]
+}
 
 export type BoardWithSectionsType = Boards & {
   sections: Sections[];

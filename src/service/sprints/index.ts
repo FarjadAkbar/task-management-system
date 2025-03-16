@@ -22,10 +22,10 @@ export function useSprints(projectId: string | null) {
   })
 }
 
-export function useSprint(sprintId: string | null) {
+export function useSprint(sprintId: string) {
   return useQuery({
     queryKey: ["sprint", sprintId],
-    queryFn: () => (sprintId ? fetchSprint(sprintId) : null),
+    queryFn: () => fetchSprint(sprintId),
     enabled: !!sprintId,
   })
 }
@@ -66,7 +66,7 @@ export function useDeleteSprint() {
   })
 }
 
-export function useSprintTasks(sprintId: string | null) {
+export function useSprintTasks(sprintId?: string) {
   return useQuery({
     queryKey: ["sprint-tasks", sprintId],
     queryFn: () => (sprintId ? fetchSprintTasks(sprintId) : []),

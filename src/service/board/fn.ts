@@ -1,6 +1,6 @@
 // api.ts
 import API from "@/lib/axios-client";
-import type { BoardWithSectionsType, BoardPayloadType, SectionPayloadType } from "./type";
+import type { BoardWithSectionsType, BoardPayloadType, SectionPayloadType, SectionType } from "./type";
 import type { Boards, Sections } from "@prisma/client";
 
 export const fetchBoards = async (projectId: string): Promise<BoardWithSectionsType[]> => {
@@ -13,8 +13,8 @@ export const fetchBoard = async (boardId: string): Promise<BoardWithSectionsType
   return response.data.board;
 };
 
-export const fetchSections = async (boardId: string): Promise<Sections[]> => {
-  const response = await API.get<{ sections: Sections[] }>(`/boards/${boardId}/sections`);
+export const fetchSections = async (boardId: string): Promise<SectionType[]> => {
+  const response = await API.get<{ sections: SectionType[] }>(`/boards/${boardId}/sections`);
   return response.data.sections;
 };
 
@@ -31,8 +31,8 @@ export const updateBoard = async (
   return response.data.board;
 };
 
-export const deleteBoard = async (boardId: string): Promise<void> => {
-  await API.delete(`/boards/${boardId}`);
+export const deleteBoard = async (data: { boardId: string; }): Promise<void> => {
+  await API.delete(`/boards/${data.boardId}`);
 };
 
 export const createSection = async (
@@ -51,6 +51,6 @@ export const updateSection = async (
   return response.data.section;
 };
 
-export const deleteSection = async (sectionId: string): Promise<void> => {
-  await API.delete(`/sections/${sectionId}`);
+export const deleteSection = async (data: { sectionId: string }): Promise<void> => {
+  await API.delete(`/sections/${data.sectionId}`);
 };

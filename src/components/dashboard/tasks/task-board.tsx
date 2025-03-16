@@ -10,6 +10,8 @@ import { TaskCard } from "./task-card"
 import { CreateTaskDialog } from "./create-task-dialog"
 import { useSprintTasks } from "@/service/sprints"
 import { useMoveTask } from "@/service/tasks"
+import { useSections } from "@/service/board"
+import { TaskType } from "@/service/tasks/type"
 
 interface TaskBoardProps {
   boardId: string
@@ -87,7 +89,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {sections?.map((section) => {
             // Get tasks for this section
-            const sectionTasks = sprintId ? sectionTasksMap.get(section.id) || [] : [] // We'll implement this when we add section tasks fetching
+            const sectionTasks: TaskType[] = sprintId ? sectionTasksMap.get(section.id) || [] : [] // We'll implement this when we add section tasks fetching
 
             return (
               <Droppable droppableId={section.id} key={section.id}>

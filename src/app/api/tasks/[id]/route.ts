@@ -21,7 +21,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 
     // Check if user has access to the task
-    const isAssigned = task.assignees ? task.assignees.some((assignee) => assignee.userId === user.id) : false
+    const isAssigned = task.assignees ? task.assignees.some((assignee) => assignee.id === user.id) : false
     const isCreator = task.createdBy === user.id
 
     // If task is in a sprint, check project membership

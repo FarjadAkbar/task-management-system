@@ -1,29 +1,28 @@
 // sprintApi.ts
 import API from "@/lib/axios-client"
-import type { Sprint } from "@prisma/client"
-import { CreateSprintPayloadType } from "./type"
+import { CreateSprintPayloadType, SprintType } from "./type"
 
 // Fetch all sprints for a project
 export const fetchSprints = async (projectId: string) => {
-  const response = await API.get<{ sprints: Sprint[] }>(`/projects/${projectId}/sprints`)
+  const response = await API.get<{ sprints: SprintType[] }>(`/projects/${projectId}/sprints`)
   return response.data.sprints
 }
 
 // Fetch a single sprint with details
 export const fetchSprint = async (sprintId: string) => {
-  const response = await API.get<{ sprint: Sprint }>(`/sprints/${sprintId}`)
+  const response = await API.get<{ sprint: SprintType }>(`/sprints/${sprintId}`)
   return response.data.sprint
 }
 
 // Create a new sprint
 export const createSprint = async (projectId: string, data: CreateSprintPayloadType) => {
-  const response = await API.post<{ sprint: Sprint }>(`/projects/${projectId}/sprints`, data)
+  const response = await API.post<{ sprint: SprintType }>(`/projects/${projectId}/sprints`, data)
   return response.data.sprint
 }
 
 // Update a sprint
 export const updateSprint = async (sprintId: string, data: Partial<CreateSprintPayloadType>) => {
-  const response = await API.put<{ sprint: Sprint }>(`/sprints/${sprintId}`, data)
+  const response = await API.put<{ sprint: SprintType }>(`/sprints/${sprintId}`, data)
   return response.data.sprint
 }
 
@@ -40,12 +39,12 @@ export const fetchSprintTasks = async (sprintId: string) => {
 
 // Start a sprint
 export const startSprint = async (sprintId: string) => {
-  const response = await API.post<{ sprint: Sprint }>(`/sprints/${sprintId}/start`)
+  const response = await API.post<{ sprint: SprintType }>(`/sprints/${sprintId}/start`)
   return response.data.sprint
 }
 
 // Complete a sprint
 export const completeSprint = async (sprintId: string) => {
-  const response = await API.post<{ sprint: Sprint }>(`/sprints/${sprintId}/complete`)
+  const response = await API.post<{ sprint: SprintType }>(`/sprints/${sprintId}/complete`)
   return response.data.sprint
 }
