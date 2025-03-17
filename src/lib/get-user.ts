@@ -4,6 +4,9 @@ import { getServerSession } from "next-auth";
 
 export const getUser = async () => {
   const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return null;
+  }
   const data = await prismadb.users.findUnique({
     where: {
       id: session?.user?.id,
