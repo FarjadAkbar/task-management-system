@@ -12,6 +12,7 @@ import { useBoards } from "@/service/board"
 import { useState } from "react"
 import { CreateTaskDialog } from "../tasks/create-task-dialog"
 import { CreateBoardDialog } from "./create-board-dialog"
+import { TaskTableView } from "../tasks/task-table-view"
 
 export default function ProjectBoard({ projectId }: { projectId: string }) {
   const { data: project, isLoading: loadingProject } = useProject(projectId)
@@ -101,15 +102,7 @@ export default function ProjectBoard({ projectId }: { projectId: string }) {
           </TabsContent>
 
           <TabsContent value="table" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Table View</CardTitle>
-                <CardDescription>View tasks in a table format</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-center py-12 text-muted-foreground">Table view coming soon</p>
-              </CardContent>
-            </Card>
+            <TaskTableView boardId={firstBoard.id} sprintId={activeSprint?.id} />
           </TabsContent>
         </Tabs>
       )}

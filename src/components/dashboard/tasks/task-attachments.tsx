@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { FileText, Image, FileArchive, FileAudio, FileVideo, FileIcon, Download, ExternalLink } from "lucide-react"
 import { formatFileSize } from "@/lib/utils"
-import { FileUploadDialog } from "../files/file-upload-dialog"
+import { FileUploaderDropzone } from "@/components/ui/file-uploader-dropzone"
 import { toast } from "@/hooks/use-toast"
+import { useAddTaskAttachmentsMutation } from "@/service/tasks"
 
 interface TaskAttachmentsProps {
   taskId: string
@@ -14,8 +15,13 @@ interface TaskAttachmentsProps {
 }
 
 export function TaskAttachments({ taskId, attachments = [] }: TaskAttachmentsProps) {
-  const [showUploadDialog, setShowUploadDialog] = useState(false)
+  const { mutate: addTaskAttachments } = useAddTaskAttachmentsMutation()
 
+  const handleFileUpload = (files: Array<{ id: string; name: string; url: string }>) => {
+    console.log(files);
+    addTaskAttachments({ taskId, documentId: files[0].id })
+  }
+  
   const getFileIcon = (mimeType: string) => {
     const type = mimeType.toLowerCase()
 
@@ -35,15 +41,7 @@ export function TaskAttachments({ taskId, attachments = [] }: TaskAttachmentsPro
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <FileUploadDialog
-          onUploadSuccess={() => {
-            toast({
-              title: "File uploaded",
-              description: "The file has been attached to this task",
-            })
-          }}
-          trigger={<Button onClick={() => setShowUploadDialog(true)}>Attach File</Button>}
-        />
+        <FileUploaderDropzone onUploadSuccess={handleFileUpload} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

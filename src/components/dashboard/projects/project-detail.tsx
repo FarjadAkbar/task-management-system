@@ -234,14 +234,13 @@ export default function ProjectDetail({ projectId }: { projectId: string }) {
           </Card>
 
           {/* Recent Activity */}
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
               <CardDescription>Latest updates from the project</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* This would be populated with actual activity data */}
                 <div className="flex gap-3">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback>JD</AvatarFallback>
@@ -287,7 +286,7 @@ export default function ProjectDetail({ projectId }: { projectId: string }) {
                 View All Activity
               </Button>
             </CardFooter>
-          </Card>
+          </Card> */}
         </TabsContent>
 
         <TabsContent value="sprints" className="space-y-6 mt-6">

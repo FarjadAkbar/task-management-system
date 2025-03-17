@@ -60,7 +60,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
   const checklistProgress = checklistCount > 0 ? (completedChecklists / checklistCount) * 100 : 0
 
   const isCompleted = task?.taskStatus === "COMPLETE"
-
+console.log(task, "task");
   if (isLoading) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -239,18 +239,18 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
             <Separator />
 
             {/* Tabs for subtasks, checklist, comments, etc. */}
-            <Tabs defaultValue="subtasks">
-              <TabsList className="grid grid-cols-5">
-                <TabsTrigger value="subtasks">Subtasks</TabsTrigger>
+            <Tabs defaultValue="checklist">
+              <TabsList className="grid grid-cols-4">
+                {/* <TabsTrigger value="subtasks">Subtasks</TabsTrigger> */}
                 <TabsTrigger value="checklist">Checklist</TabsTrigger>
                 <TabsTrigger value="comments">Comments</TabsTrigger>
                 <TabsTrigger value="attachments">Attachments</TabsTrigger>
                 <TabsTrigger value="feedback">Feedback</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="subtasks" className="space-y-4 mt-4">
+              {/* <TabsContent value="subtasks" className="space-y-4 mt-4">
                 <TaskSubtasks taskId={task.id} subtasks={task.subtasks} />
-              </TabsContent>
+              </TabsContent> */}
 
               <TabsContent value="checklist" className="space-y-4 mt-4">
                 <TaskChecklist taskId={task.id} checklist={task.checklists} />

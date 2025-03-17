@@ -236,18 +236,18 @@ export default function TaskList({ projectId, taskId }: { projectId: string; tas
           <Separator />
 
           {/* Tabs for subtasks, checklist, comments, etc. */}
-          <Tabs defaultValue="subtasks">
+          <Tabs defaultValue="checklist">
             <TabsList className="grid grid-cols-5">
-              <TabsTrigger value="subtasks">Subtasks</TabsTrigger>
+              {/* <TabsTrigger value="subtasks">Subtasks</TabsTrigger> */}
               <TabsTrigger value="checklist">Checklist</TabsTrigger>
               <TabsTrigger value="comments">Comments</TabsTrigger>
               <TabsTrigger value="attachments">Attachments</TabsTrigger>
               <TabsTrigger value="feedback">Feedback</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="subtasks" className="space-y-4 mt-4">
+            {/* <TabsContent value="subtasks" className="space-y-4 mt-4">
               <TaskSubtasks taskId={task.id} subtasks={task.subtasks} />
-            </TabsContent>
+            </TabsContent> */}
 
             <TabsContent value="checklist" className="space-y-4 mt-4">
               <TaskChecklist taskId={task.id} checklist={task.checklists} />

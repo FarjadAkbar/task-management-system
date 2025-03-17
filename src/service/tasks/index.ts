@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { addChecklistItem, addSubtask, addTaskComment, addTaskFeedback, completeChecklistItem, completeSubtask, completeTask, createTask, deleteTask, getSectionTasks, getTask, getTaskFilters, moveTask, searchTasks, updateTask } from "./fn"
+import { addChecklistItem, addSubtask, addTaskAttachments, addTaskComment, addTaskFeedback, completeChecklistItem, completeSubtask, completeTask, createTask, deleteTask, getSectionTasks, getTask, getTaskFilters, moveTask, searchTasks, updateTask } from "./fn"
 
 // Get a single task with details
 export function useTask(taskId: string) {
@@ -174,6 +174,17 @@ export function useSearchTasks(query: string, filters: any = {}) {
     queryKey: ["search-tasks", query, filters],
     queryFn: async () => searchTasks(query, filters),
     enabled: !!query || Object.values(filters).some((value) => !!value),
+  })
+}
+
+export function useAddTaskAttachmentsMutation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: addTaskAttachments,
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["task", variables.taskId] })
+    }
   })
 }
 

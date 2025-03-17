@@ -9,7 +9,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const boardId = params.id
+    const { id } = await params;
+    const boardId = id
 
     // Get board to check permissions
     const board = await prismadb.boards.findUnique({

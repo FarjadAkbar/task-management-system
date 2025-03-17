@@ -60,7 +60,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const projectId = params.id
+    const { id } = await params;
+    const projectId = id
     const body = await req.json()
 
     // Check if user has permission to create boards

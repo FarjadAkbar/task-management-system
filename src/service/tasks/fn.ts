@@ -132,3 +132,9 @@ export const searchTasks = async (query: string, filters: any = {}) => {
   const response = await API.get<{ tasks: TaskType[] }>(`/tasks/search?${params}`);
   return response.data.tasks;
 };
+
+
+export const addTaskAttachments = async (data: { taskId: string; documentId: string }) => {
+  const response = await API.get(`/tasks/${data.taskId}/attachments`);
+  return response.data.attachments;
+};
