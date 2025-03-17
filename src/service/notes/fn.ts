@@ -23,6 +23,13 @@ export const editNoteMutationFn = async (
   return response.data;
 };
 
+// Delete a Note
+export const deleteNoteMutationFn = async (
+  noteId: string
+): Promise<{ message: string }> => {
+  const response = await API.delete(`/notes/${noteId}`); 
+  return response.data;
+};
 
 export const getAllNotesQueryFn = async (): Promise<AllNotesResponseType> => {
     const response = await fetch("/api/notes");
@@ -38,10 +45,3 @@ export const getNoteByIdQueryFn = async (
   return response.data;
 };
 
-// Delete a Note
-export const deleteNoteMutationFn = async (
-  noteId: string
-): Promise<{ message: string }> => {
-  const response = await API.delete(`/notes/${noteId}`);
-  return response.data;
-};
