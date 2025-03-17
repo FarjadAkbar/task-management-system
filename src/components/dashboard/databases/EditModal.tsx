@@ -24,7 +24,9 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, mode, onUp
     const { mutate: updateNote, isPending: isMutating } = useUpdateNoteMutation();
 
     useEffect(() => {
-        if (note) setEditedNote(note);
+        if (note) {
+            setEditedNote({ ...note, visibility: note.visibility || "shared" });
+        }
     }, [note]);
 
     if (!note) return null;

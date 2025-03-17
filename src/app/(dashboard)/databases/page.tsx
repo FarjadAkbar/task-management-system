@@ -27,7 +27,7 @@ export default function Databases() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data, isLoading, error } = useGetAllNotesQuery();
-  const { mutate } = useDeleteNoteMutation();
+  const { mutate: deleteNote } = useDeleteNoteMutation();
 
   if (isLoading) return <SuspenseLoading />;
   if (error) return <p className="text-red-500">Error loading notes.</p>;
@@ -40,8 +40,9 @@ export default function Databases() {
     setIsModalOpen(true);
   };
   const onDelete = (noteId: string) => {
-    mutate(noteId, {
+    deleteNote(noteId, {
       onSuccess: () => {
+        setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
         toast({
           title: "Deleted",
           description: "Note has been removed successfully.",
