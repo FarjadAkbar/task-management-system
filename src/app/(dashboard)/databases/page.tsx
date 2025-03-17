@@ -1,131 +1,152 @@
-"use client";
-import { useState, useEffect } from "react";
-import { FaRegEdit } from "react-icons/fa";
-import AddNoteForm from "@/components/dashboard/databases/AddNoteForm";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { FaEllipsisV } from "react-icons/fa";
-import { GrView } from "react-icons/gr";
-import EditNoteModal from "@/components/dashboard/databases/EditModal";
-import SuspenseLoading from "@/components/loadings/suspense";
-import DeleteNoteDialog from "@/components/dashboard/databases/DeleteNoteDailog";
-import { toast } from "@/hooks/use-toast";
+"use client"
+
+import { useState } from "react"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Plus, Search, StickyNote } from "lucide-react"
+import { useDeleteNoteMutation, useGetAllNotesQuery } from "@/service/notes"
+import { AddNoteForm } from "@/components/dashboard/databases/add-note-form"
+import { NoteCard } from "@/components/dashboard/databases/note-card"
+import { EditNoteDialog } from "@/components/dashboard/databases/edit-note-dialog"
+// import { getUser } from "@/lib/get-user"
 import { NoteType } from "@/service/notes/type"
-import { useGetAllNotesQuery, useDeleteNoteMutation } from "@/service/notes";
 
+export default function NotesPage() {
+  // const user = getUser()
+  const [activeTab, setActiveTab] = useState("all")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [showAddNote, setShowAddNote] = useState(false)
+  const [selectedNote, setSelectedNote] = useState<NoteType | null>(null)
+  const [showEditDialog, setShowEditDialog] = useState(false)
 
-export default function Databases() {
-  const [notes, setNotes] = useState<NoteType[]>([]);
-  const [activeTab, setActiveTab] = useState("shared");
-  const [selectedNote, setSelectedNote] = useState<NoteType | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: notesData, isLoading } = useGetAllNotesQuery()
+  const { mutate: deleteNote } = useDeleteNoteMutation()
 
-  const { data, isLoading, error } = useGetAllNotesQuery();
-  const { mutate: deleteNote } = useDeleteNoteMutation();
+  const notes = notesData?.notes || []
 
-  if (isLoading) return <SuspenseLoading />;
-  if (error) return <p className="text-red-500">Error loading notes.</p>;
+  // Filter notes by search query
+  const filteredNotes = notes.filter((note) => {
+    if (!searchQuery) return true
+    return (
+      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      note.content.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  })
 
-  const nots = data?.notes || [];
+  const handleEditNote = (note: NoteType) => {
+    setSelectedNote(note)
+    setShowEditDialog(true)
+  }
 
-  const openModal = (note: NoteType) => {
-    setSelectedNote(note);
-    setIsModalOpen(true);
-  };
-  const onDelete = (noteId: string) => {
-    deleteNote(noteId, {
-      onSuccess: () => {
-        setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
-        toast({
-          title: "Deleted",
-          description: "Note has been removed successfully.",
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message || "Could not delete the note",
-          variant: "destructive",
-        });
-      },
-    });
-  };
-
-  const handleUpdateNote = (updatedNote: NoteType) => {
-    setNotes((prevNotes) => prevNotes.map((note) => (note.id === updatedNote.id ? updatedNote : note)));
-  };
+  const handleDeleteNote = (noteId: string) => {
+    deleteNote(noteId)
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <div className="w-full max-w-8xl grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white p-6 shadow-lg py-12">
-          <h1 className="text-3xl font-bold text-black mb-12 text-center">📝 Add a Note</h1>
-          <AddNoteForm />
+    <div className="container mx-auto py-6 space-y-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">Notes</h1>
+          <p className="text-muted-foreground">Create and manage your personal and shared notes</p>
         </div>
-        <div className="bg-white p-6 shadow-lg">
-          <h2 className="text-2xl font-bold mb-4">📌 My Notes</h2>
+        <Button onClick={() => setShowAddNote(!showAddNote)}>
+          {showAddNote ? (
+            "Cancel"
+          ) : (
+            <>
+              <Plus className="mr-2 h-4 w-4" />
+              New Note
+            </>
+          )}
+        </Button>
+      </div>
 
-          {/* Tabs */}
-          <div className="flex border-b mb-4">
-            <button
-              className={`p-2 w-1/2 text-center border-b-4 ${activeTab === "shared" ? "bg-gold text-black font-bold border-black" : "bg-black text-gold border-black"
-                }`}
-              onClick={() => setActiveTab("shared")}
-            >
-              Shared Notes
-            </button>
-            <button
-              className={`p-2 w-1/2 text-center border-b-4 ${activeTab === "private" ? "bg-gold text-black border-black font-bold" : "bg-black text-gold border-black"
-                }`}
-              onClick={() => setActiveTab("private")}
-            >
-              Private Notes
-            </button>
-          </div>
+      {showAddNote && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Create New Note</CardTitle>
+            <CardDescription>Add a new note to your collection</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AddNoteForm />
+          </CardContent>
+        </Card>
+      )}
 
-          {/*Notes Display */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {nots
-              .filter((note) => activeTab === "shared" || note.visibility === "private")
-              .map((note) => (
-                <div
-                  key={note.id}
-                  className="p-5 bg-white border border-gray-400 shadow-lg transform hover:scale-105 transition-all relative overflow-hidden rounded-xl"
-                >
-                  <h2 className="text-xl font-semibold text-black mt-4">{note.title}</h2>
-                  <p className="text-black mt-2">{note.content}</p>
-
-                  {activeTab === "shared" && (
-                    <p className="text-gray-500 text-sm mt-2">Shared By: {note.authorId}</p>
-                  )}
-
-                  <div className="absolute top-4 right-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="text-gray-600 hover:text-black">
-                        <FaEllipsisV />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-36">
-                        <DropdownMenuItem onClick={() => openModal(note)}>
-                          <FaRegEdit className="mr-2" /> Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600" asChild>
-                          <DeleteNoteDialog noteId={note.id} onDelete={onDelete} />
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-              ))}
-          </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
+          <TabsList>
+            <TabsTrigger value="all">All Notes</TabsTrigger>
+            <TabsTrigger value="shared">Shared</TabsTrigger>
+            <TabsTrigger value="private">Private</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <div className="relative w-full md:w-64">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search notes..."
+            className="pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
       </div>
-      <EditNoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} note={selectedNote} onUpdate={handleUpdateNote} />
+
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Card key={i} className="h-[200px]">
+              <CardHeader className="pb-2">
+                <Skeleton className="h-5 w-3/4" />
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : filteredNotes.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <StickyNote className="h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">No notes found</h3>
+            <p className="text-muted-foreground mb-4">
+              {searchQuery
+                ? "No notes match your search query"
+                : activeTab === "all"
+                  ? "You haven't created any notes yet"
+                  : activeTab === "shared"
+                    ? "You haven't shared any notes yet"
+                    : "You haven't created any private notes yet"}
+            </p>
+            <Button onClick={() => setShowAddNote(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Note
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredNotes.map((note) => (
+            <NoteCard
+              key={note.id}
+              note={note}
+              isOwner={activeTab === "shared" ? !note.is_public : note.is_public}
+              onEdit={handleEditNote}
+              onDelete={handleDeleteNote}
+            />
+          ))}
+        </div>
+      )}
+
+      <EditNoteDialog note={selectedNote} isOpen={showEditDialog} onClose={() => setShowEditDialog(false)} />
     </div>
-  );
+  )
 }
+
