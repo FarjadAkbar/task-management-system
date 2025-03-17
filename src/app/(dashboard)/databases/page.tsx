@@ -23,7 +23,6 @@ export default function Databases() {
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [activeTab, setActiveTab] = useState("shared");
   const [selectedNote, setSelectedNote] = useState<NoteType | null>(null);
-  const [modalMode, setModalMode] = useState<"view" | "edit">("view");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data, isLoading, error } = useGetAllNotesQuery();
@@ -34,9 +33,8 @@ export default function Databases() {
 
   const nots = data?.notes || [];
 
-  const openModal = (note: NoteType, mode: "view" | "edit") => {
+  const openModal = (note: NoteType) => {
     setSelectedNote(note);
-    setModalMode(mode);
     setIsModalOpen(true);
   };
   const onDelete = (noteId: string) => {
@@ -112,10 +110,7 @@ export default function Databases() {
                         <FaEllipsisV />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-36">
-                        <DropdownMenuItem onClick={() => openModal(note, "view")}>
-                          <GrView className="mr-2" /> View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openModal(note, "edit")}>
+                        <DropdownMenuItem onClick={() => openModal(note)}>
                           <FaRegEdit className="mr-2" /> Edit
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -130,7 +125,7 @@ export default function Databases() {
           </div>
         </div>
       </div>
-      <EditNoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} note={selectedNote} mode={modalMode} onUpdate={handleUpdateNote} />
+      <EditNoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} note={selectedNote} onUpdate={handleUpdateNote} />
     </div>
   );
 }

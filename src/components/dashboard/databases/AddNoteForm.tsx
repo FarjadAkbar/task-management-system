@@ -30,11 +30,7 @@ const noteSchema = z.object({
     visibility: z.enum(["shared", "private"]),
 });
 
-interface NoteFormProps {
-    onNoteAdded?: () => void;
-}
-
-export default function AddNoteForm({ onNoteAdded }: NoteFormProps) {
+export default function AddNoteForm() {
     const form = useForm({
         resolver: zodResolver(noteSchema),
         defaultValues: { title: "", content: "", visibility: "" },
@@ -44,7 +40,6 @@ export default function AddNoteForm({ onNoteAdded }: NoteFormProps) {
         try {
             await mutate(data);
             form.reset();
-            if (onNoteAdded) onNoteAdded();
             toast({
                 title: "Success",
                 description: "Note has been created successfully!",
