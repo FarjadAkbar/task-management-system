@@ -6,8 +6,12 @@ export type TaskType =  Tasks & {
   assignees: UserType[];
   sprint: Sprint;
   task_feedback: TaskFeedback[]
-  subTasks: SubTask[];
+  subtasks: SubTaskType[];
+  comments: TaskCommentType[]
+  checklists: ChecklistItemType[];
+  documents: any
 }
+
 export type CreateTaskPayloadType = {
   title: string
   content?: string
@@ -60,13 +64,16 @@ export type MoveTaskPayloadType = {
 
 export type TaskCommentType = TasksComments & {
   title: string;
-  completed: boolean
-  createdBy: UserType
-  completedBy: UserType
   completedAt: Date
   assigned_user: UserType
 }
 
 export type SubTaskType = SubTask & {
   createdBy: UserType
+}
+
+export type ChecklistItemType = ChecklistItem & {
+  completed: boolean
+  createdBy: UserType
+  completedBy: UserType
 }

@@ -1,13 +1,13 @@
 // taskApi.ts
 import API from "@/lib/axios-client";
 import type {
-  Tasks,
   SubTask,
   ChecklistItem,
   TasksComments,
   TaskFeedback,
 } from "@prisma/client";
 import {
+  TaskType,
   ChecklistItemPayloadType,
   SubTaskPayloadType,
   TaskCommentPayloadType,
@@ -18,43 +18,43 @@ import {
 } from "./type";
 
 export const getTask = async (taskId: string) => {
-  const response = await API.get<{ task: Tasks }>(`/tasks/${taskId}`);
+  const response = await API.get<{ task: TaskType }>(`/tasks/${taskId}`);
   return response.data.task;
 };
 
 export const getSectionTasks = async (sectionId: string) => {
-  const response = await API.get<{ tasks: Tasks[] }>(
+  const response = await API.get<{ tasks: TaskType[] }>(
     `/sections/${sectionId}/tasks`
   );
   return response.data.tasks;
 };
 
 export const createTask = async (data: CreateTaskPayloadType) => {
-  const response = await API.post<{ task: Tasks }>("/tasks", data);
+  const response = await API.post<{ task: TaskType }>("/tasks", data);
   return response.data.task;
 };
 
 export const updateTask = async (
   data: UpdateTaskPayloadType
 ) => {
-  const response = await API.put<{ task: Tasks }>(`/tasks/${data.id}`, data);
+  const response = await API.put<{ task: TaskType }>(`/tasks/${data.id}`, data);
   return response.data.task;
 };
 
 export const deleteTask = async (taskId: string) => {
-  const response = await API.delete<{ task: Tasks }>(`/tasks/${taskId}`);
+  const response = await API.delete<{ task: TaskType }>(`/tasks/${taskId}`);
   return response.data.task;
 };
 
 export const moveTask = async (
   data: MoveTaskPayloadType
 ) => {
-  const response = await API.post<{ task: Tasks }>(`/tasks/${data.taskId}/move`, data);
+  const response = await API.post<{ task: TaskType }>(`/tasks/${data.taskId}/move`, data);
   return response.data.task;
 };
 
 export const completeTask = async (taskId: string) => {
-  const response = await API.post<{ task: Tasks }>(`/tasks/${taskId}/complete`);
+  const response = await API.post<{ task: TaskType }>(`/tasks/${taskId}/complete`);
   return response.data.task;
 };
 
@@ -129,6 +129,6 @@ export const searchTasks = async (query: string, filters: any = {}) => {
     if (value) params.append(key, String(value));
   });
 
-  const response = await API.get<{ tasks: Tasks[] }>(`/tasks/search?${params}`);
+  const response = await API.get<{ tasks: TaskType[] }>(`/tasks/search?${params}`);
   return response.data.tasks;
 };

@@ -1,4 +1,4 @@
-import ProjectBoard from "@/components/dashboard/projects/board"
+import ProjectBoard from "@/components/dashboard/board/board-list"
 
 
 interface ProjectBoardPageProps {

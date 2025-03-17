@@ -19,7 +19,7 @@ export const fetchSections = async (boardId: string): Promise<SectionType[]> => 
 };
 
 export const createBoard = async (data: BoardPayloadType): Promise<Boards> => {
-  const response = await API.post<{ board: Boards }>("/boards", data);
+  const response = await API.post<{ board: Boards }>(`/projects/${data.projectId}/boards`, data);
   return response.data.board;
 };
 

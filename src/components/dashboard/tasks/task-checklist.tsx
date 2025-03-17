@@ -9,11 +9,11 @@ import { Plus, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { useAddChecklistItem, useCompleteChecklistItem } from "@/service/tasks"
 import { toast } from "@/hooks/use-toast"
-import { TaskCommentType } from "@/service/tasks/type"
+import { ChecklistItemType } from "@/service/tasks/type"
 
 interface TaskChecklistProps {
   taskId: string
-  checklist: TaskCommentType[]
+  checklist: ChecklistItemType[]
 }
 
 export function TaskChecklist({ taskId, checklist = [] }: TaskChecklistProps) {
