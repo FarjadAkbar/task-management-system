@@ -10,15 +10,16 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useGetUsersQuery } from "@/service/users"
 
 // Mock data for users - replace with actual API call
-const mockUsers = [
-  { id: "1", name: "John Doe", email: "john@example.com", avatar: "" },
-  { id: "2", name: "Jane Smith", email: "jane@example.com", avatar: "" },
-  { id: "3", name: "Bob Johnson", email: "bob@example.com", avatar: "" },
-  { id: "4", name: "Alice Williams", email: "alice@example.com", avatar: "" },
-  { id: "5", name: "Charlie Brown", email: "charlie@example.com", avatar: "" },
-]
+// const mockUsers = [
+//   { id: "1", name: "John Doe", email: "john@example.com", avatar: "" },
+//   { id: "2", name: "Jane Smith", email: "jane@example.com", avatar: "" },
+//   { id: "3", name: "Bob Johnson", email: "bob@example.com", avatar: "" },
+//   { id: "4", name: "Alice Williams", email: "alice@example.com", avatar: "" },
+//   { id: "5", name: "Charlie Brown", email: "charlie@example.com", avatar: "" },
+// ]
 
 interface Attendee {
   email: string
@@ -35,6 +36,14 @@ export function AttendeeSelector({ value, onChange }: AttendeeProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [customEmail, setCustomEmail] = useState("")
+
+  const { data, isLoading, isError } = useGetUsersQuery({ search })
+  console.log("user data", data)
+
+  if (isLoading) return <p>Loading users...</p>
+  if (isError) return <p>Failed to load users.</p>
+
+  const users = data?.users || []
 
   const handleAddUser = (user: { name: string; email: string }) => {
     if (!value.some((attendee) => attendee.email === user.email)) {
@@ -64,7 +73,7 @@ export function AttendeeSelector({ value, onChange }: AttendeeProps) {
   }
 
   // Filter users based on search
-  const filteredUsers = mockUsers.filter(
+  const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(search.toLowerCase()) || user.email.toLowerCase().includes(search.toLowerCase()),
   )
@@ -148,9 +157,8 @@ export function AttendeeSelector({ value, onChange }: AttendeeProps) {
                           <span className="text-xs text-muted-foreground">{user.email}</span>
                         </div>
                         <Check
-                          className={`ml-auto h-4 w-4 ${
-                            value.some((a) => a.email === user.email) ? "opacity-100" : "opacity-0"
-                          }`}
+                          className={`ml-auto h-4 w-4 ${value.some((a) => a.email === user.email) ? "opacity-100" : "opacity-0"
+                            }`}
                         />
                       </CommandItem>
                     ))}
