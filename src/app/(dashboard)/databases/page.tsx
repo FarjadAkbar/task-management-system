@@ -137,7 +137,7 @@ export default function NotesPage() {
             <NoteCard
               key={note.id}
               note={note}
-              isOwner={activeTab === "shared" ? !note.is_public : note.is_public}
+              isOwner={note.is_public}
               onEdit={handleEditNote}
               onDelete={handleDeleteNote}
             />

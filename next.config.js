@@ -12,7 +12,16 @@ module.exports = {
       ignoreDuringBuilds: true,
     },
     images: {
-      domains: ['utfs.io'],
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'utfs.io',
+        },
+        {
+          protocol: 'https',
+          hostname: 'drive.google.com',
+        },
+      ],
     },
     publicRuntimeConfig: {
       apiUrl: process.env.API_URL,

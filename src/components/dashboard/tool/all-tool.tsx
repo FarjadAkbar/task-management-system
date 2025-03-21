@@ -76,7 +76,8 @@ const AllTools = () => {
         </CardContent>
       </Card>
 
-      {isPending && <SuspenseLoading />}
+      {isPending ? <SuspenseLoading />
+      :
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {tools.map((tool) => (
@@ -134,6 +135,7 @@ const AllTools = () => {
           </Card>
         ))}
       </div>
+}
       {/* Edit Tool Dialog */}
       {selectedTool && editModalOpen && (
         <EditToolDialog

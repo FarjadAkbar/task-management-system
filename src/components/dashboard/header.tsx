@@ -49,6 +49,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
             <Link 
               key={item.name} 
               href={item.href}
+              prefetch={true}
               className="px-3 py-2 text-sm font-medium text-white hover:text-amber-400 transition-colors relative group"
             >
               {item.name}
