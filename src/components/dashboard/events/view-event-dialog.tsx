@@ -67,7 +67,9 @@ export function ViewEventDialog({ eventId, open, onOpenChange }: ViewEventDialog
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <Skeleton className="h-8 w-3/4" />
+            <DialogTitle>
+              <Skeleton className="h-8 w-3/4" />
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Skeleton className="h-4 w-full" />

@@ -3,7 +3,6 @@ import { authOptions } from "@/lib/auth";
 import { prismadb } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 
-
 export const getUser = cache(async () => {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {

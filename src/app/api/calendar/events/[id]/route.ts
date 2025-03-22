@@ -9,8 +9,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-
-    const eventId = params.id
+    const { id } = await params
+    const eventId = id
     const event = await getEvent(user.id, eventId)
 
     if (!event) {
@@ -30,8 +30,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-
-    const eventId = params.id
+    const { id } = await params
+    const eventId = id
+  
     const body = await req.json()
 
     // Parse dates if provided
