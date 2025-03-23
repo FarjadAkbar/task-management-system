@@ -17,7 +17,7 @@ const cards = [
   {
     title: "Task Manager",
     src: "/images/task.png",
-    href: "/projects",
+    href: "/projects/67dfb82f97615f9768c9824f/board",
     allowedUser: true,
   },
   {

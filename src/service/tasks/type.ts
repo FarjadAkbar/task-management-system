@@ -9,7 +9,18 @@ export type TaskType =  Tasks & {
   subtasks: SubTaskType[];
   comments: TaskCommentType[]
   checklists: ChecklistItemType[];
-  documents: any
+  documents: TaskAttachment[]
+}
+
+export type TaskAttachment = { 
+  document: { 
+    size: number;
+    document_name: string;
+    document_file_url: string; 
+    document_file_mimeType: string;
+  }; 
+  taskId: string; 
+  documentId: string 
 }
 
 export type CreateTaskPayloadType = {

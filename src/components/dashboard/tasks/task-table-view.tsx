@@ -26,6 +26,8 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react"
+import { TaskDetailDialog } from "./task-detail-dialog"
+import { EditTaskDialog } from "./edit-task-dialog"
 
 interface TaskTableViewProps {
   boardId: string
@@ -34,6 +36,8 @@ interface TaskTableViewProps {
 
 export function TaskTableView({ boardId, sprintId }: TaskTableViewProps) {
   const router = useRouter()
+  const [showDetailDialog, setShowDetailDialog] = useState(false)
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("")
   const [filters, setFilters] = useState({
     priority: "",
@@ -316,6 +320,7 @@ export function TaskTableView({ boardId, sprintId }: TaskTableViewProps) {
                 </TableRow>
               ) : (
                 sortedTasks.map((task) => (
+                  <>
                   <TableRow key={task.id} className="cursor-pointer" onClick={() => handleTaskClick(task.id)}>
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
@@ -375,43 +380,31 @@ export function TaskTableView({ boardId, sprintId }: TaskTableViewProps) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              const projectId = task.sprint?.project?.id
-                              if (projectId) {
-                                router.push(`/projects/${projectId}/tasks/${task.id}`)
-                              }
-                            }}
+                            onClick={() => setShowDetailDialog(true)}
                           >
                             View details
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              // Handle edit action
-                            }}
+                            onClick={(e) => setShowEditDialog(true)}
                           >
                             Edit task
                           </DropdownMenuItem>
-                          {task.taskStatus !== "COMPLETE" && (
-                            <DropdownMenuItem
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                // Handle complete action
-                              }}
-                            >
-                              Mark as complete
-                            </DropdownMenuItem>
-                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
+                  
+          {showDetailDialog && (
+            <TaskDetailDialog taskId={task.id} open={showDetailDialog} onOpenChange={setShowDetailDialog} />
+          )}
+          {showEditDialog && <EditTaskDialog taskId={task.id} open={showEditDialog} onOpenChange={setShowEditDialog} />}
+          </>
+
                 ))
               )}
             </TableBody>
           </Table>
-        </div>
+      </div>
       </CardContent>
     </Card>
   )

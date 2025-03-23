@@ -37,7 +37,7 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
       setIsLoading(true);
-      await axios.put(`/api/user/${userId}/setnewpass`, data);
+      await axios.put(`/api/users/${userId}/setnewpass`, data);
       //TODO: send data to the server
       toast.success("Password changed successfully");
       router.refresh();

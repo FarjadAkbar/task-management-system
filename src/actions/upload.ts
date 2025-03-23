@@ -17,8 +17,18 @@ export async function uploadFile(formData: FormData) {
       return { error: "No file provided" }
     }
 
+    // Get the folder ID if provided
+    const folderId = formData.get("folderId") as string
+
+    // Add debug logging
+    console.log("Starting file upload:", {
+      fileName: file.name,
+      fileSize: file.size,
+      folderId: folderId || "root folder",
+    })
+
     // Upload file to Google Drive
-    const uploadedFile = await uploadFileToDrive(file)
+    const uploadedFile = await uploadFileToDrive(file, folderId)
 
     // Save file info to database
     const document = await prismadb.documents.create({
@@ -27,10 +37,10 @@ export async function uploadFile(formData: FormData) {
         key: uploadedFile.id,
         description: "new document",
         document_system_type: "file",
-        document_file_url: uploadedFile.url,
+        document_file_url: `https://drive.google.com/uc?export=download&id=${uploadedFile.id}`,
         size: uploadedFile.size,
         document_file_mimeType: uploadedFile.mimeType,
-        created_by_user: user.id
+        created_by_user: user.id,
       },
     })
 
@@ -53,7 +63,7 @@ export async function uploadFile(formData: FormData) {
       file: {
         id: document.id,
         name: uploadedFile.name,
-        url: uploadedFile.url,
+        url: document.document_file_url,
       },
     }
   } catch (error) {
@@ -79,7 +89,7 @@ export async function deleteFile(fileId: string) {
     }
 
     // Check if user has permission to delete
-    if (document.created_by_user !== user.id && user.role !== "ADMIN") {
+    if (document.created_by_user !== user.id && user.role != "ADMIN") {
       return { error: "Not authorized to delete this file" }
     }
 
@@ -98,7 +108,7 @@ export async function deleteFile(fileId: string) {
       },
     })
 
-    revalidatePath("/documents")
+    revalidatePath("/files")
     return { success: true }
   } catch (error) {
     console.error("Error deleting file:", error)

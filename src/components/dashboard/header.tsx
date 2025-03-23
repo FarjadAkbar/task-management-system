@@ -21,7 +21,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
   
   const navItems = [
     { name: "Dashboard", href: "/" },
-    { name: "Projects", href: "/projects" },
+    { name: "Tasks", href: "/projects/67dfb82f97615f9768c9824f/board" },
     { name: "Tools", href: "/tools" },
     { name: "Guidelines", href: "/team" },
     { name: "Meeting", href: "/event" },

@@ -42,7 +42,7 @@ export function AvatarDropdown({ avatar, userId, name, email }: AvatarDropdownPr
             <div className="relative h-8 w-8 rounded-full overflow-hidden border-2 border-amber-400">
               <Image src={avatar || "/placeholder.svg?height=32&width=32"} alt={name} fill className="object-cover" />
             </div>
-            <span className="text-sm font-medium hidden md:inline-block">{name}</span>
+            <span className="text-sm font-medium hidden md:inline-block  text-white">{name}</span>
             <ChevronDown className="h-4 w-4 text-white/70" />
           </Button>
         </DropdownMenuTrigger>
@@ -63,12 +63,12 @@ export function AvatarDropdown({ avatar, userId, name, email }: AvatarDropdownPr
               <span>Profile</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link href="/settings" className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/logout" className="cursor-pointer text-destructive">

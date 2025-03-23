@@ -4,18 +4,19 @@ import type React from "react"
 
 import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { uploadFile } from "@/actions/upload"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { toast } from "@/hooks/use-toast"
 import { Loader2, Upload, File, X } from "lucide-react"
-import { uploadFile } from "@/actions/upload"
 
 interface Props {
   onUploadSuccess?: (files: { id: string; name: string; url: string }[]) => void
   taskId?: string
+  folderId?: string
 }
 
-export function FileUploaderDropzone({ onUploadSuccess, taskId }: Props) {
+export function FileUploaderDropzone({ onUploadSuccess, taskId, folderId }: Props) {
   const router = useRouter()
   const [isDragging, setIsDragging] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -66,6 +67,7 @@ export function FileUploaderDropzone({ onUploadSuccess, taskId }: Props) {
         const formData = new FormData()
         formData.append("file", file)
         if (taskId) formData.append("taskId", taskId)
+        if (folderId) formData.append("folderId", folderId)
 
         const result = await uploadFile(formData)
 
@@ -102,7 +104,7 @@ export function FileUploaderDropzone({ onUploadSuccess, taskId }: Props) {
     } finally {
       setIsUploading(false)
     }
-  }, [selectedFiles, taskId, onUploadSuccess, router])
+  }, [selectedFiles, taskId, folderId, onUploadSuccess, router])
 
   return (
     <div className="w-full">

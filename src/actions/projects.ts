@@ -395,6 +395,7 @@ export async function getTaskDetails(taskId: string): Promise<TaskType | null> {
             select: {
               id: true,
               document_name: true,
+              size: true,
               document_file_url: true,
               document_file_mimeType: true,
             },

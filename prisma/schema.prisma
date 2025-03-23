@@ -77,7 +77,7 @@ model Users {
 // File System Models
 model Documents {
   id                     String   @id @default(auto()) @map("_id") @db.ObjectId
-  key                    String?
+  key                    String
   document_name          String
   document_file_url      String
   document_file_mimeType String
