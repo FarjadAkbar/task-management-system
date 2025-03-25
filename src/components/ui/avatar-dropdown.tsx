@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { signOut } from "next-auth/react";
 
 type AvatarDropdownProps = {
   avatar: string
@@ -70,11 +71,9 @@ export function AvatarDropdown({ avatar, userId, name, email }: AvatarDropdownPr
             </Link>
           </DropdownMenuItem> */}
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/logout" className="cursor-pointer text-destructive">
+          <DropdownMenuItem onClick={() => signOut()}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Logout</span>
-            </Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
