@@ -7,6 +7,7 @@ export function useTask(taskId: string) {
     queryKey: ["task", taskId],
     queryFn: async () => getTask(taskId),
     enabled: !!taskId,
+    staleTime: 60 * 1000,
   })
 }
 

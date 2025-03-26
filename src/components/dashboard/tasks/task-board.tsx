@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { memo, useState } from "react"
 import { DragDropContext, Droppable, Draggable, type DropResult } from "react-beautiful-dnd"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -17,6 +17,8 @@ interface TaskBoardProps {
   boardId: string
   sprintId?: string
 }
+
+const MemoizedTaskCard = memo(TaskCard)
 
 export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
   const { data: sections, isLoading: loadingSections } = useSections(boardId)
@@ -120,7 +122,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
                           <Draggable key={task.id} draggableId={task.id} index={index}>
                             {(provided) => (
                               <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} style={{ backgroundColor: `${section.color}` }}>
-                                <TaskCard task={task} />
+                                <MemoizedTaskCard task={task} />
                               </div>
                             )}
                           </Draggable>

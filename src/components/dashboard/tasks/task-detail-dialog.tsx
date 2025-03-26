@@ -60,7 +60,6 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
   const checklistProgress = checklistCount > 0 ? (completedChecklists / checklistCount) * 100 : 0
 
   const isCompleted = task?.taskStatus === "COMPLETE"
-console.log(task, "task");
   if (isLoading) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
