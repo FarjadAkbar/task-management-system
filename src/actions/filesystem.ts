@@ -262,8 +262,8 @@ export async function deleteFile(fileId: string) {
     }
 
     // Get the document
-    const document = await prismadb.documents.findUnique({
-      where: { id: fileId },
+    const document = await prismadb.documents.findFirst({
+      where: { key: fileId },
     })
 
     if (!document) {
@@ -274,19 +274,18 @@ export async function deleteFile(fileId: string) {
     if (document.created_by_user !== user.id && user.role != "ADMIN") {
       return { error: "Not authorized to delete this file" }
     }
-
     // Delete from Google Drive
     await deleteFileFromDrive(document.key)
 
     // Delete from database
     await prismadb.documents.delete({
-      where: { id: fileId },
+      where: { id: document.id },
     })
 
     // Also delete any task document references
     await prismadb.taskDocument.deleteMany({
       where: {
-        documentId: fileId,
+        documentId: document.id,
       },
     })
 

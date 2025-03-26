@@ -93,10 +93,10 @@ export default function NewToolDialog({ userId }: { userId: string }) {
       documentID: uploadedFiles[0]?.id || "",
       createdBy: userId,
     };
-
     mutate(payload, {
       onSuccess: (data) => {
         const tool = data.tool;
+        form.reset();
         toast({
           title: "Success",
           description: "Tool created successfully",
