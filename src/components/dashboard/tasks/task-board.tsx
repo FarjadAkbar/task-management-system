@@ -94,7 +94,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
             return (
               <Droppable droppableId={section.id} key={section.id}>
                 {(provided) => (
-                  <Card ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col h-full" style={{ backgroundColor: `${section.color}` }}>
+                  <Card ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col h-full">
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-sm font-medium">
@@ -119,7 +119,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
                         {sectionTasks.map((task, index) => (
                           <Draggable key={task.id} draggableId={task.id} index={index}>
                             {(provided) => (
-                              <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                              <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} style={{ backgroundColor: `${section.color}` }}>
                                 <TaskCard task={task} />
                               </div>
                             )}
