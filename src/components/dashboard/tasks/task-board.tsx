@@ -26,6 +26,11 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
   const [createTaskSection, setCreateTaskSection] = useState<string | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
 
+  const sectionColors: Record<string, string> = {
+    "To Do": "#F8FAFC",
+    "In Progress": "#DBEAFE",
+    "Done": "#DCFCE7",
+  }
   // Group sprint tasks by section if sprintId is provided
   const sectionTasksMap = new Map()
 
@@ -68,7 +73,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Card key={i}>
+          <Card key={i} >
             <CardHeader className="pb-2">
               <Skeleton className="h-5 w-24" />
             </CardHeader>
@@ -90,11 +95,12 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
           {sections?.map((section) => {
             // Get tasks for this section
             const sectionTasks: TaskType[] = sprintId ? sectionTasksMap.get(section.id) || [] : [] // We'll implement this when we add section tasks fetching
+            const sectionColor = sectionColors[section.name] || "#FFFFFF"
 
             return (
               <Droppable droppableId={section.id} key={section.id}>
                 {(provided) => (
-                  <Card ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col h-full">
+                  <Card ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col h-full" style={{ backgroundColor: sectionColor }}>
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-sm font-medium">
