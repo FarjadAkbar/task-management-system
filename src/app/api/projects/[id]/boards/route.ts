@@ -102,8 +102,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     // Create default sections
     const defaultSections = [
       { name: "To Do", color: "#E2E8F0", position: 0 },
-      { name: "In Progress", color: "#93C5FD", position: 1 },
-      { name: "Done", color: "#86EFAC", position: 2 },
+      { name: "In Progress", color: "#e5f2ff", position: 1 },
+      { name: "Done", color: "#dcffe9", position: 2 },
     ]
 
     await Promise.all(

@@ -66,10 +66,11 @@ export function useMoveTask() {
   return useMutation({
     mutationFn: moveTask,
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
       if (data.section !== variables.sectionId) {
         queryClient.invalidateQueries({ queryKey: ["section-tasks", variables.sectionId] })
-      }
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
+      }      
     },
   })
 }

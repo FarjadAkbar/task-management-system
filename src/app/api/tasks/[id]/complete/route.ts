@@ -53,11 +53,14 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       return NextResponse.json({ error: "Not authorized to complete this task" }, { status: 403 })
     }
 
+    const section = await prismadb.sections.findFirst({ where: { position: 2 } });
+
     // Complete task
     const updatedTask = await prismadb.tasks.update({
       where: { id: taskId },
       data: {
         taskStatus: "COMPLETE",
+        section: section?.id ?? task.section,
         completedAt: new Date(),
         updatedBy: user.id,
         updatedAt: new Date(),
