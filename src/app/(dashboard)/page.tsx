@@ -50,12 +50,12 @@ const cards = [
     href: "/files",
     allowedUser: true,
   },
-  {
-    title: "Share Folder",
-    src: "/images/sharedfolder.png",
-    href: "/files/shared",
-    allowedUser: true,
-  },
+  // {
+  //   title: "Share Folder",
+  //   src: "/images/sharedfolder.png",
+  //   href: "/files/shared",
+  //   allowedUser: true,
+  // },
 ];
 
 export default async function Dashboard() {
