@@ -94,7 +94,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
             return (
               <Droppable droppableId={section.id} key={section.id}>
                 {(provided) => (
-                  <Card ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col h-full">
+                  <Card ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col h-full" style={{ backgroundColor: `${section.color}` }}>
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-sm font-medium">

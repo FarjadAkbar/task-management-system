@@ -20,6 +20,7 @@ import * as z from "zod"
 import { createNewFolder } from "@/actions/filesystem"
 import { FolderPlus, Upload, RefreshCw } from "lucide-react"
 import { FileUploaderDropzone } from "@/components/ui/file-uploader-dropzone"
+import { onSyncButtonClick } from "@/lib/google-drive"
 
 interface FileToolbarProps {
   isAdmin: boolean
@@ -93,6 +94,11 @@ export function FileToolbar({ isAdmin, currentFolder, onFilesUploaded }: FileToo
     }
   }
 
+  const handleSync = async () => {
+    await onSyncButtonClick();
+    alert("Google Drive sync completed!");
+  };
+  
   return (
     <>
       <Card className="p-2">
@@ -114,11 +120,7 @@ export function FileToolbar({ isAdmin, currentFolder, onFilesUploaded }: FileToo
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              if (onFilesUploaded) {
-                onFilesUploaded()
-              }
-            }}
+            onClick={handleSync}
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
