@@ -147,7 +147,7 @@ export function TaskTableView({ boardId, sprintId }: TaskTableViewProps) {
         )
       case "IN_PROGRESS":
         return (
-          <div className="flex items-center">
+          <div className="flex items-center bg-yellow-300">
             <Clock className="h-4 w-4 text-blue-500 mr-1" />
             <span>In Progress</span>
           </div>
@@ -321,90 +321,90 @@ export function TaskTableView({ boardId, sprintId }: TaskTableViewProps) {
               ) : (
                 sortedTasks.map((task) => (
                   <>
-                  <TableRow key={task.id} className="cursor-pointer" onClick={() => handleTaskClick(task.id)}>
-                    <TableCell className="font-medium">
-                      <div className="flex flex-col">
-                        <span>{task.title}</span>
-                        {task.tags && task.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {task.tags.map((tag: string) => (
-                              <Badge key={tag} variant="outline" className="text-xs">
-                                <Tag className="h-3 w-3 mr-1" />
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>{renderPriorityBadge(task.priority)}</TableCell>
-                    <TableCell>{renderStatusBadge(task.taskStatus)}</TableCell>
-                    <TableCell>
-                      <div className="flex -space-x-2">
-                        {task.assignees && task.assignees.length > 0 ? (
-                          task.assignees.slice(0, 3).map((assignee: any) => (
-                            <Avatar key={assignee.id} className="h-8 w-8 border-2 border-background">
-                              <AvatarImage src={assignee.user?.avatar} />
-                              <AvatarFallback>
-                                {assignee.user?.name?.charAt(0) || assignee.user?.email?.charAt(0)}
-                              </AvatarFallback>
-                            </Avatar>
-                          ))
-                        ) : (
-                          <span className="text-muted-foreground text-sm">Unassigned</span>
-                        )}
-                        {task.assignees && task.assignees.length > 3 && (
-                          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-muted text-xs">
-                            +{task.assignees.length - 3}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {task.dueDateAt ? (
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1 text-muted-foreground" />
-                          <span>{format(new Date(task.dueDateAt), "MMM d, yyyy")}</span>
+                    <TableRow key={task.id} className="cursor-pointer" onClick={() => handleTaskClick(task.id)}>
+                      <TableCell className="font-medium">
+                        <div className="flex flex-col">
+                          <span>{task.title}</span>
+                          {task.tags && task.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {task.tags.map((tag: string) => (
+                                <Badge key={tag} variant="outline" className="text-xs">
+                                  <Tag className="h-3 w-3 mr-1" />
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      ) : (
-                        <span className="text-muted-foreground">No due date</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => setShowDetailDialog(true)}
-                          >
-                            View details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={(e) => setShowEditDialog(true)}
-                          >
-                            Edit task
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                  
-          {showDetailDialog && (
-            <TaskDetailDialog taskId={task.id} open={showDetailDialog} onOpenChange={setShowDetailDialog} />
-          )}
-          {showEditDialog && <EditTaskDialog taskId={task.id} open={showEditDialog} onOpenChange={setShowEditDialog} />}
-          </>
+                      </TableCell>
+                      <TableCell>{renderPriorityBadge(task.priority)}</TableCell>
+                      <TableCell>{renderStatusBadge(task.taskStatus)}</TableCell>
+                      <TableCell>
+                        <div className="flex -space-x-2">
+                          {task.assignees && task.assignees.length > 0 ? (
+                            task.assignees.slice(0, 3).map((assignee: any) => (
+                              <Avatar key={assignee.id} className="h-8 w-8 border-2 border-background">
+                                <AvatarImage src={assignee.user?.avatar} />
+                                <AvatarFallback>
+                                  {assignee.user?.name?.charAt(0) || assignee.user?.email?.charAt(0)}
+                                </AvatarFallback>
+                              </Avatar>
+                            ))
+                          ) : (
+                            <span className="text-muted-foreground text-sm">Unassigned</span>
+                          )}
+                          {task.assignees && task.assignees.length > 3 && (
+                            <div className="flex items-center justify-center h-8 w-8 rounded-full bg-muted text-xs">
+                              +{task.assignees.length - 3}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {task.dueDateAt ? (
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-1 text-muted-foreground" />
+                            <span>{format(new Date(task.dueDateAt), "MMM d, yyyy")}</span>
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">No due date</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => setShowDetailDialog(true)}
+                            >
+                              View details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e) => setShowEditDialog(true)}
+                            >
+                              Edit task
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+
+                    {showDetailDialog && (
+                      <TaskDetailDialog taskId={task.id} open={showDetailDialog} onOpenChange={setShowDetailDialog} />
+                    )}
+                    {showEditDialog && <EditTaskDialog taskId={task.id} open={showEditDialog} onOpenChange={setShowEditDialog} />}
+                  </>
 
                 ))
               )}
             </TableBody>
           </Table>
-      </div>
+        </div>
       </CardContent>
     </Card>
   )

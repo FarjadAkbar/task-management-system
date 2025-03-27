@@ -161,7 +161,7 @@ export function InviteForm() {
             </FormItem>
           )}
         />
-        <Button className="w-[150px]" type="submit" disabled={isPending}>
+        <Button className="w-[150px] bg-black text-gold hover:bg-gold hover:text-black font-semibold" type="submit" disabled={isPending}>
           {isPending ? (
             <Icons.spinner className="animate-spin" />
           ) : (

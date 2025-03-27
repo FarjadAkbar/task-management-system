@@ -88,6 +88,17 @@ export function CalendarView() {
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           }}
+          buttonText={{
+            today: "Today",
+            month: "Month",
+            week: "Week",
+            day: "Day",
+          }}
+          dayCellDidMount={(info) => {
+            if (info.isToday) {
+              info.el.classList.add("font-bold");
+            }
+          }}
           events={formattedEvents}
           eventClick={handleEventClick}
           select={handleDateSelect}

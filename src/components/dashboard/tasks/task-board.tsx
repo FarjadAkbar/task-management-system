@@ -28,6 +28,11 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
   const [createTaskSection, setCreateTaskSection] = useState<string | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
 
+  const sectionColors: Record<string, { bg: string; header: string }> = {
+    "To Do": { bg: "#D3D5D6FF", header: "#1E293B" },
+    "In Progress": { bg: "#C9E5F8FF", header: "#0284C7 " },
+    "Done": { bg: "#BCF5D0FF ", header: "#059669" },
+  }
   // Add local state to manage tasks
   const [localTasks, setLocalTasks] = useState<TaskType[]>([])
 
@@ -103,7 +108,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Card key={i}>
+          <Card key={i} >
             <CardHeader className="pb-2">
               <Skeleton className="h-5 w-24" />
             </CardHeader>
@@ -125,32 +130,49 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
           {sections?.map((section) => {
             // Get tasks for this section
             const sectionTasks: TaskType[] = sprintId ? sectionTasksMap.get(section.id) || [] : [] // We'll implement this when we add section tasks fetching
+            const sectionColor = sectionColors[section.name] || { bg: "#FFFFFF", header: "#F1F5F9" }
 
             return (
               <Droppable droppableId={section.id} key={section.id}>
                 {(provided) => (
-                  <Card ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col h-full">
-                    <CardHeader className="pb-2">
+                  <Card
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className="flex flex-col h-full rounded-xl shadow-md overflow-hidden border"
+                    style={{
+                      backgroundColor: sectionColor.bg,
+                      transition: "all 0.3s ease-in-out",
+                    }}
+                  >
+                    {/* Header */}
+                    <CardHeader
+                      className="p-4 text-white font-semibold text-center uppercase tracking-wide"
+                      style={{
+                        background: sectionColor.header,
+                        borderRadius: "10px 10px 0 0",
+                      }}
+                    >
                       <div className="flex justify-between items-center">
-                        <CardTitle className="text-sm font-medium">
-                          {section.name}
+                        <CardTitle className="text-base">{section.name}
                           <span className="ml-2 text-xs text-muted-foreground">({sectionTasks.length})</span>
                         </CardTitle>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6"
+                          className="h-6 w-6 hover:bg-white hover:text-black transition"
                           onClick={() => {
                             setCreateTaskSection(section.id)
                             setShowCreateDialog(true)
                           }}
                         >
-                          <Plus className="h-4 w-4" />
+                          <Plus className="h-6 w-6" />
                         </Button>
                       </div>
                     </CardHeader>
-                    <CardContent className="flex-1 overflow-y-auto">
-                      <div className="space-y-2 min-h-[50px]">
+
+                    {/* Task List */}
+                    <CardContent className="flex-1 overflow-y-auto p-4">
+                      <div className="space-y-3 min-h-[50px]">
                         {sectionTasks.map((task, index) => (
                           <Draggable key={task.id} draggableId={task.id} index={index}>
                           {(provided, snapshot) => (

@@ -49,8 +49,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
             <Link
               key={item.name}
               href={item.href}
-              prefetch={true}
-              className="px-3 py-2 text-sm font-medium text-white hover:text-amber-400 transition-colors relative group"
+              className="px-3 py-2 text-md font-medium text-white hover:text-gold transition-colors relative group"
             >
               {item.name}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full"></span>
