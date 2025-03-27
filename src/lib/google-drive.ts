@@ -2,6 +2,8 @@ import { google } from "googleapis"
 import { JWT } from "google-auth-library"
 import { Readable } from "stream"
 import { prismadb } from "./prisma"
+import fs from 'fs'
+import readline from 'readline'
 
 // Initialize Google Drive client
 const initGoogleDriveClient = () => {
@@ -229,124 +231,124 @@ export const renameFile = async (fileId: string, newName: string): Promise<void>
 
 
 // Recursive function to list all files and folders
-// const SCOPES = ["https://www.googleapis.com/auth/drive"];
+const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
-// const authorize = async () => {
-//   const credentials = JSON.parse(fs.readFileSync("credentials.json", "utf8"));
-//   const { client_secret, client_id, redirect_uris } = credentials.web;
-//   const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+const authorize = async () => {
+  const credentials = JSON.parse(fs.readFileSync("credentials.json", "utf8"));
+  const { client_secret, client_id, redirect_uris } = credentials.web;
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
-//   // Check if token already exists
-//   if (fs.existsSync("token.json")) {
-//     oAuth2Client.setCredentials(JSON.parse(fs.readFileSync("token.json", "utf8")));
-//     return oAuth2Client;
-//   }
+  // Check if token already exists
+  if (fs.existsSync("token.json")) {
+    oAuth2Client.setCredentials(JSON.parse(fs.readFileSync("token.json", "utf8")));
+    return oAuth2Client;
+  }
 
-//   // Generate new token
-//   const authUrl = oAuth2Client.generateAuthUrl({
-//     access_type: "offline",
-//     scope: SCOPES,
-//   });
+  // Generate new token
+  const authUrl = oAuth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: SCOPES,
+  });
 
-//   console.log("Authorize this app by visiting:", authUrl);
+  console.log("Authorize this app by visiting:", authUrl);
 
-//   const rl = readline.createInterface({
-//     input: process.stdin,
-//     output: process.stdout,
-//   });
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
 
-//   return new Promise((resolve) => {
-//     rl.question("Enter the code from that page: ", async (code) => {
-//       rl.close();
-//       const { tokens } = await oAuth2Client.getToken(code);
-//       oAuth2Client.setCredentials(tokens);
-//       fs.writeFileSync("token.json", JSON.stringify(tokens));
-//       resolve(oAuth2Client);
-//     });
-//   });
-// };
+  return new Promise((resolve) => {
+    rl.question("Enter the code from that page: ", async (code) => {
+      rl.close();
+      const { tokens } = await oAuth2Client.getToken(code);
+      oAuth2Client.setCredentials(tokens);
+      fs.writeFileSync("token.json", JSON.stringify(tokens));
+      resolve(oAuth2Client);
+    });
+  });
+};
 
-// const listAllFiles = async (folderId = "root") => {
-//   let files: any[] = [];
-//   let nextPageToken: string | undefined;
+const listAllFiles = async (folderId = "root") => {
+  let files: any[] = [];
+  let nextPageToken: string | undefined;
 
 
-//   const auth = await authorize();
-//   const drive = google.drive({ version: "v3", auth });
+  const auth = await authorize();
+  const drive = google.drive({ version: "v3", auth });
 
-//   // do {
-//     const response = await drive.files.list({
-//       q: `'${folderId}' in parents and trashed = false`,
-//       fields: "nextPageToken, files(id, name, mimeType, size, modifiedTime, parents, webViewLink)",
-//       pageSize: 1000,
-//       pageToken: nextPageToken,
-//     });
+  // do {
+    const response = await drive.files.list({
+      q: `'${folderId}' in parents and trashed = false`,
+      fields: "nextPageToken, files(id, name, mimeType, size, modifiedTime, parents, webViewLink)",
+      pageSize: 1000,
+      pageToken: nextPageToken,
+    });
 
-//     files.push(...(response.data.files || []));
-//   //   nextPageToken = response.data.nextPageToken;
-//   // } while (nextPageToken);
+    files.push(...(response.data.files || []));
+  //   nextPageToken = response.data.nextPageToken;
+  // } while (nextPageToken);
 
-//   // Recurse for subfolders
-//   for (const file of files.filter((f) => f.mimeType === "application/vnd.google-apps.folder")) {
-//     const subFiles = await listAllFiles(file.id);
-//     files.push(...subFiles);
-//   }
+  // Recurse for subfolders
+  for (const file of files.filter((f) => f.mimeType === "application/vnd.google-apps.folder")) {
+    const subFiles = await listAllFiles(file.id);
+    files.push(...subFiles);
+  }
 
-//   return files;
-// };
+  return files;
+};
 
-// // Sync Google Drive data with Prisma Database
-// export const syncGoogleDrive = async () => {
-//   console.log("Starting Google Drive Sync...");
+// Sync Google Drive data with Prisma Database
+export const syncGoogleDrive = async () => {
+  console.log("Starting Google Drive Sync...");
 
-//   // Fetch all Google Drive files recursively from root
-//   const googleDriveFiles = await listAllFiles();
-// console.log(googleDriveFiles, "googleDriveFiles")
-//   // Fetch all documents from database
-//   // const dbDocuments = await prismadb.documents.findMany({
-//   //   select: { id: true, key: true },
-//   // });
+  // Fetch all Google Drive files recursively from root
+  const googleDriveFiles = await listAllFiles();
+console.log(googleDriveFiles, "googleDriveFiles")
+  // Fetch all documents from database
+  // const dbDocuments = await prismadb.documents.findMany({
+  //   select: { id: true, key: true },
+  // });
 
-//   // const dbDocumentMap = new Map(dbDocuments.map((doc) => [doc.key, doc.id]));
+  // const dbDocumentMap = new Map(dbDocuments.map((doc) => [doc.key, doc.id]));
 
-//   // Add or Update Files
-//   // for (const file of googleDriveFiles) {
-//   //   const existingDocumentId = dbDocumentMap.get(file.id);
+  // Add or Update Files
+  // for (const file of googleDriveFiles) {
+  //   const existingDocumentId = dbDocumentMap.get(file.id);
 
-//   //   if (existingDocumentId) {
-//   //     // Update if modified
-//   //     await prismadb.documents.update({
-//   //       where: { id: existingDocumentId },
-//   //       data: {
-//   //         document_name: file.name,
-//   //         document_file_url: file.webViewLink,
-//   //         document_file_mimeType: file.mimeType,
-//   //         size: file.size ? parseInt(file.size) : null,
-//   //         updatedAt: new Date(file.modifiedTime),
-//   //       },
-//   //     });
-//   //   } else {
-//   //     // Create new entry if not present
-//   //     await prismadb.documents.create({
-//   //       data: {
-//   //         key: file.id,
-//   //         document_name: file.name,
-//   //         document_file_url: file.webViewLink,
-//   //         document_file_mimeType: file.mimeType,
-//   //         size: file.size ? parseInt(file.size) : null,
-//   //         created_by_user: '67d53b5ea300b60892f4f664',
-//   //       },
-//   //     });
-//   //   }
-//   // }
+  //   if (existingDocumentId) {
+  //     // Update if modified
+  //     await prismadb.documents.update({
+  //       where: { id: existingDocumentId },
+  //       data: {
+  //         document_name: file.name,
+  //         document_file_url: file.webViewLink,
+  //         document_file_mimeType: file.mimeType,
+  //         size: file.size ? parseInt(file.size) : null,
+  //         updatedAt: new Date(file.modifiedTime),
+  //       },
+  //     });
+  //   } else {
+  //     // Create new entry if not present
+  //     await prismadb.documents.create({
+  //       data: {
+  //         key: file.id,
+  //         document_name: file.name,
+  //         document_file_url: file.webViewLink,
+  //         document_file_mimeType: file.mimeType,
+  //         size: file.size ? parseInt(file.size) : null,
+  //         created_by_user: '67d53b5ea300b60892f4f664',
+  //       },
+  //     });
+  //   }
+  // }
 
-//   // // Delete Files not in Google Drive
-//   // for (const { id, key } of dbDocuments) {
-//   //   if (!googleDriveFiles.find((file) => file.id === key)) {
-//   //     await prismadb.documents.delete({ where: { id } });
-//   //     console.log(`Deleted Document: ${id}`);
-//   //   }
-//   // }
+  // // Delete Files not in Google Drive
+  // for (const { id, key } of dbDocuments) {
+  //   if (!googleDriveFiles.find((file) => file.id === key)) {
+  //     await prismadb.documents.delete({ where: { id } });
+  //     console.log(`Deleted Document: ${id}`);
+  //   }
+  // }
 
-//   console.log("Google Drive Sync Completed.");
-// };
+  console.log("Google Drive Sync Completed.");
+};
