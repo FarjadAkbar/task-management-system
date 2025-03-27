@@ -1,8 +1,7 @@
-import EmployeeGuidelines from '@/components/dashboard/team/EmployeeGuidelines'
-import React from 'react'
+import EmployeeGuidelines from '@/components/dashboard/team/EmployeeGuidelines';
+import React from 'react';
 
-
-const page = () => {
+const Page = () => {
     const data = [
         {
             category: "Promotional Posts",
@@ -78,10 +77,16 @@ const page = () => {
         },
     ];
     return (
-        <div className="bg-gray-100 min-h-screen">
-            <div className="max-w-7xl mx-auto py-6">
-                <h1 className="text-2xl font-semibold mb-6">SEO Content Writer</h1>
-                <EmployeeGuidelines />
+        <div className=" min-h-screen flex items-center justify-center p-1">
+            <div className="max-w-7xl w-full bg-white shadow-xl rounded-lg p-10">
+                <h1 className="text-3xl font-extrabold text-center text-gray-900">SEO Content Writer</h1>
+                <p className="text-lg text-gray-600 text-center mt-2">Employee Guidelines & Responsibilities</p>
+
+                <div className="mt-6 border-t border-gray-300 pt-6">
+                    <EmployeeGuidelines />
+                </div>
+
+                {/* Role-Specific Guidelines Section */}
                 <section className="bg-white p-6 rounded-lg shadow-md">
                     <div className="overflow-x-auto">
                         <table className="table-auto w-full border border-gray-200 text-sm text-gray-700">
@@ -118,9 +123,24 @@ const page = () => {
                         </table>
                     </div>
                 </section>
+
+                {/* API Section */}
+                <section className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" >
+                    {
+                        ["API", "User Name", "Password"].map((title, index) => (
+                            <div
+                                key={index}
+                                className="bg-gray-50 border border-gray-300 shadow-md rounded-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-lg hover:scale-105"
+                            >
+                                <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+                                <p className="text-sm text-gray-600 mt-2">Secure credentials stored safely</p>
+                            </div>
+                        ))
+                    }
+                </section>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default page
+export default Page;

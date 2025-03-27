@@ -30,15 +30,15 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-black border-b border-white/10 backdrop-blur-sm">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
             <Image
               src="/images/logo.png"
               alt="Logo"
-              width={100}
+              width={200}
               height={40}
-              className="h-10 w-auto"
+              className="h-16 w-auto"
             />
           </Link>
         </div>
@@ -49,8 +49,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
             <Link
               key={item.name}
               href={item.href}
-              prefetch={true}
-              className="px-3 py-2 text-sm font-medium text-white hover:text-gold transition-colors relative group"
+              className="px-3 py-2 text-md font-medium text-white hover:text-gold transition-colors relative group"
             >
               {item.name}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full"></span>
