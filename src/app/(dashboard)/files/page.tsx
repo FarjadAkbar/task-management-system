@@ -1,10 +1,10 @@
 import { FileExplorer } from "@/components/dashboard/filesystem/file-explorer"
 import { getUser } from "@/lib/get-user"
-import { syncGoogleDrive } from "@/lib/google-drive";
+// import { syncGoogleDrive } from "@/lib/google-drive";
 
 export default async function FilesPage() {
   const user = await getUser()
-  const driv = await syncGoogleDrive();
+  // const driv = await syncGoogleDrive();
   const isAdmin = user?.role === "ADMIN"
   
   return (
