@@ -61,7 +61,7 @@ export function FileUploaderDropzone({ onUploadSuccess, taskId, folderId }: Prop
 
     setIsUploading(true)
     const uploadedFiles = []
-
+console.log(taskId, folderId)
     try {
       for (const file of selectedFiles) {
         const formData = new FormData()
@@ -132,6 +132,7 @@ export function FileUploaderDropzone({ onUploadSuccess, taskId, folderId }: Prop
           />
           <Button
             variant="outline"
+            type="button"
             onClick={() => document.getElementById("file-upload")?.click()}
             disabled={isUploading}
           >

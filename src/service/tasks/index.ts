@@ -7,6 +7,7 @@ export function useTask(taskId: string) {
     queryKey: ["task", taskId],
     queryFn: async () => getTask(taskId),
     enabled: !!taskId,
+    staleTime: 60 * 1000,
   })
 }
 
@@ -65,11 +66,8 @@ export function useMoveTask() {
 
   return useMutation({
     mutationFn: moveTask,
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
-      if (data.section !== variables.sectionId) {
-        queryClient.invalidateQueries({ queryKey: ["section-tasks", variables.sectionId] })
-      }
+    onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId], exact: true })
     },
   })
 }

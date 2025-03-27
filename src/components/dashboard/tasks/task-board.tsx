@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { DragDropContext, Droppable, Draggable, type DropResult } from "react-beautiful-dnd"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,8 @@ interface TaskBoardProps {
   sprintId?: string
 }
 
+const MemoizedTaskCard = memo(TaskCard)
+
 export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
   const { data: sections, isLoading: loadingSections } = useSections(boardId)
   const { data: sprintTasks, isLoading: loadingSprintTasks } = useSprintTasks(sprintId)
@@ -31,17 +33,28 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     "In Progress": { bg: "#C9E5F8FF", header: "#0284C7 " },
     "Done": { bg: "#BCF5D0FF ", header: "#059669" },
   }
+  // Add local state to manage tasks
+  const [localTasks, setLocalTasks] = useState<TaskType[]>([])
+
+   // Initialize local tasks when sprintTasks changes
+   useEffect(() => {
+    if (sprintTasks) {
+      setLocalTasks(sprintTasks)
+    }
+  }, [sprintTasks])
+
+
   // Group sprint tasks by section if sprintId is provided
   const sectionTasksMap = new Map()
 
-  if (sprintId && sprintTasks) {
+  if (sprintId && localTasks.length > 0) {
     // Initialize all sections with empty arrays
     sections?.forEach((section) => {
       sectionTasksMap.set(section.id, [])
     })
 
     // Group tasks by section
-    sprintTasks.forEach((task) => {
+    localTasks.forEach((task) => {
       const sectionId = task.assigned_section?.id
       if (sectionId) {
         if (!sectionTasksMap.has(sectionId)) {
@@ -61,13 +74,35 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     // Dropped in the same position
     if (destination.droppableId === source.droppableId && destination.index === source.index) return
 
-    // Move the task
+    // Update local state immediately for a smooth UI experience
+    setLocalTasks((prevTasks) => {
+      const updatedTasks = [...prevTasks]
+      const taskIndex = updatedTasks.findIndex((task) => task.id === draggableId)
+
+      if (taskIndex !== -1) {
+        // Update the task's section
+        const taskToMove = { ...updatedTasks[taskIndex] }
+
+        // Update the assigned section
+        taskToMove.assigned_section = {
+          ...taskToMove.assigned_section,
+          id: destination.droppableId,
+        }
+
+        updatedTasks[taskIndex] = taskToMove
+      }
+
+      return updatedTasks
+    })
+
+    // Call the API to persist the change
     moveTask({
       taskId: draggableId,
       sectionId: destination.droppableId,
       position: destination.index,
     })
   }
+
 
   if (loadingSections || loadingSprintTasks) {
     return (
@@ -140,17 +175,24 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
                       <div className="space-y-3 min-h-[50px]">
                         {sectionTasks.map((task, index) => (
                           <Draggable key={task.id} draggableId={task.id} index={index}>
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className="p-3 bg-white shadow-sm rounded-lg border border-gray-300 hover:shadow-lg transition duration-300 cursor-pointer"
-                              >
-                                <TaskCard task={task} />
-                              </div>
-                            )}
-                          </Draggable>
+                          {(provided, snapshot) => (
+                            <div 
+                              ref={provided.innerRef} 
+                              {...provided.draggableProps} 
+                              {...provided.dragHandleProps}
+                              style={{
+                                ...provided.draggableProps.style,
+                                backgroundColor: `${section.color}`,
+                                opacity: snapshot.isDragging ? 0.8 : 1,
+                                transform: snapshot.isDragging ? provided.draggableProps.style?.transform : "none",
+                                boxShadow: snapshot.isDragging ? "0 5px 10px rgba(0, 0, 0, 0.2)" : "none",
+                              }}
+                              className={`${snapshot.isDragging ? "z-50 rounded-md" : ""}`}
+                            >
+                              <MemoizedTaskCard task={task} />
+                            </div>
+                          )}
+                        </Draggable>
                         ))}
                         {provided.placeholder}
                       </div>

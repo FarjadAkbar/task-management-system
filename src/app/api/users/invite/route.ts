@@ -83,6 +83,17 @@ export async function POST(req: Request) {
           });
         });
 
+        const project = await prismadb.project.findFirst();
+        if(project){
+          prismadb.projectMember.create({
+            data: {
+              projectId: project?.id,
+              userId: user.id,
+              role: "MEMBER",
+            },
+          });
+        }
+
         await Promise.all(availabilityPromises);
         const emailHtml = render(
           InviteUserEmail({

@@ -1,14 +1,14 @@
 "use client"
-
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Clock, CheckCircle2, BarChart, ListChecks, MessageSquare, Paperclip } from "lucide-react"
 import { format } from "date-fns"
 import { TaskDetailDialog } from "./task-detail-dialog"
+import { TaskType } from "@/service/tasks/type"
 
 interface TaskCardProps {
-  task: any
+  task: TaskType
 }
 
 export function TaskCard({ task }: TaskCardProps) {

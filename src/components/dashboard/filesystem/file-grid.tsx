@@ -16,6 +16,7 @@ import { toast } from "@/hooks/use-toast"
 import { deleteFile } from "@/actions/filesystem"
 import { File, Folder, MoreVertical, Download, Share2, Trash, Edit } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
+import Image from "next/image"
 
 interface FileGridProps {
   files: Array<{
@@ -170,11 +171,12 @@ export function FileGrid({ files, onFolderClick, isAdmin }: FileGridProps) {
                     <Folder className="h-16 w-16 text-blue-500" />
                   ) : file.mimeType.startsWith("image/") ? (
                     <div className="h-16 w-16 bg-gray-100 flex items-center justify-center rounded overflow-hidden">
-                      {file.thumbnailLink ? (
-                        <img
-                          src={file.thumbnailLink || "/placeholder.svg"}
+                      {file.id ? (
+                        <Image
+                          src={`https://drive.google.com/uc?export=download&id=${file.id}` || "/placeholder.svg"}
                           alt={file.name}
-                          className="max-h-full max-w-full object-cover"
+                          width={70}
+                          height={70}
                         />
                       ) : (
                         <File className="h-10 w-10 text-gray-400" />
