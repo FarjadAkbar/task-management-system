@@ -99,12 +99,12 @@ export function FileToolbar({ isAdmin, currentFolder, onFilesUploaded }: FileToo
         <div className="flex items-center gap-2">
           {isAdmin && (
             <>
-              <Button variant="outline" size="sm" onClick={() => setShowNewFolderDialog(true)}>
+              <Button variant="outline" size="sm" onClick={() => setShowNewFolderDialog(true)} className="bg-black hover:bg-gold text-gold hover:text-black">
                 <FolderPlus className="h-4 w-4 mr-2" />
                 New Folder
               </Button>
 
-              <Button variant="outline" size="sm" onClick={() => setShowUploadDialog(true)}>
+              <Button variant="outline" size="sm" onClick={() => setShowUploadDialog(true)} className="bg-black hover:bg-gold text-gold hover:text-black">
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Files
               </Button>

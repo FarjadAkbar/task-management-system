@@ -64,7 +64,7 @@ export default function ProjectBoard({ projectId }: { projectId: string }) {
           </p>
         </div>
 
-        <Button onClick={handleAddTask}>
+        <Button onClick={handleAddTask} className="bg-black text-gold hover:text-black hover:bg-gold">
           <Plus className="mr-2 h-4 w-4" />
           Add Task
         </Button>
@@ -86,12 +86,12 @@ export default function ProjectBoard({ projectId }: { projectId: string }) {
         </Card>
       ) : (
         <Tabs defaultValue="kanban">
-          <TabsList>
-            <TabsTrigger value="kanban">
+          <TabsList className="bg-black">
+            <TabsTrigger value="kanban" className="text-gold">
               <KanbanSquare className="h-4 w-4 mr-2" />
               Kanban
             </TabsTrigger>
-            <TabsTrigger value="table">
+            <TabsTrigger value="table" className="text-gold">
               <Table2 className="h-4 w-4 mr-2" />
               Table
             </TabsTrigger>
@@ -107,8 +107,8 @@ export default function ProjectBoard({ projectId }: { projectId: string }) {
         </Tabs>
       )}
 
-       {/* Create Task Dialog */}
-       {showCreateTaskDialog && (
+      {/* Create Task Dialog */}
+      {showCreateTaskDialog && (
         <CreateTaskDialog
           open={showCreateTaskDialog}
           onOpenChange={setShowCreateTaskDialog}

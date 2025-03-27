@@ -26,7 +26,7 @@ export function SyncEventsButton() {
   }
 
   return (
-    <Button onClick={handleSync} disabled={isPending} variant="outline">
+    <Button onClick={handleSync} disabled={isPending} variant="outline" className="bg-gray-100 hover:bg-gray-200 hover:font-semibold">
       <RefreshCw className={`mr-2 h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
       {isPending ? "Syncing..." : "Sync Calendar"}
     </Button>
