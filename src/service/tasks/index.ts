@@ -66,12 +66,8 @@ export function useMoveTask() {
 
   return useMutation({
     mutationFn: moveTask,
-    onSuccess: (data, variables) => {
-      if (data.section !== variables.sectionId) {
-        queryClient.invalidateQueries({ queryKey: ["section-tasks", variables.sectionId] })
-      } else {
-        queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
-      }      
+    onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId], exact: true })
     },
   })
 }
