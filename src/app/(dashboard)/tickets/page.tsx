@@ -7,8 +7,6 @@ import { Session } from "next-auth";
 import TicketsView from "@/components/dashboard/tickets/TicketsView";
 import SuspenseLoading from "@/components/loadings/suspense";
 
-export const maxDuration = 300;
-
 const TicketsPage = async () => {
   const session: Session | null = await getServerSession(authOptions);
 
