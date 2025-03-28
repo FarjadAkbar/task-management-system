@@ -12,6 +12,7 @@ import { useSprintTasks } from "@/service/sprints"
 import { useMoveTask } from "@/service/tasks"
 import { useSections } from "@/service/board"
 import { TaskType } from "@/service/tasks/type"
+import AdminWrapper from "../admin-wrapper"
 
 interface TaskBoardProps {
   boardId: string
@@ -156,6 +157,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
                         <CardTitle className="text-base">{section.name}
                           <span className="ml-2 text-xs text-muted-foreground">({sectionTasks.length})</span>
                         </CardTitle>
+                        <AdminWrapper>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -167,6 +169,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
                         >
                           <Plus className="h-6 w-6" />
                         </Button>
+                        </AdminWrapper>
                       </div>
                     </CardHeader>
 

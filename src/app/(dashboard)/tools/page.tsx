@@ -4,6 +4,7 @@ import NewToolDialog from "@/components/dashboard/tool/new-tool";
 import H2Title from "@/components/typography/h2";
 import { Separator } from "@/components/ui/separator";
 import { redirect } from "next/navigation";
+import AdminWrapper from "@/components/dashboard/admin-wrapper";
 
 export default async function Tools() {
   const user = await getUser();
@@ -14,7 +15,9 @@ export default async function Tools() {
       <div className="flex justify-between items-center px-8  bg-white shadow-md">
         <H2Title>Tools</H2Title>
         <div className="flex gap-3">
-          <NewToolDialog userId={user.id} />
+          <AdminWrapper>
+            <NewToolDialog userId={user.id} />
+          </AdminWrapper>
         </div>
       </div>
       <Separator className="my-4 !h-[0.5px]" />

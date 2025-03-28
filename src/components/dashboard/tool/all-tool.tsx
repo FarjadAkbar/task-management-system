@@ -12,6 +12,7 @@ import { AlertCircle, Edit, Eye, MoreVertical } from "lucide-react";
 import { useDeleteToolMutation, useGetToolsQuery } from "@/service/tools";
 import EditToolDialog from "./edit-tool";
 import { ToolType } from "@/service/tools/type";
+import AdminWrapper from "../admin-wrapper";
 
 const AllTools = () => {
   const [pageNumber] = useState(1);
@@ -83,6 +84,7 @@ const AllTools = () => {
         {tools.map((tool) => (
           <Card key={tool.id} className="group overflow-hidden transition-all hover:shadow-md">
             <CardHeader className="relative pb-0 pt-6">
+              <AdminWrapper>
               <div className="absolute top-2 right-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -100,6 +102,7 @@ const AllTools = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
+              </AdminWrapper>
 
               <div className="flex justify-center">
                 <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex items-center justify-center transition-transform group-hover:scale-105">
