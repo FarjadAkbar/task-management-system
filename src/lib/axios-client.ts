@@ -6,7 +6,7 @@ const baseURL = process.env.NEXT_PUBLIC_APP_URL + "/api";
 const options = {
   baseURL,
   withCredentials: true,
-  timeout: 10000,
+  timeout: 100000,
 };
 
 const API = axios.create(options);

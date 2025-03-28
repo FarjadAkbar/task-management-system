@@ -59,8 +59,8 @@ export async function PUT(
 // ********** DELETE: Remove a Note **********
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
     try {
-      const { id } = params; 
-
+      const { id } = await params; 
+console.log(id, ".......")
       const existingNote = await prismadb.notes.findUnique({
         where: { id },
       });

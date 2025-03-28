@@ -11,7 +11,6 @@ import {
     getNoteByIdQueryFn,
     deleteNoteMutationFn,
   } from "./fn";
-  import { AllNotesPayloadType } from "./type";
 
 export const useGetAllNotesQuery = () => {
     return useQuery({

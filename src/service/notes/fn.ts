@@ -32,10 +32,9 @@ export const deleteNoteMutationFn = async (
 };
 
 export const getAllNotesQueryFn = async (): Promise<AllNotesResponseType> => {
-    const response = await fetch("/api/notes");
-    if (!response.ok) throw new Error("Failed to fetch notes");
-    return response.json();
-  };
+  const response = await API.get(`/notes`);
+  return response.data;
+};
 
 // Get a Single Note by ID
 export const getNoteByIdQueryFn = async (

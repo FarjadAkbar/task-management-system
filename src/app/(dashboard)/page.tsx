@@ -17,7 +17,7 @@ const cards = [
   {
     title: "Task Manager",
     src: "/images/task.png",
-    href: "/projects",
+    href: "/projects/67dfb82f97615f9768c9824f/board",
     allowedUser: true,
   },
   {
@@ -50,12 +50,12 @@ const cards = [
     href: "/files",
     allowedUser: true,
   },
-  {
-    title: "Share Folder",
-    src: "/images/sharedfolder.png",
-    href: "/files/shared",
-    allowedUser: true,
-  },
+  // {
+  //   title: "Share Folder",
+  //   src: "/images/sharedfolder.png",
+  //   href: "/files/shared",
+  //   allowedUser: true,
+  // },
 ];
 
 export default async function Dashboard() {
@@ -73,12 +73,12 @@ export default async function Dashboard() {
   return (
     <>
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl p-8 mb-8 shadow-lg">
+      <div className="bg-gradient-to-r from-amber-300 to-gold rounded-2xl p-8 mb-8 shadow-lg">
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-black mb-2">
             Welcome back, {data.name}!
           </h1>
-          <p className="text-white/90 text-lg">
+          <p className="text-black text-lg">
             <span className="font-medium">{data.role}</span> • Access all your
             workspace tools and resources
           </p>

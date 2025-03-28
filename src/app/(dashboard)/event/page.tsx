@@ -26,7 +26,7 @@ export default async function EventPage() {
         </div>
 
         <div className="flex gap-2">
-          <Button asChild>
+          <Button asChild className="bg-black text-gold hover:text-black hover:bg-gold">
             <a href="/api/auth/google">
               <CalendarCheck2 className="mr-2 h-4 w-4" />
               {!isConnected ? "Connect Google Calendar" : "Reconnect Google Calendar"}
@@ -38,9 +38,9 @@ export default async function EventPage() {
 
       {isConnected ? (
         <Tabs defaultValue="calendar">
-          <TabsList>
-            <TabsTrigger value="calendar">Calendar</TabsTrigger>
-            <TabsTrigger value="availability">Availability</TabsTrigger>
+          <TabsList className="bg-black">
+            <TabsTrigger value="calendar" className="text-gold">Calendar</TabsTrigger>
+            <TabsTrigger value="availability" className="text-gold">Availability</TabsTrigger>
           </TabsList>
           <TabsContent value="calendar" className="mt-6">
             <CalendarView />

@@ -5,7 +5,7 @@ import { getTickets } from "@/actions/tickets/get-tickets";
 import { authOptions } from "@/lib/auth";
 import H2Title from "@/components/typography/h2";
 import NewTicketDialog from "@/app/(dashboard)/tickets/dialogs/NewTicket";
-import { DataTable } from "@/app/(dashboard)/components/table-components/data-table";
+import { DataTable } from "@/components/table-components/data-table";
 import { columns } from "@/app/(dashboard)/tickets/table-components/columns";
 import { priorities } from "@/app/(dashboard)/tickets/data/data";
 

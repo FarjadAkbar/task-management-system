@@ -93,7 +93,7 @@ const NewTicketDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="px-2">New ticket</Button>
+        <Button className="px-2 bg-black hover:bg-gold text-gold hover:text-black">New ticket</Button>
       </DialogTrigger>
       <DialogContent className="">
         <DialogHeader>
