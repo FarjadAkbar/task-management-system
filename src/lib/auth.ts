@@ -9,6 +9,7 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prismadb),
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60
   },
 
   providers: [
@@ -76,8 +77,6 @@ export const authOptions: NextAuthOptions = {
       session.user.name = user.name;
       session.user.email = user.email;
       session.user.avatar = user.avatar;
-      session.user.grantId = user.grantId;
-      session.user.grantEmail = user.grantEmail;
       session.user.role = user.role;
       session.user.userStatus = user.userStatus;
       session.user.lastLoginAt = user.lastLoginAt;

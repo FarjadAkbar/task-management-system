@@ -11,8 +11,6 @@ declare module "next-auth" {
       id: UserId;
       _id: UserId;
       role?: string;
-      grantId?: string;
-      grantEmail?: string;
       avatar?: string | null | undefined;
       isAdmin: boolean;
       userStatus: string;

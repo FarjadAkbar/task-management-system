@@ -13,6 +13,7 @@ import { useState } from "react"
 import { CreateTaskDialog } from "../tasks/create-task-dialog"
 import { CreateBoardDialog } from "./create-board-dialog"
 import { TaskTableView } from "../tasks/task-table-view"
+import AdminWrapper from "../admin-wrapper"
 
 export default function ProjectBoard({ projectId }: { projectId: string }) {
   const { data: project, isLoading: loadingProject } = useProject(projectId)
@@ -64,10 +65,12 @@ export default function ProjectBoard({ projectId }: { projectId: string }) {
           </p>
         </div>
 
+        <AdminWrapper>
         <Button onClick={handleAddTask} className="bg-black text-gold hover:text-black hover:bg-gold">
           <Plus className="mr-2 h-4 w-4" />
           Add Task
         </Button>
+        </AdminWrapper>
       </div>
 
       {!firstBoard ? (
