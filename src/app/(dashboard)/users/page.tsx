@@ -11,8 +11,8 @@ const AdminUsersPage = async () => {
       title="Users administration"
       description={"Here you can manage your NextCRM users"}
     >
-      <div className="flex-col1">
-        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+      <div className="flex flex-col gap-4">
+        <h4 className=" text-lg sm:text-xl font-semibold">
           Invite new user to NextCRM
         </h4>
         <InviteForm />

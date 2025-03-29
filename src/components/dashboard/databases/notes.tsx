@@ -44,14 +44,14 @@ export function Notes() {
     )
   }
   const filteredNotes: NoteType[] = data?.notes.filter((note) => {
-    const matchesSearch = 
-      note.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch =
+      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       note.content.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesTab = activeTab === "shared" 
+
+    const matchesTab = activeTab === "shared"
       ? note.is_public !== true
       : note.is_public === true
-    
+
     return matchesSearch && matchesTab
   }) ?? [];
 
@@ -71,14 +71,16 @@ export function Notes() {
           </div>
 
           <Tabs defaultValue="shared" value={activeTab} onValueChange={(value) => setActiveTab(value as "shared" | "private")} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsList className="grid w-full grid-cols-2 mb-6 bg-black">
               <TabsTrigger
                 value="shared"
+                className="text-gold"
               >
                 Shared Notes
               </TabsTrigger>
               <TabsTrigger
                 value="private"
+                className="text-gold"
               >
                 Private Notes
               </TabsTrigger>
@@ -88,19 +90,19 @@ export function Notes() {
               {filteredNotes.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in-50 duration-300">
                   {filteredNotes.map((note) => (
-                    <NoteCard 
-                      key={note.id} 
-                      note={note} 
-                      openModal={openModal} 
-                      onDelete={onDelete} 
-                      isShared={true} 
+                    <NoteCard
+                      key={note.id}
+                      note={note}
+                      openModal={openModal}
+                      onDelete={onDelete}
+                      isShared={true}
                     />
                   ))}
                 </div>
               ) : (
-                <EmptyState 
-                  title="No shared notes found" 
-                  description={searchQuery ? "Try a different search term" : "Create a new note to get started"} 
+                <EmptyState
+                  title="No shared notes found"
+                  description={searchQuery ? "Try a different search term" : "Create a new note to get started"}
                   action={
                     <AddNoteDialog />
                   }
@@ -112,19 +114,19 @@ export function Notes() {
               {filteredNotes.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in-50 duration-300">
                   {filteredNotes.map((note) => (
-                    <NoteCard 
-                      key={note.id} 
-                      note={note} 
-                      openModal={openModal} 
-                      onDelete={onDelete} 
-                      isShared={false} 
+                    <NoteCard
+                      key={note.id}
+                      note={note}
+                      openModal={openModal}
+                      onDelete={onDelete}
+                      isShared={false}
                     />
                   ))}
                 </div>
               ) : (
-                <EmptyState 
-                  title="No private notes found" 
-                  description={searchQuery ? "Try a different search term" : "Create a new private note to get started"} 
+                <EmptyState
+                  title="No private notes found"
+                  description={searchQuery ? "Try a different search term" : "Create a new private note to get started"}
                   action={
                     <AddNoteDialog />
                   }

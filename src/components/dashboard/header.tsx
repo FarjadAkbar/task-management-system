@@ -38,13 +38,13 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
               alt="Logo"
               width={200}
               height={40}
-              className="h-16 w-auto"
+              className="h-12 w-auto md:h-16"
             />
           </Link>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="flex items-center space-x-1">
+        <nav className="hidden md:flex items-center space-x-4">
           {navItems.map((item) => (
             <Link
               key={item.name}
@@ -57,7 +57,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
           ))}
         </nav>
 
-        <div className="flex items-center">
+        <div className="flex items-center space-x-3">
           <AvatarDropdown
             avatar={avatar}
             userId={id}
@@ -69,7 +69,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="ml-2 md:hidden text-white"
+            className="md:hidden text-white"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -79,7 +79,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
 
       {/* Mobile Navigation */}
       <div className={cn(
-        "md:hidden absolute w-full bg-black/95 backdrop-blur-sm transition-all duration-300 ease-in-out border-b border-white/10",
+        "md:hidden absolute w-full top-full left-0 bg-black/95 backdrop-blur-sm transition-all duration-300 ease-in-out border-b border-white/10",
         menuOpen ? "max-h-[400px] py-4 opacity-100" : "max-h-0 py-0 opacity-0 overflow-hidden"
       )}>
         <nav className="container mx-auto px-4 flex flex-col space-y-1">

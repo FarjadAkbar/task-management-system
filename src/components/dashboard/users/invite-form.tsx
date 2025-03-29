@@ -84,13 +84,13 @@ export function InviteForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex space-x-5 w-full p-5 items-end"
+        className="flex flex-wrap gap-4 w-full items-end md:flex-nowrap"
       >
         <FormField
           control={form.control}
           name="firstName"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full md:w-auto">
               <FormLabel>First Name</FormLabel>
               <FormControl>
                 <Input placeholder="John" {...field} />
@@ -104,7 +104,7 @@ export function InviteForm() {
           control={form.control}
           name="lastName"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full md:w-auto">
               <FormLabel>Last Name</FormLabel>
               <FormControl>
                 <Input placeholder="Doe" {...field} />
@@ -117,7 +117,7 @@ export function InviteForm() {
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem className="w-1/3">
+            <FormItem className="w-full md:w-1/3">
               <FormLabel>E-main</FormLabel>
               <FormControl>
                 <Input placeholder="name@domain.com" {...field} />
@@ -130,11 +130,11 @@ export function InviteForm() {
           control={form.control}
           name="role"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full md:w-auto">
               <FormLabel>Role</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select a role" />
                   </SelectTrigger>
                 </FormControl>
@@ -161,7 +161,7 @@ export function InviteForm() {
             </FormItem>
           )}
         />
-        <Button className="w-[150px] bg-black text-gold hover:bg-gold hover:text-black font-semibold" type="submit" disabled={isPending}>
+        <Button className="w-full md:w-[150px] bg-black text-gold hover:bg-gold hover:text-black font-semibold" type="submit" disabled={isPending}>
           {isPending ? (
             <Icons.spinner className="animate-spin" />
           ) : (

@@ -36,11 +36,11 @@ const AllTools = () => {
     });
   };
 
-  const handleCopy = (text: string) => {
+  const handleCopy = (text: string, isPassword = false) => {
     navigator.clipboard.writeText(text);
     toast({
       title: "Copied",
-      description: "The URL has been copied to your clipboard.",
+      description: isPassword ? `Password copied to clipboard: ${"*".repeat(text.length)}` : `Copied: ${text}`,
     });
   };
 
@@ -50,7 +50,7 @@ const AllTools = () => {
   };
 
   return (
-    <main className="container mx-auto px-4 py-6">
+    <main className="min-h-screen mx-auto px-4 sm:px-8 py-6">
       <h2 className="text-3xl mb-8 text-center font-bold text-gray-800">Paid Tools By DolceFrutti</h2>
 
       <Card className="max-w-3xl mx-auto mb-12 shadow-lg rounded-xl bg-white border-0">
@@ -77,65 +77,78 @@ const AllTools = () => {
       </Card>
 
       {isPending ? <SuspenseLoading />
-      :
+        :
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tools.map((tool) => (
-          <Card key={tool.id} className="group overflow-hidden transition-all hover:shadow-md">
-            <CardHeader className="relative pb-0 pt-6">
-              <div className="absolute top-2 right-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreVertical className="h-4 w-4" />
-                      <span className="sr-only">Open menu</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mt-10">
+          {tools.map((tool) => (
+            <Card key={tool.id} className=" bg-white border-0 group overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:scale-105 shadow-lg rounded-xl">
+              <CardHeader className="relative pb-0 pt-6">
+                <div className="absolute top-2 right-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreVertical className="h-4 w-4" />
+                        <span className="sr-only">Open menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleEditClick(tool)}>
+                        <Edit className="mr-2 h-4 w-4" /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DeleteConfirmationDialog name={tool.name} onDelete={() => onDelete(tool.id)} />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <div className="flex justify-center">
+                  <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex items-center justify-center transition-transform group-hover:scale-105">
+                    <Image
+                      src={tool.document.document_file_url || "/placeholder.svg?height=96&width=96"}
+                      alt={tool.name || "Tool Image"}
+                      width={96}
+                      height={96}
+                      className="object-fit"
+                    />
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="pt-3 text-center">
+                <h3 className="font-bold text-lg mb-1">{tool.name}</h3>
+              </CardContent>
+
+              <CardFooter className="flex flex-col space-y-1 pt-0">
+                <div className="w-full py-1 rounded-md bg-muted/50 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-medium">User Email:</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCopy(tool.username)}
+                    >
+                      Copy User Email
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleEditClick(tool)}>
-                      <Edit className="mr-2 h-4 w-4" /> Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DeleteConfirmationDialog name={tool.name} onDelete={() => onDelete(tool.id)} />
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              <div className="flex justify-center">
-                <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex items-center justify-center transition-transform group-hover:scale-105">
-                  <Image
-                    src={tool.document.document_file_url || "/placeholder.svg?height=96&width=96"}
-                    alt={tool.name || "Tool Image"}
-                    width={96}
-                    height={96}
-                    className="object-cover"
-                  />
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
+                <div className="w-full rounded-md bg-muted/50 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-medium">Password:</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCopy(tool.password, true)}
+                    >
+                      Copy Password
+                    </Button>
 
-            <CardContent className="pt-4 text-center">
-              <h3 className="font-bold text-lg mb-2">{tool.name}</h3>
-            </CardContent>
-
-            <CardFooter className="flex flex-col space-y-2 pt-0">
-              <div className="w-full p-2 rounded-md bg-muted/50 text-sm">
-                <div className="flex justify-between">
-                  <span className="font-medium">User Email:</span>
-                  <span className="text-muted-foreground cursor-pointer" onClick={() => handleCopy(tool.name)}>{tool.username}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="w-full p-2 rounded-md bg-muted/50 text-sm">
-                <div className="flex justify-between">
-                  <span className="font-medium">Password:</span>
-                  <span className="text-muted-foreground cursor-pointer" onClick={() => handleCopy(tool.password)}>{tool.password}</span>
-                </div>
-              </div>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-}
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      }
       {/* Edit Tool Dialog */}
       {selectedTool && editModalOpen && (
         <EditToolDialog

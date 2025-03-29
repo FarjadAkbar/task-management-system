@@ -19,15 +19,15 @@ export default async function EventPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Calendar</h1>
-          <p className="text-muted-foreground">Manage your meetings and availability</p>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="text-center sm:text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Calendar</h1>
+          <p className="text-muted-foreground text-sm sm:text-base mb-3">Manage your meetings and availability</p>
         </div>
 
-        <div className="flex gap-2">
-          <Button asChild className="bg-black text-gold hover:text-black hover:bg-gold">
-            <a href="/api/auth/google">
+        <div className="flex flex-row gap-2 w-full sm:w-50">
+          <Button asChild className="bg-black text-gold hover:text-black hover:bg-gold w-full sm:w-auto">
+            <a href="/api/auth/google" className="flex items-center justify-center">
               <CalendarCheck2 className="mr-2 h-4 w-4" />
               {!isConnected ? "Connect Google Calendar" : "Reconnect Google Calendar"}
             </a>
@@ -39,8 +39,8 @@ export default async function EventPage() {
       {isConnected ? (
         <Tabs defaultValue="calendar">
           <TabsList className="bg-black">
-            <TabsTrigger value="calendar" className="text-gold">Calendar</TabsTrigger>
-            <TabsTrigger value="availability" className="text-gold">Availability</TabsTrigger>
+            <TabsTrigger value="calendar" className="text-gold px-4 py-2">Calendar</TabsTrigger>
+            <TabsTrigger value="availability" className="text-gold px-4 py-2">Availability</TabsTrigger>
           </TabsList>
           <TabsContent value="calendar" className="mt-6">
             <CalendarView />
@@ -50,14 +50,14 @@ export default async function EventPage() {
           </TabsContent>
         </Tabs>
       ) : (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
+        <div className="flex flex-col items-center justify-center py-12 text-center px-4">
           <CalendarCheck2 className="h-16 w-16 text-muted-foreground mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Connect Your Google Calendar</h2>
-          <p className="text-muted-foreground max-w-md mb-6">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-2">Connect Your Google Calendar</h2>
+          <p className="text-muted-foreground max-w-md text-sm sm:text-base mb-6">
             Connect your Google Calendar to manage your meetings, schedule events, and set your availability.
           </p>
-          <Button asChild>
-            <a href="/api/auth/google">
+          <Button asChild className="w-full sm:w-auto">
+            <a href="/api/auth/google" className="flex items-center justify-center">
               <CalendarCheck2 className="mr-2 h-4 w-4" />
               Connect Google Calendar
             </a>
