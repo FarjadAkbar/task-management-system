@@ -17,8 +17,9 @@ import { TaskComments } from "./task-comments"
 import { TaskAttachments } from "./task-attachments"
 import { TaskFeedback } from "./task-feedback"
 import { EditTaskDialog } from "./edit-task-dialog"
-import { useCompleteTask, useTask } from "@/service/tasks"
+import { useCompleteTask, useDeleteTask, useTask } from "@/service/tasks"
 import { toast } from "@/hooks/use-toast"
+import DeleteConfirmationDialog from "@/components/modals/delete-confitmation"
 
 interface TaskDetailDialogProps {
   taskId: string
@@ -29,6 +30,7 @@ interface TaskDetailDialogProps {
 export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialogProps) {
   const { data: task, isLoading, isError } = useTask(taskId)
   const { mutate: completeTask, isPending: isCompleting } = useCompleteTask()
+  const { mutate: deleteTask, isPending: isDeleting } = useDeleteTask()
 
   const [showEditDialog, setShowEditDialog] = useState(false)
 
@@ -43,6 +45,25 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
       onError: (error) => {
         toast({
           title: "Failed to complete task",
+          description: error.message,
+          variant: "destructive",
+        })
+      },
+    })
+  }
+
+  const onDeleteTask = () => {
+    deleteTask(taskId, {
+      onSuccess: () => {
+        toast({
+          title: "Task deleted",
+          description: "The task has been deleted",
+        })
+        onOpenChange(false)
+      },
+      onError: (error) => {
+        toast({
+          title: "Failed to delete task",
           description: error.message,
           variant: "destructive",
         })
@@ -111,6 +132,8 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
                 <Button variant="outline" size="sm" onClick={() => setShowEditDialog(true)}>
                   <Edit className="h-4 w-4 mr-1" /> Edit
                 </Button>
+                <DeleteConfirmationDialog name={task.title} onDelete={onDeleteTask} />
+
                 {!isCompleted && (
                   <Button size="sm" onClick={handleCompleteTask} disabled={isCompleting}>
                     <CheckCircle2 className="h-4 w-4 mr-1" />

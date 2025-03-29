@@ -12,6 +12,7 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { Button } from "../ui/button";
 
 interface DeleteConfirmationDialogProps {
     name: string;
@@ -22,9 +23,9 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ nam
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <button className="flex items-center gap-2 w-full text-left px-2 py-1 text-sm hover:bg-gray-100">
+                <Button variant="destructive" size="sm">
                     <RiDeleteBin6Line /> Delete
-                </button>
+                </Button>
             </AlertDialogTrigger>
             <AlertDialogContent className="bg-white shadow-lg text-left">
                 <AlertDialogHeader>

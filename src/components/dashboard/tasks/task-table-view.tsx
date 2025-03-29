@@ -28,6 +28,8 @@ import {
 } from "lucide-react"
 import { TaskDetailDialog } from "./task-detail-dialog"
 import { EditTaskDialog } from "./edit-task-dialog"
+import DeleteConfirmationDialog from "@/components/modals/delete-confitmation"
+import { TaskType } from "@/service/tasks/type"
 
 interface TaskTableViewProps {
   boardId: string
@@ -115,7 +117,7 @@ export function TaskTableView({ boardId, sprintId }: TaskTableViewProps) {
 
   // Handle task click
   const handleTaskClick = (taskId: string) => {
-    const projectId = tasks.find((task) => task.id === taskId)?.sprint?.project?.id
+    const projectId = tasks.find((task: TaskType) => task.id === taskId)?.sprint?.project?.id
     if (projectId) {
       router.push(`/projects/${projectId}/tasks/${taskId}`)
     }
