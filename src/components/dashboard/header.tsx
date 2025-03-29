@@ -25,7 +25,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
     { name: "Tools", href: "/tools" },
     { name: "Guidelines", href: "/team" },
     { name: "Meeting", href: "/event" },
-    { name: "Suggestion", href: "/suggestion" },
+    // { name: "Suggestion", href: "/suggestion" },
   ]
 
   return (

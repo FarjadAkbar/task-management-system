@@ -17,13 +17,14 @@ import { Button } from "../ui/button";
 interface DeleteConfirmationDialogProps {
     name: string;
     onDelete: (name: string) => void;
+    disabled?: boolean
 }
 
-const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ name, onDelete }) => {
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ name, onDelete, disabled = false }) => {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm">
+                <Button variant="destructive" size="sm" disabled={disabled}>
                     <RiDeleteBin6Line /> Delete
                 </Button>
             </AlertDialogTrigger>

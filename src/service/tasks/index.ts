@@ -27,8 +27,8 @@ export function useCreateTask() {
   return useMutation({
     mutationFn: createTask,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
-      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId] })
+      // queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
+      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId], exact: true })
     },
   })
 }
@@ -54,8 +54,8 @@ export function useDeleteTask() {
   return useMutation({
     mutationFn: deleteTask,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
-      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId] })
+      // queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
+      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId], exact: true })
     },
   })
 }

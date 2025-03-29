@@ -129,10 +129,10 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
                 </Badge>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setShowEditDialog(true)}>
+                <Button variant="outline" size="sm" onClick={() => setShowEditDialog(true)} disabled={isDeleting}>
                   <Edit className="h-4 w-4 mr-1" /> Edit
                 </Button>
-                <DeleteConfirmationDialog name={task.title} onDelete={onDeleteTask} />
+                <DeleteConfirmationDialog name={task.title} onDelete={onDeleteTask} disabled={isDeleting} />
 
                 {!isCompleted && (
                   <Button size="sm" onClick={handleCompleteTask} disabled={isCompleting}>
