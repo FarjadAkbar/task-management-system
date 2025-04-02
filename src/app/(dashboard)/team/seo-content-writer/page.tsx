@@ -1,3 +1,4 @@
+"use client"
 import EmployeeGuidelines from '@/components/dashboard/team/EmployeeGuidelines';
 import { useRouter } from 'next/navigation'
 import React from 'react';
