@@ -49,8 +49,8 @@ export function Notes() {
       note.content.toLowerCase().includes(searchQuery.toLowerCase())
 
     const matchesTab = activeTab === "shared"
-      ? note.is_public !== true
-      : note.is_public === true
+      ? note.is_public === true
+      : note.is_public !== true
 
     return matchesSearch && matchesTab
   }) ?? [];

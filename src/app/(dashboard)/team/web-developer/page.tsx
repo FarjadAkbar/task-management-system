@@ -83,11 +83,11 @@ const Page = () => {
                     {cards.map(({ title, description, path }) => (
                         <div
                             key={title}
-                            className="bg-gray-50 border border-gray-300 shadow-md rounded-lg p-2 flex flex-col items-center text-center transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer"
+                            className="border border-gray-300 shadow-md rounded-lg p-2 flex flex-col items-center text-center transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer bg-black hover:bg-gold text-gold hover:text-black"
                             onClick={() => router.push(path)}
                         >
-                            <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
-                            <p className="text-sm text-gray-600 mt-1">{description}</p>
+                            <h3 className="text-xl">{title}</h3>
+                            <p className="text-sm mt-1">{description}</p>
                         </div>
                     ))}
                 </section>

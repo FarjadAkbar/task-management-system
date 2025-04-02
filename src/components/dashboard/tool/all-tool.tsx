@@ -126,7 +126,7 @@ const AllTools = () => {
                   <div className="flex justify-between">
                     <span className="font-medium">User Email:</span>
                     <Button
-                      variant="outline"
+                      className="bg-gray-100 text-black hover:bg-black hover:text-gold border"
                       size="sm"
                       onClick={() => handleCopy(tool.username)}
                     >
@@ -138,7 +138,7 @@ const AllTools = () => {
                   <div className="flex justify-between">
                     <span className="font-medium">Password:</span>
                     <Button
-                      variant="outline"
+                      className="bg-gray-100 text-black hover:bg-black hover:text-gold border"
                       size="sm"
                       onClick={() => handleCopy(tool.password, true)}
                     >
