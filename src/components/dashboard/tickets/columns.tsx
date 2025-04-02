@@ -1,17 +1,29 @@
 "use client";
-
+import moment from "moment";
 import { ColumnDef } from "@tanstack/react-table";
-
+import { DataTableRowActions } from "./data-table-row-actions";
+import { DataTableColumnHeader } from "@/components/table-components/data-table-column-header";
+import { TicketType } from "@/service/tickets/type";
 import { Badge } from "@/components/ui/badge";
 
-import { priorities } from "../data/data";
-import { Ticket } from "../data/schema";
-import { DataTableColumnHeader } from "../../../../components/table-components/data-table-column-header";
-import { DataTableRowActions } from "./data-table-row-actions";
-import moment from "moment";
-import Link from "next/link";
-
-export const columns: ColumnDef<Ticket>[] = [
+export const priorities = [
+    {
+      value: "LOW",
+      label: "Low",
+    },
+    {
+      value: "MEDIUM",
+      label: "Medium",
+    },{
+      value: "HIGH",
+      label: "High",
+    },
+    {
+      value: "URGENT",
+      label: "Urgent",
+    },
+  ]
+export const columns: ColumnDef<TicketType>[] = [
   {
     accessorKey: "date_created",
     header: ({ column }) => (

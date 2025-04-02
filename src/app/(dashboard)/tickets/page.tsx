@@ -1,21 +1,19 @@
-import React, { Suspense } from "react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { Session } from "next-auth";
+import { CreateTicketDialog } from "@/components/dashboard/tickets/create-ticket-dialog";
+import TicketsList from "@/components/dashboard/tickets/tickets-list";
+import Container from "@/components/ui/container";
 
-import TicketsView from "@/components/dashboard/tickets/TicketsView";
-import SuspenseLoading from "@/components/loadings/suspense";
+
 
 const TicketsPage = async () => {
-  const session: Session | null = await getServerSession(authOptions);
-
-  if (!session) return redirect("/sign-in");
 
   return (
-    <Suspense fallback={<SuspenseLoading />}>
-      <TicketsView />
-    </Suspense>
+    <div className="flex flex-col gap-4 px-4 py-6 lg:px-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Tickets</h1>
+        <CreateTicketDialog />
+      </div>
+      <TicketsList />
+    </div>
   );
 };
 

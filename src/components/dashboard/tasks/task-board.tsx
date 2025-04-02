@@ -12,6 +12,7 @@ import {
   DragOverlay,
   type DragStartEvent,
   type DragOverEvent,
+  useDroppable,
 } from "@dnd-kit/core"
 import {
   SortableContext,
@@ -39,14 +40,35 @@ interface TaskBoardProps {
 }
 
 // Create a sortable wrapper for TaskCard
-const SortableTaskCard = memo(({ task, id, bgColor }: { task: TaskType; id: string, bgColor: string }) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+
+// Create a droppable section component
+const DroppableSection = ({ id, children }: { id: string; children: React.ReactNode }) => {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `section:${id}`,
+  })
+
+  return (
+    <div ref={setNodeRef} className={`h-full ${isOver ? "ring-2 ring-primary ring-opacity-50" : ""}`}>
+      {children}
+    </div>
+  )
+}
+
+// Create a sortable wrapper for TaskCard
+const SortableTaskCard = memo(({ task, id, bgColor }: { task: TaskType; id: string; bgColor: string }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: `task:${id}`,
+    data: {
+      type: "task",
+      task,
+    },
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     backgroundColor: bgColor,
-    opacity: isDragging ? 0.7 : 1,
+    opacity: isDragging ? 0.9 : 1,
     zIndex: isDragging ? 1 : 0,
   }
 
@@ -63,8 +85,11 @@ const MemoizedTaskCard = memo(TaskCard)
 
 // Helper function to find the container (section) a task belongs to
 function findContainer(containersMap: Map<string, TaskType[]>, id: string) {
+  // Remove the 'task:' prefix if it exists
+  const taskId = id.startsWith("task:") ? id.substring(5) : id
+
   for (const [containerId, items] of containersMap.entries()) {
-    if (items.some((item) => item.id === id)) {
+    if (items.some((item) => item.id === taskId)) {
       return containerId
     }
   }
@@ -136,7 +161,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     const newItems: Record<string, string[]> = {}
 
     for (const [sectionId, tasks] of sectionTasksMap.entries()) {
-      newItems[sectionId] = tasks.map((task: TaskType) => task.id)
+      newItems[sectionId] = tasks.map((task: TaskType) => `task:${task.id}`)
     }
 
     setItems(newItems)
@@ -147,7 +172,11 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     const id = active.id as string
 
     setActiveId(id)
-    const task = localTasks.find((t) => t.id === id)
+
+    // Extract the task ID from the prefixed format
+    const taskId = id.startsWith("task:") ? id.substring(5) : id
+    const task = localTasks.find((t) => t.id === taskId)
+
     if (task) {
       setActiveTask(task)
     }
@@ -161,18 +190,23 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     const activeId = active.id as string
     const overId = over.id as string
 
+    console.log("Drag over - Active ID:", activeId, "Over ID:", overId)
+
+    // Extract the task ID from the prefixed format
+    const taskId = activeId.startsWith("task:") ? activeId.substring(5) : activeId
+
     // Find the containers
-    const activeContainer = findContainer(sectionTasksMap, activeId)
+    const activeContainer = findContainer(sectionTasksMap, taskId)
 
     // If over a task, find its container
-    let overContainer = findContainer(sectionTasksMap, overId)
+    let overContainer: string | null = null
 
-    // If over a container directly
-    if (!overContainer) {
-      const containerMatch = String(overId).match(/^section:(.+)$/)
-      if (containerMatch) {
-        overContainer = containerMatch[1]
-      }
+    if (overId.startsWith("section:")) {
+      // Directly over a section
+      overContainer = overId.substring(8)
+    } else if (overId.startsWith("task:")) {
+      // Over another task, find its container
+      overContainer = findContainer(sectionTasksMap, overId.substring(5))
     }
 
     if (!activeContainer || !overContainer || activeContainer === overContainer) {
@@ -183,13 +217,13 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
       const activeItems = [...prev[activeContainer]]
       const overItems = [...prev[overContainer!]]
 
-      const activeIndex = activeItems.indexOf(activeId)
+      const activeIndex = activeItems.indexOf(`task:${taskId}`)
 
       // Remove from original container
       activeItems.splice(activeIndex, 1)
 
       // Add to new container at the end
-      overItems.push(activeId)
+      overItems.push(`task:${taskId}`)
 
       return {
         ...prev,
@@ -211,23 +245,31 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     const activeId = active.id as string
     const overId = over.id as string
 
+    console.log("Drag end - Active ID:", activeId, "Over ID:", overId)
+
+    // Extract the task ID from the prefixed format
+    const taskId = activeId.startsWith("task:") ? activeId.substring(5) : activeId
+
     // Find the containers
-    const activeContainer = findContainer(sectionTasksMap, activeId)
+    const activeContainer = findContainer(sectionTasksMap, taskId)
 
     // If over a task, find its container
-    let overContainer = findContainer(sectionTasksMap, overId)
+    let overContainer: string | null = null
     let overIndex = -1
 
-    // If over a container directly
-    if (!overContainer) {
-      const containerMatch = String(overId).match(/^section:(.+)$/)
-      if (containerMatch) {
-        overContainer = containerMatch[1]
+    if (overId.startsWith("section:")) {
+      // Directly over a section
+      overContainer = overId.substring(8)
+    } else if (overId.startsWith("task:")) {
+      // Over another task, find its container
+      const overTaskId = overId.substring(5)
+      overContainer = findContainer(sectionTasksMap, overTaskId)
+
+      if (overContainer) {
+        // Find the index of the task we're over
+        const overItems = sectionTasksMap.get(overContainer)
+        overIndex = overItems.findIndex((item: TaskType) => item.id === overTaskId)
       }
-    } else {
-      // Find the index of the task we're over
-      const overItems = sectionTasksMap.get(overContainer)
-      overIndex = overItems.findIndex((item: TaskType) => item.id === overId)
     }
 
     if (!activeContainer) {
@@ -238,7 +280,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
 
     // Handle sorting within the same container
     if (activeContainer === overContainer) {
-      const activeIndex = sectionTasksMap.get(activeContainer).findIndex((item: TaskType) => item.id === activeId)
+      const activeIndex = sectionTasksMap.get(activeContainer).findIndex((item: TaskType) => item.id === taskId)
 
       if (activeIndex !== overIndex && overIndex !== -1) {
         // Update local state for immediate UI update
@@ -262,7 +304,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
 
         // Call API to update position
         moveTask({
-          taskId: activeId,
+          taskId,
           sectionId: activeContainer,
           position: overIndex,
         })
@@ -272,7 +314,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
       // Update local state for immediate UI update
       setLocalTasks((prevTasks) => {
         const updatedTasks = [...prevTasks]
-        const taskIndex = updatedTasks.findIndex((t) => t.id === activeId)
+        const taskIndex = updatedTasks.findIndex((t) => t.id === taskId)
 
         if (taskIndex !== -1) {
           // Update the task's section
@@ -293,9 +335,9 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
 
       // Call API to update section and position
       moveTask({
-        taskId: activeId,
+        taskId,
         sectionId: overContainer,
-        position: position,
+        position,
       })
     }
 
@@ -336,58 +378,63 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
             // Get tasks for this section
             const sectionTasks: TaskType[] = sprintId ? sectionTasksMap.get(section.id) || [] : []
             const sectionColor = sectionColors[section.name] || { bg: "#FFFFFF", header: "#F1F5F9" }
-            const taskIds = items[section.id] || sectionTasks.map((task) => task.id)
+            const taskIds = items[section.id] || sectionTasks.map((task) => `task:${task.id}`)
 
             return (
-              <Card
-                key={section.id}
-                className="flex flex-col h-full rounded-xl shadow-md overflow-hidden border"
-                style={{
-                  backgroundColor: sectionColor.bg,
-                  transition: "all 0.3s ease-in-out",
-                }}
-                id={`section:${section.id}`}
-              >
-                {/* Header */}
-                <CardHeader
-                  className="p-4 text-white font-semibold text-center uppercase tracking-wide"
+              <DroppableSection id={section.id} key={section.id}>
+                <Card
+                  className="flex flex-col h-full rounded-xl shadow-md overflow-hidden border"
                   style={{
-                    background: sectionColor.header,
-                    borderRadius: "10px 10px 0 0",
+                    backgroundColor: sectionColor.bg,
+                    transition: "all 0.3s ease-in-out",
                   }}
                 >
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-base">
-                      {section.name}
-                      <span className="ml-2 text-xs text-muted-foreground">({sectionTasks.length})</span>
-                    </CardTitle>
-                    <AdminWrapper>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 hover:bg-white hover:text-black transition"
-                        onClick={() => {
-                          setCreateTaskSection(section.id)
-                          setShowCreateDialog(true)
-                        }}
-                      >
-                        <Plus className="h-6 w-6" />
-                      </Button>
-                    </AdminWrapper>
-                  </div>
-                </CardHeader>
-
-                {/* Task List */}
-                <CardContent className="flex-1 overflow-y-auto p-4" data-section-id={section.id}>
-                  <SortableContext items={taskIds} strategy={verticalListSortingStrategy} id={section.id}>
-                    <div className="space-y-3 min-h-[50px]" data-droppable-id={`section:${section.id}`}>
-                      {sectionTasks.map((task) => (
-                        <SortableTaskCard key={task.id} task={task} id={task.id} bgColor={`${section.color}`} />
-                      ))}
+                  {/* Header */}
+                  <CardHeader
+                    className="p-4 text-white font-semibold text-center uppercase tracking-wide"
+                    style={{
+                      background: sectionColor.header,
+                      borderRadius: "10px 10px 0 0",
+                    }}
+                  >
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-base">
+                        {section.name}
+                        <span className="ml-2 text-xs text-muted-foreground">({sectionTasks.length})</span>
+                      </CardTitle>
+                      <AdminWrapper>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 hover:bg-white hover:text-black transition"
+                          onClick={() => {
+                            setCreateTaskSection(section.id)
+                            setShowCreateDialog(true)
+                          }}
+                        >
+                          <Plus className="h-6 w-6" />
+                        </Button>
+                      </AdminWrapper>
                     </div>
-                  </SortableContext>
-                </CardContent>
-              </Card>
+                  </CardHeader>
+
+                  {/* Task List */}
+                  <CardContent className="flex-1 overflow-y-auto p-4">
+                    <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
+                      <div className="space-y-3 min-h-[150px]">
+                        {sectionTasks.map((task) => (
+                          <SortableTaskCard key={task.id} task={task} id={task.id} bgColor={`${section.color}`} />
+                        ))}
+                        {sectionTasks.length === 0 && (
+                          <div className="h-20 flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-md">
+                            Drop tasks here
+                          </div>
+                        )}
+                      </div>
+                    </SortableContext>
+                  </CardContent>
+                </Card>
+              </DroppableSection>
             )
           })}
         </div>
@@ -412,4 +459,5 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     </>
   )
 }
+
 

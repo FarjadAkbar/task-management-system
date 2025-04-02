@@ -1,6 +1,5 @@
 "use client";
 
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
@@ -8,25 +7,19 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { ticketSchema } from "../data/schema";
-import { useRouter } from "next/navigation";
 import AlertModal from "@/components/modals/alert-modal";
 import { useState } from "react";
-import axios from "axios";
-import {
-  Eye,
-  EyeIcon,
-  EyeOff,
-  Glasses,
-  Magnet,
-  Pencil,
-  Trash,
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
+
+import { Pencil, Trash } from "lucide-react";
+import { ActiveStatus } from "@prisma/client";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { TicketType } from "@/service/tickets/type";
 import {
   Sheet,
   SheetContent,
@@ -34,8 +27,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-
-import UpdateTicketForm from "../forms/UpdateTicket";
+import { EditTicket } from "./edit-ticket";
+import { useDeleteTicketMutation } from "@/service/tickets";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -44,36 +37,30 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const router = useRouter();
-  const ticket = ticketSchema.parse(row.original);
-
+  const { mutate, isPending } = useDeleteTicketMutation();
+  const data = row.original as TicketType;
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const { toast } = useToast();
+  const ticketId = data.id;
 
   const onDelete = async () => {
-    setLoading(true);
-    try {
-      await axios.delete(`/api/tickets/${ticket.id}`);
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error, ticket not deleted. Please try again.",
-      });
-      console.log(error);
-    } finally {
-      toast({
-        title: "Success",
-        description: `Ticket: ${ticket.title}, deleted successfully`,
-      });
-      router.refresh();
-      setOpen(false);
-      setLoading(false);
-    }
+    mutate(ticketId, {
+      onSuccess: () => {
+        toast({
+          title: "Success",
+          description: "Ticket deleted successfully",
+        });
+        setOpen(false);
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   };
-
 
   return (
     <>
@@ -81,7 +68,7 @@ export function DataTableRowActions<TData>({
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onDelete}
-        loading={loading}
+        loading={isPending}
       />
       <Sheet open={editOpen} onOpenChange={() => setEditOpen(false)}>
         <SheetContent>
@@ -89,7 +76,7 @@ export function DataTableRowActions<TData>({
             <SheetTitle>Edit your ticket data</SheetTitle>
             <SheetDescription></SheetDescription>
           </SheetHeader>
-          <UpdateTicketForm initialData={ticket} openEdit={setEditOpen} />
+          <EditTicket initialData={data} openEdit={setEditOpen} />
         </SheetContent>
       </Sheet>
       <DropdownMenu>
@@ -107,7 +94,6 @@ export function DataTableRowActions<TData>({
             <Pencil className="mr-2 w-4 h-4" />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash className="mr-2 w-4 h-4" />
