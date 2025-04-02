@@ -59,17 +59,17 @@ export default function ProjectBoard({ projectId }: { projectId: string }) {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">{project?.name} Board</h1>
+          <h1 className=" text-xl sm:text-2xl font-bold">{project?.name} Board</h1>
           <p className="text-muted-foreground">
             {activeSprint ? `Current Sprint: ${activeSprint.name}` : "No active sprint"}
           </p>
         </div>
 
         <AdminWrapper>
-        <Button onClick={handleAddTask} className="bg-black text-gold hover:text-black hover:bg-gold">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Task
-        </Button>
+          <Button onClick={handleAddTask} className="bg-black text-gold hover:text-black hover:bg-gold">
+            <Plus className="mr-1 h-4 w-4" />
+            Add Task
+          </Button>
         </AdminWrapper>
       </div>
 
