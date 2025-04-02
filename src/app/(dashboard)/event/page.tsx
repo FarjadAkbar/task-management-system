@@ -19,13 +19,15 @@ export default async function EventPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="text-center sm:text-left">
+      <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between w-full gap-4">
+        {/* Left Side - Heading */}
+        <div className="text-center sm:text-left flex-1">
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">Calendar</h1>
           <p className="text-muted-foreground text-sm sm:text-base mb-3">Manage your meetings and availability</p>
         </div>
 
-        <div className="flex flex-row gap-2 w-full sm:w-50">
+        {/* Right Side - Buttons */}
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:justify-end sm:items-center">
           <Button asChild className="bg-black text-gold hover:text-black hover:bg-gold w-full sm:w-auto">
             <a href="/api/auth/google" className="flex items-center justify-center">
               <CalendarCheck2 className="mr-2 h-4 w-4" />

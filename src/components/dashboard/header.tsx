@@ -4,7 +4,6 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Menu, X } from 'lucide-react'
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { AvatarDropdown } from "@/components/ui/avatar-dropdown"
@@ -55,6 +54,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full"></span>
             </Link>
           ))}
+
         </nav>
 
         <div className="flex items-center space-x-3">
