@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getUser } from "@/lib/get-user"
 import { prismadb } from "@/lib/prisma"
 import { getTaskDetails } from "@/actions/projects"
+import { deleteFileFromDrive } from "@/lib/google-drive"
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
@@ -173,7 +174,6 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
     const { id } = await params;
     const taskId = id
-
     // Get task
     const task = await prismadb.tasks.findUnique({
       where: { id: taskId },
@@ -185,7 +185,6 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     if (!task) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 })
     }
-
     // Check if user has permission to delete the task
     const isCreator = task.createdBy === user.id
 
@@ -214,12 +213,34 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
       return NextResponse.json({ error: "Not authorized to delete this task" }, { status: 403 })
     }
 
-    // Delete task
+    // Delete checklist items
+    await prismadb.checklistItem.deleteMany({
+      where: { taskId },
+    });
+
+    // Fetch related task documents
+    const taskDocuments = await prismadb.taskDocument.findMany({
+      where: { taskId },
+      select: { document: { select: { key: true } } },
+    });
+
+    // Delete associated files
+    await Promise.all(taskDocuments.map(({ document }) => deleteFileFromDrive(document.key)));
+
+    // Delete all related records concurrently
+    await Promise.all([
+      prismadb.taskDocument.deleteMany({ where: { taskId } }),
+      prismadb.taskAssignee.deleteMany({ where: { taskId } }),
+      prismadb.tasksComments.deleteMany({ where: { taskId } }),
+      prismadb.taskFeedback.deleteMany({ where: { taskId } }),
+    ]);
+
+    // Delete the task itself
     await prismadb.tasks.delete({
       where: { id: taskId },
-    })
+    });
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ task }, { status: 201 })
   } catch (error) {
     console.error("Error deleting task:", error)
     return NextResponse.json({ error: "Failed to delete task" }, { status: 500 })

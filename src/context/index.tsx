@@ -2,6 +2,7 @@
 import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NuqsAdapter } from "nuqs/adapters/react";
+import { SessionProvider } from "next-auth/react";
 
 interface Props {
   children: ReactNode;
@@ -23,10 +24,12 @@ export default function ClientProvider({ children }: Props) {
     },
   });
   return (
+    <SessionProvider>
     <QueryClientProvider client={queryClient}>
       <NuqsAdapter>
         {children}
       </NuqsAdapter>
     </QueryClientProvider>
+    </SessionProvider>
   );
 }

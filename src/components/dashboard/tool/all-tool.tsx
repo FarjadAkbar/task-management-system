@@ -12,6 +12,7 @@ import { AlertCircle, Edit, Eye, MoreVertical } from "lucide-react";
 import { useDeleteToolMutation, useGetToolsQuery } from "@/service/tools";
 import EditToolDialog from "./edit-tool";
 import { ToolType } from "@/service/tools/type";
+import AdminWrapper from "../admin-wrapper";
 
 const AllTools = () => {
   const [pageNumber] = useState(1);
@@ -79,27 +80,29 @@ const AllTools = () => {
       {isPending ? <SuspenseLoading />
         :
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {tools.map((tool) => (
-            <Card key={tool.id} className=" bg-white border-0 group overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:scale-105 shadow-lg rounded-xl">
+            <Card key={tool.id} className="group overflow-hidden transition-all hover:shadow-md">
               <CardHeader className="relative pb-0 pt-6">
-                <div className="absolute top-2 right-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreVertical className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEditClick(tool)}>
-                        <Edit className="mr-2 h-4 w-4" /> Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DeleteConfirmationDialog name={tool.name} onDelete={() => onDelete(tool.id)} />
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                <AdminWrapper>
+                  <div className="absolute top-2 right-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreVertical className="h-4 w-4" />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEditClick(tool)}>
+                          <Edit className="mr-2 h-4 w-4" /> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DeleteConfirmationDialog name={tool.name} onDelete={() => onDelete(tool.id)} />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </AdminWrapper>
 
                 <div className="flex justify-center">
                   <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex items-center justify-center transition-transform group-hover:scale-105">

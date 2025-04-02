@@ -2,19 +2,21 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useQueryState } from "nuqs"
+import { Search, Grid, List } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { toast } from "@/hooks/use-toast"
+
 import { FileGrid } from "@/components/dashboard/filesystem/file-grid"
 import { FileList } from "@/components/dashboard/filesystem/file-list"
 import { FolderBreadcrumb } from "@/components/dashboard/filesystem/folder-breadcrumb"
 import { FileToolbar } from "@/components/dashboard/filesystem/file-toolbar"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { toast } from "@/hooks/use-toast"
-import { Search, Grid, List } from "lucide-react"
 import { listFiles } from "@/actions/filesystem"
 
 interface FileExplorerProps {
@@ -22,29 +24,21 @@ interface FileExplorerProps {
 }
 
 export function FileExplorer({ isAdmin }: FileExplorerProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
+  // Use nuqs for folder parameter
+  const [folder, setFolder] = useQueryState("folder")
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [isLoading, setIsLoading] = useState(true)
   const [files, setFiles] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
-  const [currentFolder, setCurrentFolder] = useState<string | undefined>(undefined)
   const [folderPath, setFolderPath] = useState<Array<{ id: string; name: string }>>([])
-
-  // Get current folder from URL
-  useEffect(() => {
-    const folder = searchParams.get("folder")
-    setCurrentFolder(folder || undefined)
-  }, [searchParams])
 
   // Load files
   useEffect(() => {
     const loadFiles = async () => {
       setIsLoading(true)
       try {
-        const result = await listFiles(currentFolder, searchQuery || undefined)
+        const result = await listFiles(folder || undefined, searchQuery || undefined)
 
         if (result.error) {
           toast({
@@ -70,12 +64,12 @@ export function FileExplorer({ isAdmin }: FileExplorerProps) {
     }
 
     loadFiles()
-  }, [currentFolder, searchQuery])
+  }, [folder, searchQuery])
 
   // Update folder path breadcrumb
   useEffect(() => {
     const updateFolderPath = async () => {
-      if (!currentFolder) {
+      if (!folder) {
         setFolderPath([{ id: "", name: "Root" }])
         return
       }
@@ -84,18 +78,16 @@ export function FileExplorer({ isAdmin }: FileExplorerProps) {
       // For now, just show current folder
       setFolderPath([
         { id: "", name: "Root" },
-        { id: currentFolder, name: "Current Folder" },
+        { id: folder, name: "Current Folder" },
       ])
     }
 
     updateFolderPath()
-  }, [currentFolder])
+  }, [folder])
 
   // Handle folder navigation
   const handleFolderClick = (folderId: string) => {
-    const params = new URLSearchParams(searchParams)
-    params.set("folder", folderId)
-    router.push(`${pathname}?${params.toString()}`)
+    setFolder(folderId)
   }
 
   // Handle search
@@ -108,14 +100,10 @@ export function FileExplorer({ isAdmin }: FileExplorerProps) {
   const handleBreadcrumbClick = (folderId: string) => {
     if (!folderId) {
       // Navigate to root
-      const params = new URLSearchParams(searchParams)
-      params.delete("folder")
-      router.push(`${pathname}?${params.toString()}`)
+      setFolder(null)
     } else {
       // Navigate to specific folder
-      const params = new URLSearchParams(searchParams)
-      params.set("folder", folderId)
-      router.push(`${pathname}?${params.toString()}`)
+      setFolder(folderId)
     }
   }
 
@@ -151,10 +139,10 @@ export function FileExplorer({ isAdmin }: FileExplorerProps) {
 
       <FileToolbar
         isAdmin={isAdmin}
-        currentFolder={currentFolder}
+        currentFolder={folder || undefined}
         onFilesUploaded={() => {
           // Refresh files after upload
-          listFiles(currentFolder).then((result) => {
+          listFiles(folder || undefined).then((result) => {
             if (result.success) {
               setFiles(result.files || [])
             }

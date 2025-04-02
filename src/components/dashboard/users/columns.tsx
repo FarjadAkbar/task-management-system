@@ -18,13 +18,13 @@ export const columns: ColumnDef<UserType>[] = [
     enableHiding: false,
   }, */
   {
-    accessorKey: "created_on",
+    accessorKey: "created_at",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date created" />
     ),
     cell: ({ row }) => (
       <div className="w-[130px]">
-        {moment(row.getValue("created_on")).format("YYYY/MM/DD-HH:mm")}
+        {moment(row.getValue("created_at")).format("YYYY/MM/DD-HH:mm")}
       </div>
     ),
     enableSorting: true,

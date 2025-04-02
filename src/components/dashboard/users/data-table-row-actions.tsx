@@ -40,6 +40,13 @@ export function DataTableRowActions<TData>({
   //Action triggered when the delete button is clicked to delete the store
   const onDelete = async () => {
     mutate(userId, {
+      onSuccess: () => {
+        toast({
+          title: "Success",
+          description: "User deleted successfully",
+        });
+        setOpen(false)
+      },
       onError: (error) => {
         toast({
           title: "Error",
@@ -59,7 +66,7 @@ export function DataTableRowActions<TData>({
     };
 
     mutateStatus(payload, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast({
           title: "Success",
           description: "User updated successfully",
