@@ -64,12 +64,14 @@ export function AddNoteDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="px-2"><Plus className="h-4 w-4" />Add Note</Button>
+        <Button className="px-3 py-2 text-gold hover:text-black hover:bg-gold flex items-center gap-2">
+          <Plus className="h-5 w-5" /> Add Note
+        </Button>
       </DialogTrigger>
-      <DialogContent className="">
+      <DialogContent className="w-full max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-6 sm:p-8">
         <DialogHeader>
-          <DialogTitle className="p-2">Add Note</DialogTitle>
-          <DialogDescription className="p-2">
+          <DialogTitle className="p-2 text-lg sm:text-xl">Add Note</DialogTitle>
+          <DialogDescription className="p-2 text-sm sm:text-base">
             Fill out the form below to create a new note.
           </DialogDescription>
         </DialogHeader>
@@ -132,7 +134,7 @@ export function AddNoteDialog() {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button type="submit" className="w-full text-gold hover:text-black hover:bg-gold" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

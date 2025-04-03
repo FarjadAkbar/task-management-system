@@ -43,7 +43,7 @@ interface CreateTaskDialogProps {
 
 export function CreateTaskDialog({ open, onOpenChange, sectionId, sprintId, parentTaskId }: CreateTaskDialogProps) {
   const { mutate: createTask, isPending } = useCreateTask()
-  const { data: usersData } = useGetUsersQuery({ search: ""})
+  const { data: usersData } = useGetUsersQuery({ search: "" })
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -162,10 +162,10 @@ export function CreateTaskDialog({ open, onOpenChange, sectionId, sprintId, pare
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" className="bg-gray-100 hover:bg-gray-300" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" disabled={isPending} className="bg-black text-gold hover:text-black hover:bg-gold">
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

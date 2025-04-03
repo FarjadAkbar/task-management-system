@@ -79,7 +79,7 @@ export function CalendarView() {
 
   return (
     <>
-      <Card className="p-4">
+      <Card className="p-4 w-full max-w-full overflow-x-auto">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"

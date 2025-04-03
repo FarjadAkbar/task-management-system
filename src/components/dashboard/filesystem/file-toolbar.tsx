@@ -98,19 +98,29 @@ export function FileToolbar({ isAdmin, currentFolder, onFilesUploaded }: FileToo
     // await onSyncButtonClick();
     alert("Google Drive sync failed!");
   };
-  
+
   return (
     <>
       <Card className="p-2">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {isAdmin && (
             <>
-              <Button variant="outline" size="sm" onClick={() => setShowNewFolderDialog(true)} className="bg-black hover:bg-gold text-gold hover:text-black">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowNewFolderDialog(true)}
+                className="bg-black hover:bg-gold text-gold hover:text-black w-full sm:w-auto"
+              >
                 <FolderPlus className="h-4 w-4 mr-2" />
                 New Folder
               </Button>
 
-              <Button variant="outline" size="sm" onClick={() => setShowUploadDialog(true)} className="bg-black hover:bg-gold text-gold hover:text-black">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowUploadDialog(true)}
+                className="bg-black hover:bg-gold text-gold hover:text-black w-full sm:w-auto"
+              >
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Files
               </Button>
@@ -121,12 +131,14 @@ export function FileToolbar({ isAdmin, currentFolder, onFilesUploaded }: FileToo
             variant="ghost"
             size="sm"
             onClick={handleSync}
+            className="w-full sm:w-auto"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
         </div>
       </Card>
+
 
       {/* New Folder Dialog */}
       <Dialog open={showNewFolderDialog} onOpenChange={setShowNewFolderDialog}>

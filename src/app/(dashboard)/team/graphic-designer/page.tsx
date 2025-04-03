@@ -1,8 +1,17 @@
+"use client"
 import EmployeeGuidelines from '@/components/dashboard/team/EmployeeGuidelines'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
-
 const page = () => {
+    const router = useRouter();
+
+    const cards = [
+        { title: "Tools", description: "All Tools credentials", path: "/tools" },
+        { title: "Tasks", description: "See All Tasks", path: "/projects/67dfb82f97615f9768c9824f/board" },
+        { title: "Meetings", description: "See All Meetings", path: "/event" },
+    ];
+
     return (
         <div className=" min-h-screen flex items-center justify-center p-1">
             <div className="max-w-7xl w-full bg-white shadow-xl rounded-lg p-10">
@@ -103,18 +112,19 @@ const page = () => {
 
                 {/* API Section */}
                 <section className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {["API", "User Name", "Password"].map((title, index) => (
+                    {cards.map(({ title, description, path }) => (
                         <div
-                            key={index}
-                            className="bg-gray-50 border border-gray-300 shadow-md rounded-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-lg hover:scale-105"
+                            key={title}
+                            className="border border-gray-300 shadow-md rounded-lg p-2 flex flex-col items-center text-center transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer bg-black hover:bg-gold text-gold hover:text-black"
+                            onClick={() => router.push(path)}
                         >
-                            <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
-                            <p className="text-sm text-gray-600 mt-2">Secure credentials stored safely</p>
+                            <h3 className="text-xl">{title}</h3>
+                            <p className="text-sm mt-1">{description}</p>
                         </div>
                     ))}
                 </section>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 

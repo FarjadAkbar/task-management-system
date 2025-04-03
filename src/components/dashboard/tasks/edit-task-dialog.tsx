@@ -336,7 +336,7 @@ export function EditTaskDialog({ taskId, open, onOpenChange }: EditTaskDialogPro
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" disabled={isPending} className="bg-black text-gold hover:text-black hover:bg-gold">
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -60,10 +60,10 @@ export function EditNoteDialog({ note, isOpen, onClose }: EditNoteDialogProps) {
     if (!note) return
 
     const payload = {
-        id: note.id,
-        title: values.title,
-        content: values.content,
-        visibility: values.visibility,
+      id: note.id,
+      title: values.title,
+      content: values.content,
+      visibility: values.visibility,
     }
     updateNote(payload,
       {
@@ -135,10 +135,10 @@ export function EditNoteDialog({ note, isOpen, onClose }: EditNoteDialogProps) {
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" className="bg-gray-100 hover:bg-gray-300" onClick={onClose}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" className="bg-black text-gold hover:text-black hover:bg-gold" disabled={isPending}>
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

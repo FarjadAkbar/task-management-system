@@ -92,7 +92,7 @@ export function FileGrid({ files, onFolderClick, isAdmin }: FileGridProps) {
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {files.map((file) => (
           <Card
             key={file.id}
@@ -166,7 +166,7 @@ export function FileGrid({ files, onFolderClick, isAdmin }: FileGridProps) {
                   </DropdownMenu>
                 </div>
 
-                <div className="flex flex-col items-center pt-4 pb-2">
+                <div className="flex flex-col items-center pt-4 pb-2 ">
                   {file.mimeType === "application/vnd.google-apps.folder" ? (
                     <Folder className="h-16 w-16 text-blue-500" />
                   ) : file.mimeType.startsWith("image/") ? (
