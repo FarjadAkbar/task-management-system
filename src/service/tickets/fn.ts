@@ -8,11 +8,6 @@ export const getTickestFn = async (
     return response.data;
   };
 
-  export const getTicketByIdFn = async (ticketId: string): Promise<TicketsResponseType> => {
-    const response = await API.get(`/tickets/${ticketId}`);
-    return response.data.ticket;
-  };
-  
 
   export const ticketMutationFn = async (
     data: TicketPayloadType

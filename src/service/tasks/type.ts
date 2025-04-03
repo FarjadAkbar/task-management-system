@@ -26,14 +26,8 @@ export type TaskAttachment = {
 
 export type CreateTaskPayloadType = {
   title: string
-  content?: string
-  priority: string
   section?: string
   sprintId?: string
-  weight?: number
-  estimatedHours?: number
-  startDate?: Date
-  dueDateAt?: Date
   assignees?: string[]
   tags?: string[]
   parentTaskId?: string

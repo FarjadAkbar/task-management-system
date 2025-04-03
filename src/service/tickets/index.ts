@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { TicketsResponseType, TicketType } from "./type";
-import { deleteTicketMutationFn, getTickestFn, getTicketByIdFn, ticketMutationFn, updateTicketMutationFn } from "./fn";
+import { deleteTicketMutationFn, getTickestFn, ticketMutationFn, updateTicketMutationFn } from "./fn";
 
 
 export const useGetTicketsQuery = ({ search = "" }: { search: string }) => {
@@ -11,13 +11,6 @@ export const useGetTicketsQuery = ({ search = "" }: { search: string }) => {
     });
   };
   
-export const useGetTicketByIdQuery = (ticketId: string) => {
-  return useQuery<TicketType>({
-    queryKey: ["ticket", ticketId],
-    queryFn: async () => getTicketByIdFn(ticketId),
-    enabled: !!ticketId,
-  });
-};
 
 export const useTicketMutation = () => {
   const queryClient = useQueryClient();

@@ -66,11 +66,11 @@ export function useDeleteSprint() {
   })
 }
 
-export function useSprintTasks(sprintId?: string) {
+export function useSprintTasks(sprintId: string) {
   return useQuery({
     queryKey: ["sprint-tasks", sprintId],
-    queryFn: () => (sprintId ? fetchSprintTasks(sprintId) : []),
-    enabled: !!sprintId,
+    queryFn: () => fetchSprintTasks(sprintId),
+    // enabled: !!sprintId,
   })
 }
 
