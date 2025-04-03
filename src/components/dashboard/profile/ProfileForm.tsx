@@ -58,13 +58,13 @@ export function ProfileForm({ data }: ProfileFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex space-x-5 w-full p-5 items-end"
+        className="flex flex-wrap md:flex-nowrap space-y-4 md:space-y-0 space-x-0 md:space-x-5 w-full md:p-5 items-end"
       >
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full md:w-auto">
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input disabled={isLoading} placeholder="John@gmail.com" {...field}
@@ -74,7 +74,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full md:w-auto">
           <div>
             <FormField
               control={form.control}
@@ -107,7 +107,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
           </div>
         </div>
 
-        <Button className="w-[150px]" type="submit">
+        <Button className="w-full md:w-[150px] bg-black hover:bg-gold text-gold hover:text-black" type="submit">
           Save Changes
         </Button>
       </form>

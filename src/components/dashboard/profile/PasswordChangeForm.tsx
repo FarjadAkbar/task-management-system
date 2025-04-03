@@ -57,13 +57,13 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex space-x-5 w-full p-5 items-end"
+        className="flex flex-wrap md:flex-nowrap space-y-4 md:space-y-0 space-x-0 md:space-x-5 w-full md:p-5 items-end"
       >
         <FormField
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem className="w-1/3">
+            <FormItem className="w-full md:w-1/3">
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input
@@ -81,7 +81,7 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
           control={form.control}
           name="cpassword"
           render={({ field }) => (
-            <FormItem className="w-1/3">
+            <FormItem className="w-full md:w-1/3">
               <FormLabel>Confirm password</FormLabel>
               <FormControl>
                 <Input
@@ -95,7 +95,7 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
             </FormItem>
           )}
         />
-        <Button className="w-[250px]" type="submit">
+        <Button className="w-full md:w-[150px] bg-black hover:bg-gold text-gold hover:text-black" type="submit">
           Change password
         </Button>
       </form>

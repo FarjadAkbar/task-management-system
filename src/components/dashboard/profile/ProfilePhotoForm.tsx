@@ -50,16 +50,17 @@ export function ProfilePhotoForm({ data }: ProfileFormProps) {
   };
 
   return (
-    <div className="flex items-center space-x-5">
+    <div className="flex flex-wrap sm:flex-nowrap items-center gap-4">
       <div>
         <Image
           src={avatar || "/images/nouser.png"}
           alt="avatar"
           width={100}
           height={100}
+          className="w-[70px] h-[70px] sm:w-[100px] sm:h-[100px] rounded-full object-cover"
         />
       </div>
-      <div>
+      <div className="w-full sm:w-auto">
         <FileUploaderDropzone onUploadSuccess={handleUploadSuccess} />
       </div>
     </div>

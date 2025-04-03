@@ -103,7 +103,7 @@ export function LoginComponent() {
       toast.success("Password reset link sent to your email.");
     } catch (error) {
       if (error) {
-       toast.error("Error sending password reset link.");
+        toast.error("Error sending password reset link.");
       }
     } finally {
       setIsLoading(false);
@@ -112,7 +112,7 @@ export function LoginComponent() {
   }
 
   return (
-    <Card className="shadow-lg my-5 w-[500px]">
+    <Card className="shadow-lg my-5 w-full max-w-[100%] sm:w-[500px] mx-auto">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>Click here to login with: </CardDescription>
@@ -122,8 +122,7 @@ export function LoginComponent() {
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
           </div>
-          <div className="relative flex justify-center text-xs uppercase">
-          </div>
+          <div className="relative flex justify-center text-xs uppercase"></div>
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -138,6 +137,7 @@ export function LoginComponent() {
                       <Input
                         disabled={isLoading}
                         placeholder="test@example.com"
+                        className="w-full"
                         {...field}
                       />
                     </FormControl>
@@ -145,7 +145,7 @@ export function LoginComponent() {
                   </FormItem>
                 )}
               />
-              <div className="flex items-center w-full ">
+              <div className="flex items-center w-full flex-row justify-between">
                 <FormField
                   control={form.control}
                   name="password"
@@ -166,29 +166,29 @@ export function LoginComponent() {
                   )}
                 />
                 <span
-                  className="flex px-4 pt-7 w-16"
+                  className="flex sm:px-4 px-2 pt-4 sm:pt-7 w-12 sm:w-16 cursor-pointer mt-4 sm:mt-0"
                   onClick={() => setShow(!show)}
                 >
                   <FingerprintIcon size={25} className="text-gray-400" />
                 </span>
               </div>
             </div>
-            <div className="grid gap-2 py-8">
+            <div className="grid gap-2 py-6 sm:py-8">
               <Button
                 disabled={isLoading}
                 type="submit"
-                className="flex gap-2 h-12"
+                className="flex gap-2 h-12 w-full"
               >
                 <span
                   className={
                     isLoading
-                      ? " border rounded-full px-3 py-2 animate-spin"
+                      ? "border rounded-full px-3 py-2 animate-spin"
                       : "hidden"
                   }
                 >
                   D
                 </span>
-                <span className={isLoading ? " " : "hidden"}>Loading ...</span>
+                <span className={isLoading ? "" : "hidden"}>Loading ...</span>
                 <span className={isLoading ? "hidden" : ""}>Login</span>
               </Button>
             </div>
@@ -196,7 +196,7 @@ export function LoginComponent() {
         </Form>
       </CardContent>
       <CardFooter className="flex flex-col space-y-5">
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500 text-center sm:text-left">
           Need password reset? Click
           {/* Dialog start */}
           <Dialog open={open} onOpenChange={setOpen}>
@@ -214,14 +214,16 @@ export function LoginComponent() {
               {isLoading ? (
                 <SuspenseLoading />
               ) : (
-                <div className="flex px-2 space-x-5 py-5">
+                <div className="flex flex-col sm:flex-row px-2 space-y-4 sm:space-y-0 sm:space-x-5 py-5">
                   <Input
                     type="email"
                     placeholder="name@domain.com"
+                    className="w-full"
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   <Button
                     disabled={email === ""}
+                    className="w-full sm:w-auto"
                     onClick={() => {
                       onPasswordReset(email);
                     }}
@@ -230,8 +232,10 @@ export function LoginComponent() {
                   </Button>
                 </div>
               )}
-              <DialogTrigger className="w-full text-right pt-5 ">
-                <Button variant={"destructive"}>Cancel</Button>
+              <DialogTrigger className="w-full text-right pt-5">
+                <Button variant={"destructive"} className="w-full sm:w-auto">
+                  Cancel
+                </Button>
               </DialogTrigger>
             </DialogContent>
           </Dialog>
@@ -239,5 +243,6 @@ export function LoginComponent() {
         </div>
       </CardFooter>
     </Card>
+
   );
 }

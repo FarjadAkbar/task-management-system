@@ -13,10 +13,10 @@ const page = () => {
     ];
 
     return (
-        <div className=" min-h-screen flex items-center justify-center p-1">
-            <div className="max-w-7xl w-full bg-white shadow-xl rounded-lg p-10">
-                <h1 className="text-3xl font-extrabold text-center text-gray-900">Graphic Designer</h1>
-                <p className="text-lg text-gray-600 text-center mt-2">Employee Guidelines & Responsibilities</p>
+        <div className="min-h-screen flex items-center justify-center p-1">
+            <div className="max-w-7xl w-full bg-white shadow-xl rounded-lg py-4 sm:p-10 p-2">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-center text-gray-900">Graphic Designer</h1>
+                <p className="sm:text-lg text-sm text-gray-600 text-center mt-2">Employee Guidelines & Responsibilities</p>
 
                 <div className="mt-6 border-t border-gray-300 pt-6">
                     <EmployeeGuidelines />
@@ -24,7 +24,7 @@ const page = () => {
 
                 {/* Role-Specific Guidelines Section */}
                 <section className="mt-10">
-                    <h2 className="text-2xl font-bold text-black mb-6 text-center">Video Editing/3D Animation Standards for Web and Social Media</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-black mb-6 text-center">Video Editing/3D Animation Standards for Web and Social Media</h2>
                     <ul className="list-disc list-inside space-y-2 text-gray-700 text-sm">
                         <li>
                             Keep the logo style, positioning, intro, and outro consistent for every video, unless specified otherwise.

@@ -52,12 +52,16 @@ const AllTools = () => {
 
   return (
     <main className="min-h-screen mx-auto px-4 sm:px-8 py-6">
-      <h2 className="text-3xl mb-8 text-center font-bold text-gray-800">Paid Tools By DolceFrutti</h2>
+      <h2 className="text-2xl sm:text-3xl mb-6 sm:mb-8 text-center font-bold text-gray-800">
+        Paid Tools By DolceFrutti
+      </h2>
 
-      <Card className="max-w-3xl mx-auto mb-12 shadow-lg rounded-xl bg-white border-0">
-        <CardContent className="pt-6">
-          <h2 className="text-xl font-bold mb-4">For Better Implementation and Efficiency</h2>
-          <p className="text-muted-foreground mb-6">
+      <Card className="w-full max-w-3xl mx-auto mb-8 sm:mb-12 shadow-lg rounded-xl bg-white border-0">
+        <CardContent className="pt-4 sm:pt-6">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+            For Better Implementation and Efficiency
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
             To support your work and ensure smooth operations, Dolce Frutti provides access to essential tools. Please
             read the following guidelines to maintain security and compliance.
           </p>
@@ -66,7 +70,7 @@ const AllTools = () => {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Important Notes</AlertTitle>
             <AlertDescription>
-              <ul className="list-disc pl-4 space-y-2 mt-2 ">
+              <ul className="list-disc pl-3 sm:pl-4 space-y-2 sm:space-y-3 mt-2">
                 <li>All tools and accounts provided by Dolce Frutti are strictly for company use.</li>
                 <li>These tools are licensed and paid by the company. Misuse may result in penalties.</li>
                 <li>Ensure that you log out after using shared accounts.</li>

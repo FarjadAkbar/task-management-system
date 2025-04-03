@@ -124,21 +124,21 @@ export function AvailabilitySettings() {
             }
 
             return (
-              <div key={day.value} className="flex items-center space-x-4">
-                <div className="w-24">
+              <div key={day.value} className="flex flex-wrap md:flex-nowrap items-center gap-2 sm:gap-4">
+                <div className="w-24 min-w-[80px]">
                   <Label>{day.label}</Label>
                 </div>
                 <Switch checked={dayAvailability.isActive} onCheckedChange={() => handleToggleDay(day.value)} />
 
                 {dayAvailability.isActive && (
                   <>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <Select
                         value={dayAvailability.startTime}
                         onValueChange={(value) => handleChangeTime(day.value, "startTime", value)}
                       >
-                        <SelectTrigger className="w-[110px]">
+                        <SelectTrigger className="w-[100px] sm:w-[110px]">
                           <SelectValue placeholder="Start time" />
                         </SelectTrigger>
                         <SelectContent>
@@ -149,12 +149,12 @@ export function AvailabilitySettings() {
                           ))}
                         </SelectContent>
                       </Select>
-                      <span>to</span>
+                      <span className="text-sm">to</span>
                       <Select
                         value={dayAvailability.endTime}
                         onValueChange={(value) => handleChangeTime(day.value, "endTime", value)}
                       >
-                        <SelectTrigger className="w-[110px]">
+                        <SelectTrigger className="w-[100px] sm:w-[110px]">
                           <SelectValue placeholder="End time" />
                         </SelectTrigger>
                         <SelectContent>
@@ -172,7 +172,7 @@ export function AvailabilitySettings() {
             )
           })}
 
-          <Button onClick={handleSave} disabled={isPending} className="mt-4">
+          <Button onClick={handleSave} disabled={isPending} className="mt-4 bg-black hover:bg-gold text-gold hover:text-black">
             {isPending ? (
               "Saving..."
             ) : (

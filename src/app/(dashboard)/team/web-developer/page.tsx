@@ -13,20 +13,20 @@ const Page = () => {
     ];
 
     return (
-        <div className=" min-h-screen flex items-center justify-center p-1">
-            <div className="max-w-7xl w-full bg-white shadow-xl rounded-lg p-10">
-                <h1 className="text-3xl font-extrabold text-center text-gray-900">Web Developer</h1>
-                <p className="text-lg text-gray-600 text-center mt-2">Employee Guidelines & Responsibilities</p>
+        <div className="min-h-screen flex items-center justify-center p-1">
+            <div className="max-w-7xl w-full bg-white shadow-xl rounded-lg py-4 sm:p-10 p-2">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-center text-gray-900">Web Developer</h1>
+                <p className="sm:text-lg text-sm text-gray-600 text-center mt-2">Employee Guidelines & Responsibilities</p>
 
-                <div className="mt-6 border-t border-gray-300 pt-6">
+                <div className="mt-6 border-t border-gray-300  pt-6">
                     <EmployeeGuidelines />
                 </div>
 
                 {/* Role-Specific Guidelines Section */}
                 <section className="mt-10">
-                    <h2 className="text-2xl font-bold text-black mb-6 text-center">Role-Specific Guidelines</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-black mb-6 text-center">Role-Specific Guidelines</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+                        <div className="bg-gray-50 sm:p-6 p-3 rounded-lg shadow-md">
                             <ul className="list-disc list-inside space-y-3 text-black text-base">
                                 <li>Collaborate on web app design, development & deployment.</li>
                                 <li>Ensure full responsiveness & mobile optimization.</li>
@@ -45,7 +45,7 @@ const Page = () => {
                                 <li>Prepare blueprints for new features & seek approval.</li>
                             </ul>
                         </div>
-                        <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+                        <div className="bg-gray-50 sm:p-6 p-3 rounded-lg shadow-md">
                             <ul className="list-disc list-inside space-y-3 text-black text-base">
                                 <li>Maintain clear project documentation & workflows.</li>
                                 <li>Be available for urgent fixes or deployments.</li>

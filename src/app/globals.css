@@ -13,3 +13,34 @@
     --radius: 0.5rem;
   }
 }
+.fc-header-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px;
+}
+
+.fc-toolbar-chunk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fc-button {
+  font-size: 12px; /* Reduce button font size */
+  padding: 6px 12px; /* Smaller padding */
+  min-width: 80px; /* Ensures buttons do not shrink too much */
+}
+
+@media (max-width: 640px) {
+  .fc-toolbar-chunk {
+    justify-content: center; /* Center align buttons */
+    /* flex-direction: column;  */
+  }
+
+  .fc-button {
+    width: 30%; /* Full width buttons */
+    padding: 8px; /* Slightly larger padding for better touch */
+  }
+}

@@ -18,7 +18,7 @@ export function ChatSidebar({ activeRoomId, onRoomSelect }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("")
 
   return (
-    <div className="w-80 border-r flex flex-col h-full">
+    <div className="w-full md:w-80 border-r flex flex-col h-full">
       <div className="p-4 border-b">
         <h2 className="text-xl font-semibold mb-4">Messages</h2>
         <div className="relative">
@@ -64,6 +64,7 @@ export function ChatSidebar({ activeRoomId, onRoomSelect }: ChatSidebarProps) {
         </TabsContent>
       </Tabs>
     </div>
+
   )
 }
 
