@@ -43,7 +43,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
       setIsLoading(true);
-      await axios.put(`/api/user/${data.id}/updateprofile`, data);
+      await axios.put(`/api/users/${data.id}/updateprofile`, data);
       //TODO: send data to the server
       toast.success("Profile updated successfully");
       router.refresh();

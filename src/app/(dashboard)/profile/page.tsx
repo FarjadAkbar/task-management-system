@@ -2,7 +2,7 @@ import { getUser } from "@/lib/get-user";
 import { ProfileForm } from "@/components/dashboard/profile/ProfileForm";
 import { PasswordChangeForm } from "@/components/dashboard/profile/PasswordChangeForm";
 import { ProfilePhotoForm } from "@/components/dashboard/profile/ProfilePhotoForm";
-import Container from "../components/ui/Container";
+import Container from "../../../components/ui/container";
 import H4Title from "@/components/typography/h4";
 
 

@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dialog";
 import { useCreateToolMutation } from "@/service/tools";
 import { useDeleteFileMutation } from "@/service/files";
+import AdminWrapper from "../admin-wrapper";
 
 export default function NewToolDialog({ userId }: { userId: string }) {
   const [open, setOpen] = useState(false);
@@ -93,10 +94,10 @@ export default function NewToolDialog({ userId }: { userId: string }) {
       documentID: uploadedFiles[0]?.id || "",
       createdBy: userId,
     };
-
     mutate(payload, {
       onSuccess: (data) => {
         const tool = data.tool;
+        form.reset();
         toast({
           title: "Success",
           description: "Tool created successfully",
@@ -117,7 +118,9 @@ export default function NewToolDialog({ userId }: { userId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-black text-gold font-bold hover:bg-gold hover:text-black px-5 py-2 rounded-lg shadow-lg hover:scale-105 transition duration-300">+ New Tool</Button>
+        <AdminWrapper>
+          <Button className="bg-black text-gold font-bold hover:bg-gold hover:text-black px-5 py-2 rounded-lg shadow-lg hover:scale-105 transition duration-300">+ New Tool</Button>
+        </AdminWrapper>
       </DialogTrigger>
       <DialogContent className="w-[600px] max-h-[80vh] overflow-y-auto bg-white shadow-xl rounded-none">
         <DialogHeader>

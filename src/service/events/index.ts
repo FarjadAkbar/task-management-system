@@ -10,7 +10,7 @@ import {
   updateAvailabilityFn,
   updateEventFn,
 } from "./fn";
-import { createEvent, updateEvent } from "@/lib/google-calendar";
+import { createEvent, updateEvent } from "@/actions/google-calendar";
 
 // Fetch events for the current user
 export function useEvents(range?: CalendarViewRangeType) {

@@ -12,19 +12,21 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { Button } from "../ui/button";
 
 interface DeleteConfirmationDialogProps {
     name: string;
     onDelete: (name: string) => void;
+    disabled?: boolean
 }
 
-const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ name, onDelete }) => {
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ name, onDelete, disabled = false }) => {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <button className="flex items-center gap-2 w-full text-left px-2 py-1 text-sm hover:bg-gray-100">
+                <Button variant="destructive" size="sm" disabled={disabled}>
                     <RiDeleteBin6Line /> Delete
-                </button>
+                </Button>
             </AlertDialogTrigger>
             <AlertDialogContent className="bg-white shadow-lg text-left">
                 <AlertDialogHeader>

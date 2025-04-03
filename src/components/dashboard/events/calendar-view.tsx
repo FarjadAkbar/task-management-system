@@ -79,7 +79,7 @@ export function CalendarView() {
 
   return (
     <>
-      <Card className="p-4">
+      <Card className="p-4 w-full max-w-full overflow-x-auto">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
@@ -87,6 +87,17 @@ export function CalendarView() {
             left: "prev,next today",
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
+          }}
+          buttonText={{
+            today: "Today",
+            month: "Month",
+            week: "Week",
+            day: "Day",
+          }}
+          dayCellDidMount={(info) => {
+            if (info.isToday) {
+              info.el.classList.add("font-bold");
+            }
           }}
           events={formattedEvents}
           eventClick={handleEventClick}

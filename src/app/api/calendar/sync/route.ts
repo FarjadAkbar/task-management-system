@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { getUser } from "@/lib/get-user"
-import { syncEventsFromGoogle } from "@/lib/google-calendar"
+import { syncEventsFromGoogle } from "@/actions/google-calendar"
 
 export async function POST(req: Request) {
   try {

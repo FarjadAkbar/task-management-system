@@ -62,7 +62,7 @@ export const InviteUserEmail = ({
             </Text>
             <Text className="text-black text-[14px] leading-[24px]">
               To accept this invitation, click the button below. And use this
-              password to login: 
+              password to login: &nbsp;
               <strong>{invitedUserPassword}</strong>
             </Text>
 

@@ -17,7 +17,7 @@ const cards = [
   {
     title: "Task Manager",
     src: "/images/task.png",
-    href: "/projects",
+    href: "/projects/67dfb82f97615f9768c9824f/board",
     allowedUser: true,
   },
   {
@@ -50,19 +50,19 @@ const cards = [
     href: "/files",
     allowedUser: true,
   },
-  {
-    title: "Share Folder",
-    src: "/images/sharedfolder.png",
-    href: "/files/shared",
-    allowedUser: true,
-  },
+  // {
+  //   title: "Share Folder",
+  //   src: "/images/sharedfolder.png",
+  //   href: "/files/shared",
+  //   allowedUser: true,
+  // },
 ];
 
 export default async function Dashboard() {
   const data = await getUser();
 
   if (!data) {
-    return <div>No user data.</div>;
+    return <div className="text-center text-gray-700 dark:text-white">No user data.</div>;
   }
 
   // Dynamically filter cards based on allowedRoles
@@ -73,12 +73,12 @@ export default async function Dashboard() {
   return (
     <>
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-amber-300 to-gold rounded-2xl p-8 mb-8 shadow-lg">
+      <div className="bg-gradient-to-r from-amber-300 to-gold rounded-2xl p-6 md:p-8 mb-8 shadow-lg">
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold text-black mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">
             Welcome back, {data.name}!
           </h1>
-          <p className="text-black text-lg">
+          <p className="text-black text-base md:text-lg">
             <span className="font-medium">{data.role}</span> • Access all your
             workspace tools and resources
           </p>
@@ -86,11 +86,11 @@ export default async function Dashboard() {
       </div>
 
       {/* Cards Grid */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-6 text-gray-800 dark:text-white">
+      <div className="mb-6 md:mb-8">
+        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-gray-800 dark:text-white">
           Workspace Tools
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {filteredCards.map((card, index) => (
             <DashboardCard
               key={index}

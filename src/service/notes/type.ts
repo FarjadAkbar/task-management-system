@@ -1,11 +1,15 @@
+import { UserType } from "../users/type";
 
 export type NoteType = {
   id: string;
   title: string;
   content: string;
+  is_public: boolean;
   visibility: "private" | "shared";
   creatorName?: string;
   authorId: string;
+  updatedAt: Date;
+  author: UserType;
 };
 
 

@@ -16,6 +16,9 @@ export async function GET(req: Request) {
 
   const notes = await prismadb.notes.findMany({
     where: { authorId: userId },
+    include: {
+      author: true,
+    },
     orderBy: { updatedAt: "desc" },
   });
 
