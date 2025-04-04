@@ -189,7 +189,7 @@ export function FileGrid({ files, onFolderClick, isAdmin }: FileGridProps) {
               </div>
 
               <div className="mt-2 text-center">
-                <h3 className="text-sm font-medium truncate w-full" title={file.name}>
+                <h3 className="text-sm font-medium truncate w-24 overflow-hidden whitespace-nowrap" title={file.name}>
                   {file.name}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1">

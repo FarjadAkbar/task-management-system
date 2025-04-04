@@ -261,35 +261,36 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
             <Separator />
 
             {/* Tabs for subtasks, checklist, comments, etc. */}
-            <Tabs defaultValue="checklist">
+            {/*<Tabs defaultValue="checklist">
               <TabsList className="grid grid-cols-4">
-                {/* <TabsTrigger value="subtasks">Subtasks</TabsTrigger> */}
+                 <TabsTrigger value="subtasks">Subtasks</TabsTrigger>
                 <TabsTrigger value="checklist">Checklist</TabsTrigger>
                 <TabsTrigger value="comments">Comments</TabsTrigger>
                 <TabsTrigger value="attachments">Attachments</TabsTrigger>
                 <TabsTrigger value="feedback">Feedback</TabsTrigger>
               </TabsList>
-
+ */}
               {/* <TabsContent value="subtasks" className="space-y-4 mt-4">
                 <TaskSubtasks taskId={task.id} subtasks={task.subtasks} />
               </TabsContent> */}
 
-              <TabsContent value="checklist" className="space-y-4 mt-4">
+              {/* <TabsContent value="attachments" className="space-y-4 mt-4"> */}
+              <TaskAttachments taskId={task.id} attachments={task.documents} />
+              {/* </TabsContent> */}
+              
+              {/* <TabsContent value="checklist" className="space-y-4 mt-4"> */}
                 <TaskChecklist taskId={task.id} checklist={task.checklists} />
-              </TabsContent>
+              {/* </TabsContent> */}
 
-              <TabsContent value="comments" className="space-y-4 mt-4">
+              {/* <TabsContent value="comments" className="space-y-4 mt-4"> */}
                 <TaskComments taskId={task.id} comments={task.comments} />
-              </TabsContent>
+              {/* </TabsContent> */}
 
-              <TabsContent value="attachments" className="space-y-4 mt-4">
-                <TaskAttachments taskId={task.id} attachments={task.documents} />
-              </TabsContent>
 
-              <TabsContent value="feedback" className="space-y-4 mt-4">
+              {/* <TabsContent value="feedback" className="space-y-4 mt-4"> */}
                 <TaskFeedback taskId={task.id} feedback={task.task_feedback} />
-              </TabsContent>
-            </Tabs>
+              {/* </TabsContent> */}
+            {/* </Tabs> */}
           </div>
         </DialogContent>
       </Dialog>

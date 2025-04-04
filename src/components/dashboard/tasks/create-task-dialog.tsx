@@ -132,8 +132,8 @@ export function CreateTaskDialog({ open, onOpenChange, sectionId, sprintId, pare
                     <MultiSelect
                       placeholder="Select assignees"
                       options={userOptions}
-                      selected={field.value || []}
-                      onChange={field.onChange}
+                      defaultValue={field.value || []}
+                      onValueChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -151,9 +151,9 @@ export function CreateTaskDialog({ open, onOpenChange, sectionId, sprintId, pare
                     <MultiSelect
                       placeholder="Select tags"
                       options={tagOptions}
-                      selected={field.value || []}
-                      onChange={field.onChange}
-                      allowCreate
+                      defaultValue={field.value || []}
+                      onValueChange={field.onChange}
+                      maxCount={3}
                     />
                   </FormControl>
                   <FormMessage />

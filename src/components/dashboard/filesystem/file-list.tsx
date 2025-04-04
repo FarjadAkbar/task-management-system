@@ -124,7 +124,7 @@ export function FileList({ files, onFolderClick, isAdmin }: FileListProps) {
                     ) : (
                       <File className="h-5 w-5 text-gray-400" />
                     )}
-                    <span className="font-medium">{file.name}</span>
+                    <span className="font-medium w-24 overflow-hidden whitespace-nowrap">{file.name}</span>
                   </div>
                 </TableCell>
                 <TableCell>{file.size !== undefined ? formatFileSize(file.size) : "-"}</TableCell>
