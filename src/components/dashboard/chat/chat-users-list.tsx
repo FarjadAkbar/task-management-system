@@ -13,8 +13,21 @@ interface ChatUsersListProps {
 }
 
 export function ChatUsersList({ search, onUserSelect }: ChatUsersListProps) {
-  const { data, isLoading, isError } = useGetUsersQuery({search})
+  const { data, isLoading, isError } = useGetUsersQuery({ search })
   const { mutate: createRoom, isPending } = useCreateChatRoomMutation()
+
+  function stringToColor(str: string) {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    let color = '#'
+    for (let i = 0; i < 3; i++) {
+      const value = (hash >> (i * 8)) & 0xff
+      color += ('00' + value.toString(16)).substr(-2)
+    }
+    return color
+  }
 
   const handleUserClick = (userId: string) => {
     createRoom(
@@ -64,12 +77,12 @@ export function ChatUsersList({ search, onUserSelect }: ChatUsersListProps) {
       {data?.users.map((user) => (
         <div
           key={user.id}
-          className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-muted transition-colors"
+          className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-muted transition-colors bg-white"
         >
           <div className="flex items-center gap-3 cursor-pointer">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user.avatar} />
-              <AvatarFallback>{user.name?.substring(0, 2) || user.email?.substring(0, 2) || "U"}</AvatarFallback>
+              <AvatarFallback style={{ backgroundColor: stringToColor(user.id), color: "#fff" }}>{user.name?.substring(0, 2) || user.email?.substring(0, 2) || "U"}</AvatarFallback>
             </Avatar>
 
             <div>

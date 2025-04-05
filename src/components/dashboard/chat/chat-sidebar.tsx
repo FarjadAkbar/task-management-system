@@ -25,7 +25,7 @@ export function ChatSidebar({ activeRoomId, onRoomSelect }: ChatSidebarProps) {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search..."
-            className="pl-8"
+            className="pl-8 border-0 border-b-2 border-gold focus:border-black focus:outline-none rounded-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -33,12 +33,12 @@ export function ChatSidebar({ activeRoomId, onRoomSelect }: ChatSidebarProps) {
       </div>
 
       <Tabs defaultValue="chats" className="flex-1 flex flex-col" onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-2 mx-4 mt-2">
-          <TabsTrigger value="chats" className="flex items-center gap-2">
+        <TabsList className="grid grid-cols-2 mx-4 mt-2 bg-black">
+          <TabsTrigger value="chats" className="flex items-center gap-2 text-gold">
             <MessageSquare className="h-4 w-4" />
             <span>Chats</span>
           </TabsTrigger>
-          <TabsTrigger value="users" className="flex items-center gap-2">
+          <TabsTrigger value="users" className="flex items-center gap-2 text-gold">
             <Users className="h-4 w-4" />
             <span>Users</span>
           </TabsTrigger>

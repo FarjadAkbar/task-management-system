@@ -4,6 +4,7 @@ import { PasswordChangeForm } from "@/components/dashboard/profile/PasswordChang
 import { ProfilePhotoForm } from "@/components/dashboard/profile/ProfilePhotoForm";
 import Container from "../../../components/ui/container";
 import H4Title from "@/components/typography/h4";
+import Link from "next/link";
 
 
 export default async function Profile() {
@@ -21,8 +22,17 @@ export default async function Profile() {
       <H4Title>Profile</H4Title>
       <ProfileForm data={data} />
 
-      <H4Title>Password change</H4Title>
-      <PasswordChangeForm userId={data.id} />
+      {/* <H4Title>Webmail</H4Title>
+      <div>
+        <Link href="https://webmail-oxcs.networksolutionsemail.com/appsuite/?user_domain=mail.dolcefrutti.com">
+          https://webmail-oxcs.networksolutionsemail.com/appsuite/?user_domain=mail.dolcefrutti.com</Link>
+      </div> */}
+
+
+
+
+      {/* <H4Title>Password change</H4Title>
+      <PasswordChangeForm userId={data.id} /> */}
     </>
   );
 }
