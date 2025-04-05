@@ -6,14 +6,39 @@ import { Clock, CheckCircle2, BarChart, ListChecks, MessageSquare, Paperclip } f
 import { format } from "date-fns"
 import { TaskDetailDialog } from "./task-detail-dialog"
 import { TaskType } from "@/service/tasks/type"
+import { useDeleteTask } from "@/service/tasks"
+import { toast } from "@/hooks/use-toast"
+import DeleteConfirmationDialog from "@/components/modals/delete-confitmation"
 
 interface TaskCardProps {
   task: TaskType
+  taskId: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({ task, taskId, open, onOpenChange }: TaskCardProps) {
   const [showDetailDialog, setShowDetailDialog] = useState(false)
+  const { mutate: deleteTask, isPending: isDeleting } = useDeleteTask()
 
+  const onDeleteTask = () => {
+    deleteTask(taskId, {
+      onSuccess: () => {
+        toast({
+          title: "Task deleted",
+          description: "The task has been deleted",
+        })
+        onOpenChange(false)
+      },
+      onError: (error) => {
+        toast({
+          title: "Failed to delete task",
+          description: error.message,
+          variant: "destructive",
+        })
+      },
+    })
+  }
   // Determine priority color
   const priorityColor =
     task.priority === "HIGH" ? "text-red-500" : task.priority === "MEDIUM" ? "text-amber-500" : "text-blue-500"
@@ -121,6 +146,15 @@ export function TaskCard({ task }: TaskCardProps) {
                 <span>{task.documents.length}</span>
               </div>
             )}
+
+            {/* Push the delete button to the right */}
+            <div className="ml-auto">
+              <DeleteConfirmationDialog
+                name={task.title}
+                onDelete={onDeleteTask}
+                disabled={isDeleting}
+              />
+            </div>
           </div>
         </div>
       </div>

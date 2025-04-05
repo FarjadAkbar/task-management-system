@@ -52,24 +52,24 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
     })
   }
 
-  const onDeleteTask = () => {
-    deleteTask(taskId, {
-      onSuccess: () => {
-        toast({
-          title: "Task deleted",
-          description: "The task has been deleted",
-        })
-        onOpenChange(false)
-      },
-      onError: (error) => {
-        toast({
-          title: "Failed to delete task",
-          description: error.message,
-          variant: "destructive",
-        })
-      },
-    })
-  }
+  // const onDeleteTask = () => {
+  //   deleteTask(taskId, {
+  //     onSuccess: () => {
+  //       toast({
+  //         title: "Task deleted",
+  //         description: "The task has been deleted",
+  //       })
+  //       onOpenChange(false)
+  //     },
+  //     onError: (error) => {
+  //       toast({
+  //         title: "Failed to delete task",
+  //         description: error.message,
+  //         variant: "destructive",
+  //       })
+  //     },
+  //   })
+  // }
 
   // Calculate completion stats
   const subtaskCount = task?.subtasks?.length || 0
@@ -132,7 +132,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
                 <Button variant="outline" size="sm" onClick={() => setShowEditDialog(true)} disabled={isDeleting}>
                   <Edit className="h-4 w-4 mr-1" /> Edit
                 </Button>
-                <DeleteConfirmationDialog name={task.title} onDelete={onDeleteTask} disabled={isDeleting} />
+                {/* <DeleteConfirmationDialog name={task.title} onDelete={onDeleteTask} disabled={isDeleting} /> */}
 
                 {!isCompleted && (
                   <Button size="sm" onClick={handleCompleteTask} disabled={isCompleting}>
@@ -229,33 +229,6 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
                   </div>
                 </div>
               )}
-
-              {/* Progress */}
-              <div className="space-y-4">
-                {subtaskCount > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Subtasks</span>
-                      <span>
-                        {completedSubtasks}/{subtaskCount}
-                      </span>
-                    </div>
-                    <Progress value={subtaskProgress} className="h-2" />
-                  </div>
-                )}
-
-                {checklistCount > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Checklist</span>
-                      <span>
-                        {completedChecklists}/{checklistCount}
-                      </span>
-                    </div>
-                    <Progress value={checklistProgress} className="h-2" />
-                  </div>
-                )}
-              </div>
             </div>
 
             <Separator />
@@ -270,26 +243,52 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
                 <TabsTrigger value="feedback">Feedback</TabsTrigger>
               </TabsList>
  */}
-              {/* <TabsContent value="subtasks" className="space-y-4 mt-4">
+            {/* <TabsContent value="subtasks" className="space-y-4 mt-4">
                 <TaskSubtasks taskId={task.id} subtasks={task.subtasks} />
               </TabsContent> */}
 
-              {/* <TabsContent value="attachments" className="space-y-4 mt-4"> */}
-              <TaskAttachments taskId={task.id} attachments={task.documents} />
-              {/* </TabsContent> */}
-              
-              {/* <TabsContent value="checklist" className="space-y-4 mt-4"> */}
-                <TaskChecklist taskId={task.id} checklist={task.checklists} />
-              {/* </TabsContent> */}
+            {/* <TabsContent value="attachments" className="space-y-4 mt-4"> */}
+            <TaskAttachments taskId={task.id} attachments={task.documents} />
+            {/* </TabsContent> */}
+            {/* Progress */}
+            <div className="space-y-4">
+              {subtaskCount > 0 && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Subtasks</span>
+                    <span>
+                      {completedSubtasks}/{subtaskCount}
+                    </span>
+                  </div>
+                  <Progress value={subtaskProgress} className="h-2" />
+                </div>
+              )}
 
-              {/* <TabsContent value="comments" className="space-y-4 mt-4"> */}
-                <TaskComments taskId={task.id} comments={task.comments} />
-              {/* </TabsContent> */}
+              {checklistCount > 0 && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Checklist</span>
+                    <span>
+                      {completedChecklists}/{checklistCount}
+                    </span>
+                  </div>
+                  <Progress value={checklistProgress} className="h-2" />
+                </div>
+              )}
+            </div>
+
+            {/* <TabsContent value="checklist" className="space-y-4 mt-4"> */}
+            <TaskChecklist taskId={task.id} checklist={task.checklists} />
+            {/* </TabsContent> */}
+
+            {/* <TabsContent value="comments" className="space-y-4 mt-4"> */}
+            <TaskComments taskId={task.id} comments={task.comments} />
+            {/* </TabsContent> */}
 
 
-              {/* <TabsContent value="feedback" className="space-y-4 mt-4"> */}
-                <TaskFeedback taskId={task.id} feedback={task.task_feedback} />
-              {/* </TabsContent> */}
+            {/* <TabsContent value="feedback" className="space-y-4 mt-4"> */}
+            <TaskFeedback taskId={task.id} feedback={task.task_feedback} />
+            {/* </TabsContent> */}
             {/* </Tabs> */}
           </div>
         </DialogContent>

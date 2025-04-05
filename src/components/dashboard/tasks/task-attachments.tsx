@@ -3,12 +3,14 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { FileText, Image, FileArchive, FileAudio, FileVideo, FileIcon, Download, ExternalLink } from "lucide-react"
+import { FileText, Image, FileArchive, FileAudio, FileVideo, FileIcon, Download, ExternalLink, Paperclip } from "lucide-react"
 import { formatFileSize } from "@/lib/utils"
 import { FileUploaderDropzone } from "@/components/ui/file-uploader-dropzone"
 import { toast } from "@/hooks/use-toast"
 import { useAddTaskAttachmentsMutation } from "@/service/tasks"
 import { TaskAttachment } from "@/service/tasks/type"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+
 
 interface TaskAttachmentsProps {
   taskId: string
@@ -17,12 +19,13 @@ interface TaskAttachmentsProps {
 
 export function TaskAttachments({ taskId, attachments = [] }: TaskAttachmentsProps) {
   const { mutate: addTaskAttachments } = useAddTaskAttachmentsMutation()
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleFileUpload = (files: Array<{ id: string; name: string; url: string }>) => {
     console.log(files);
     // addTaskAttachments({ taskId, documentId: files[0].id })
   }
-  
+
   const getFileIcon = (mimeType: string) => {
     const type = mimeType.toLowerCase()
 
@@ -41,9 +44,23 @@ export function TaskAttachments({ taskId, attachments = [] }: TaskAttachmentsPro
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <FileUploaderDropzone onUploadSuccess={handleFileUpload} taskId={taskId} />
-      </div>
+
+      <Button onClick={() => setIsModalOpen(true)} className="bg-black text-gold hover:bg-gold hover:text-black w-full">
+        <Paperclip className="h-4 w-4" /> Attach Docs
+      </Button>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="bg-white p-6 rounded-lg shadow-lg w-96">
+          <DialogTitle className="text-lg font-medium mb-4">Attach Documents</DialogTitle>
+          <FileUploaderDropzone onUploadSuccess={handleFileUpload} taskId={taskId} />
+          <div className="mt-4 text-right">
+            <Button onClick={() => setIsModalOpen(false)} variant="outline">
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {attachments.length === 0 ? (
