@@ -122,7 +122,7 @@ export default function NewToolDialog({ userId }: { userId: string }) {
           <Button className="bg-black text-gold font-bold hover:bg-gold hover:text-black px-5 py-2 rounded-lg shadow-lg hover:scale-105 transition duration-300">+ New Tool</Button>
         </AdminWrapper>
       </DialogTrigger>
-      <DialogContent className="w-[600px] max-h-[80vh] overflow-y-auto bg-white shadow-xl rounded-none">
+      <DialogContent className="w-[600px] max-h-[80vh] overflow-y-auto bg-white shadow-xl rounded-none z-[9999]">
         <DialogHeader>
           <DialogTitle className="p-2">New Tool</DialogTitle>
           <DialogDescription className="p-2">
