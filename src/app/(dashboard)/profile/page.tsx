@@ -4,6 +4,7 @@ import { PasswordChangeForm } from "@/components/dashboard/profile/PasswordChang
 import { ProfilePhotoForm } from "@/components/dashboard/profile/ProfilePhotoForm";
 import Container from "../../../components/ui/container";
 import H4Title from "@/components/typography/h4";
+import LoginCredentails from "@/components/dashboard/profile/LoginCredentails";
 
 
 export default async function Profile() {
@@ -20,9 +21,10 @@ export default async function Profile() {
 
       <H4Title>Profile</H4Title>
       <ProfileForm data={data} />
+      <LoginCredentails />
 
-      <H4Title>Password change</H4Title>
-      <PasswordChangeForm userId={data.id} />
+      {/* <H4Title>Password change</H4Title>
+      <PasswordChangeForm userId={data.id} /> */}
     </>
   );
 }
