@@ -43,7 +43,7 @@ export function ChatMessages({ messages, currentUserId }: ChatMessagesProps) {
       {Object.entries(groupedMessages).map(([date, dateMessages]) => (
         <div key={date} className="space-y-4">
           <div className="flex justify-center">
-            <div className="bg-muted px-3 py-1 rounded-full text-xs text-muted-foreground">
+            <div className="bg-muted px-3 py-1 rounded-full text-xs text-muted-foreground bg-white">
               {format(new Date(date), "MMMM d, yyyy")}
             </div>
           </div>
@@ -62,7 +62,7 @@ export function ChatMessages({ messages, currentUserId }: ChatMessagesProps) {
                 {!isCurrentUser && showAvatar ? (
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={message.sender.avatar} />
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-gray-300">
                       {message.sender.name?.substring(0, 2) || message.sender.email?.substring(0, 2) || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -72,12 +72,12 @@ export function ChatMessages({ messages, currentUserId }: ChatMessagesProps) {
 
                 <div
                   className={cn("max-w-[70%] rounded-lg px-3 py-2 text-sm", {
-                    "bg-primary text-primary-foreground": isCurrentUser,
-                    "bg-muted": !isCurrentUser,
+                    "bg-[#dcf8c6] text-black rounded-2xl rounded-br-none": isCurrentUser, // WhatsApp green
+                    "bg-white text-black rounded-2xl rounded-bl-none": !isCurrentUser,
                   })}
                 >
                   {!isCurrentUser && showAvatar && <p className="text-xs font-medium mb-1">{message.sender.name}</p>}
-                  <p>{message.content}</p>
+                  <p >{message.content}</p>
                   <p className="text-xs opacity-70 text-right mt-1">{format(new Date(message.createdAt), "h:mm a")}</p>
                 </div>
               </div>

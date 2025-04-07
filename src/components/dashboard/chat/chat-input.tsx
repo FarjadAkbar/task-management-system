@@ -62,11 +62,11 @@ export function ChatInput({ value, onChange, onSend, isLoading, disabled }: Chat
 
         <Button
           size="icon"
-          className="h-10 w-10 shrink-0 rounded-full"
+          className="h-10 w-10 shrink-0 bg-green-500 hover:bg-green-600 text-white rounded-full"
           onClick={onSend}
           disabled={!value.trim() || isLoading || disabled}
         >
-          <Send className="h-4 w-4" />
+          <Send className="h-6 w-6" />
         </Button>
       </div>
     </div>
