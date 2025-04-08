@@ -12,11 +12,10 @@ import { Loader2, Upload, File, X } from "lucide-react"
 
 interface Props {
   onUploadSuccess?: (files: { id: string; name: string; url: string }[]) => void
-  taskId?: string
   folderId?: string
 }
 
-export function FileUploaderDropzone({ onUploadSuccess, taskId, folderId }: Props) {
+export function FileUploaderDropzone({ onUploadSuccess, folderId }: Props) {
   const router = useRouter()
   const [isDragging, setIsDragging] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -61,12 +60,10 @@ export function FileUploaderDropzone({ onUploadSuccess, taskId, folderId }: Prop
 
     setIsUploading(true)
     const uploadedFiles = []
-console.log(taskId, folderId)
     try {
       for (const file of selectedFiles) {
         const formData = new FormData()
         formData.append("file", file)
-        if (taskId) formData.append("taskId", taskId)
         if (folderId) formData.append("folderId", folderId)
 
         const result = await uploadFile(formData)
@@ -104,7 +101,7 @@ console.log(taskId, folderId)
     } finally {
       setIsUploading(false)
     }
-  }, [selectedFiles, taskId, folderId, onUploadSuccess, router])
+  }, [selectedFiles, folderId, onUploadSuccess, router])
 
   return (
     <div className="w-full">

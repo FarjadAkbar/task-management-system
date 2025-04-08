@@ -20,7 +20,11 @@ export function TaskAttachments({ taskId, attachments = [] }: TaskAttachmentsPro
 
   const handleFileUpload = (files: Array<{ id: string; name: string; url: string }>) => {
     console.log(files);
-    // addTaskAttachments({ taskId, documentId: files[0].id })
+    files.forEach((file) => {
+      if (file.id) {
+        addTaskAttachments({ taskId, documentId: file.id })
+      }
+    })
   }
   
   const getFileIcon = (mimeType: string) => {
@@ -42,7 +46,7 @@ export function TaskAttachments({ taskId, attachments = [] }: TaskAttachmentsPro
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <FileUploaderDropzone onUploadSuccess={handleFileUpload} taskId={taskId} />
+        <FileUploaderDropzone onUploadSuccess={handleFileUpload} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

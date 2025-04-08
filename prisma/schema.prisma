@@ -32,6 +32,7 @@ model Users {
   googleAccessToken  String?
   googleTokenExpiry  DateTime?
   googleCalendarId   String?
+  folderId           String?
 
   // File system relations
   documents         Documents[] @relation("user_documents")

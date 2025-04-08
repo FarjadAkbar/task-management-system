@@ -20,13 +20,6 @@ export async function uploadFile(formData: FormData) {
     // Get the folder ID if provided
     const folderId = formData.get("folderId") as string
 
-    // Add debug logging
-    console.log("Starting file upload:", {
-      fileName: file.name,
-      fileSize: file.size,
-      folderId: folderId || "root folder",
-    })
-
     // Upload file to Google Drive
     const uploadedFile = await uploadFileToDrive(file, folderId)
 
@@ -44,20 +37,8 @@ export async function uploadFile(formData: FormData) {
       },
     })
 
-    // If taskId is provided, assign the document to the task
-    const taskId = formData.get("taskId") as string
-    if (taskId) {
-      await prismadb.taskDocument.create({
-        data: {
-          taskId,
-          documentId: document.id,
-        },
-      })
-    }
 
     revalidatePath("/documents")
-    if (taskId) revalidatePath(`/projects/tasks/${taskId}`)
-
     return {
       success: true,
       file: {
