@@ -90,6 +90,7 @@ export const listFilesInFolder = async (
 // Get file or folder details
 export const getFileDetails = async (fileId: string) => {
   const drive = initGoogleDriveClient()
+  console.log(drive, "drive");
 
   const response = await drive.files.get({
     fileId,
@@ -97,6 +98,7 @@ export const getFileDetails = async (fileId: string) => {
     supportsAllDrives: true,
   })
 
+  console.log(response.data, "response");
   return response.data
 }
 
