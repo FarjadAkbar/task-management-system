@@ -5,26 +5,27 @@ import { deleteFileFromDrive } from "@/lib/google-drive"
 
 export async function POST(req: NextRequest, { params }: { params: { fileId: string } }) {
   try {
-    const user = await getUser()
-    if (!user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const { fileId } = await params;
+
+    if (!fileId) {
+      return NextResponse.json({ error: "File ID is required" }, { status: 400 })
     }
+    const body = await req.json();
 
-    const { userId } = await params
-
-    if (!userId) {
+    if (!body.userId) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 })
     }
 
+    console.log(fileId, ".......")
     await prismadb.users.update({
-      where: { id: userId },
+      where: { id: body.userId },
       data: { folderId: fileId },
     });
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting file:", error)
-    return NextResponse.json({ error: "Failed to delete file" }, { status: 500 })
+    console.error("Error deleting file:", error.message)
+    return NextResponse.json({ error: "Failed to assign folder" }, { status: 500 })
   }  
 }
 

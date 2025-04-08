@@ -31,6 +31,7 @@ export function FileExplorer({ isAdmin }: FileExplorerProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [files, setFiles] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
+  const [debouncedQuery, setDebouncedQuery] = useState("")
   const [folderPath, setFolderPath] = useState<Array<{ id: string; name: string }>>([])
 
   // Load files
@@ -84,6 +85,14 @@ export function FileExplorer({ isAdmin }: FileExplorerProps) {
 
     updateFolderPath()
   }, [folder])
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery)
+    }, 300) // 300ms debounce
+
+    return () => clearTimeout(handler)
+  }, [searchQuery])
 
   // Handle folder navigation
   const handleFolderClick = (folderId: string) => {

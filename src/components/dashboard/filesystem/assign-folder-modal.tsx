@@ -37,8 +37,8 @@ export function AssignFolderModal({
   const [selectedUserName, setSelectedUserName] = useState<string>("")
   const [openCombobox, setOpenCombobox] = useState(false)
 
-  const { data: users, isLoading } = useGetUsersQuery({ search: "" })
-  const { mutate: assignFolderToUser, isLoading: isAssigningFolder } = useAssignFolderMutation()
+  const { data, isLoading } = useGetUsersQuery({ search: "" })
+  const { mutate: assignFolderToUser, isPending } = useAssignFolderMutation()
 
   const handleAssign = async () => {
     if (!selectedUser) {
@@ -101,7 +101,7 @@ export function AssignFolderModal({
                       {isLoading ? (
                         <SuspenseLoading />
                       ) : (
-                        users?.map((user) => (
+                        data?.users?.map((user) => (
                           <CommandItem
                             key={user.id}
                             value={user.id}
@@ -132,8 +132,8 @@ export function AssignFolderModal({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleAssign} disabled={!selectedUser || isAssigningFolder}>
-            {isAssigningFolder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button onClick={handleAssign} disabled={!selectedUser || isPending}>
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Assign Folder
           </Button>
         </DialogFooter>

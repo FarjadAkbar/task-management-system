@@ -168,15 +168,17 @@ export function FileList({ files, onFolderClick, isAdmin }: FileListProps) {
                               Rename
                             </DropdownMenuItem> */}
 
-                            <DropdownMenuItem
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setShowAssignFolderModal(true)
-                              }}
-                            >
-                              <User className="h-4 w-4 mr-2" />
-                              Assign Folder
-                            </DropdownMenuItem>
+{file.mimeType === "application/vnd.google-apps.folder" && (
+  <DropdownMenuItem
+    onClick={(e) => {
+      e.stopPropagation();
+      setShowAssignFolderModal(true);
+    }}
+  >
+    <User className="h-4 w-4 mr-2" />
+    Assign Folder
+  </DropdownMenuItem>
+)}
                             </>
                           )}
     
