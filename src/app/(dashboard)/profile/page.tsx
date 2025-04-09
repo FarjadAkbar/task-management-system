@@ -1,8 +1,8 @@
 import { getUser } from "@/lib/get-user";
-import { ProfileForm } from "@/components/dashboard/profile/ProfileForm";
-import { PasswordChangeForm } from "@/components/dashboard/profile/PasswordChangeForm";
-import { ProfilePhotoForm } from "@/components/dashboard/profile/ProfilePhotoForm";
-import Container from "../../../components/ui/container";
+import { ProfileForm } from "@/components/dashboard/profile/profile-form";
+import { PasswordForm } from "@/components/dashboard/profile/password-form";
+import { ProfilePic } from "@/components/dashboard/profile/profile-pic";
+import { Credentials } from "@/components/dashboard/profile/credentials";
 import H4Title from "@/components/typography/h4";
 
 
@@ -16,13 +16,14 @@ export default async function Profile() {
   return (
     <>
       <H4Title>Profile photo</H4Title>
-      <ProfilePhotoForm data={data} />
+      <ProfilePic data={data} />
 
       <H4Title>Profile</H4Title>
       <ProfileForm data={data} />
+      <Credentials data={data} />
 
-      <H4Title>Password change</H4Title>
-      <PasswordChangeForm userId={data.id} />
+      {/* <H4Title>Password change</H4Title>
+      <PasswordForm userId={data.id} /> */}
     </>
   );
 }
