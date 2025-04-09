@@ -109,7 +109,8 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
 
   const sectionColors: Record<string, { bg: string; header: string }> = {
     "To Do": { bg: "#D3D5D6FF", header: "#1E293B" },
-    "In Progress": { bg: "#C9E5F8FF", header: "#0284C7 " },
+    "In Progress": { bg: "#C9E5F8FF", header: "#0284C7" },
+    "Approval": { bg: "#f8c9c9", header: "#d02c06" },
     Done: { bg: "#BCF5D0FF ", header: "#059669" },
   }
 
