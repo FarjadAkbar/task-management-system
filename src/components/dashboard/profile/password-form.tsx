@@ -25,7 +25,7 @@ const FormSchema = z.object({
   cpassword: z.string().min(5).max(50),
 });
 
-export function PasswordChangeForm({ userId }: { userId: string }) {
+export function PasswordForm({ userId }: { userId: string }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const router = useRouter();
