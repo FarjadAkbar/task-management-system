@@ -333,7 +333,25 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
           </div>
 
           <Separator />
+
+          {/* Tabs for subtasks, checklist, comments, etc. */}
+          {/*<Tabs defaultValue="checklist">
+  <TabsList className="grid grid-cols-4">
+     <TabsTrigger value="subtasks">Subtasks</TabsTrigger>
+    <TabsTrigger value="checklist">Checklist</TabsTrigger>
+    <TabsTrigger value="comments">Comments</TabsTrigger>
+    <TabsTrigger value="attachments">Attachments</TabsTrigger>
+    <TabsTrigger value="feedback">Feedback</TabsTrigger>
+  </TabsList>
+*/}
+          {/* <TabsContent value="subtasks" className="space-y-4 mt-4">
+    <TaskSubtasks taskId={task.id} subtasks={task.subtasks} />
+  </TabsContent> */}
+
+          {/* <TabsContent value="attachments" className="space-y-4 mt-4"> */}
           <TaskAttachments taskId={task.id} attachments={task.documents} />
+          {/* </TabsContent> */}
+          {/* Progress */}
           <div className="space-y-4">
             {subtaskCount > 0 && (
               <div className="space-y-2">
@@ -346,6 +364,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
                 <Progress value={subtaskProgress} className="h-2" />
               </div>
             )}
+
             {checklistCount > 0 && (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
@@ -358,9 +377,20 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
               </div>
             )}
           </div>
+
+          {/* <TabsContent value="checklist" className="space-y-4 mt-4"> */}
           <TaskChecklist taskId={task.id} checklist={task.checklists} />
+          {/* </TabsContent> */}
+
+          {/* <TabsContent value="comments" className="space-y-4 mt-4"> */}
           <TaskComments taskId={task.id} comments={task.comments} />
+          {/* </TabsContent> */}
+
+
+          {/* <TabsContent value="feedback" className="space-y-4 mt-4"> */}
           <TaskFeedback taskId={task.id} feedback={task.task_feedback} />
+          {/* </TabsContent> */}
+          {/* </Tabs> */}
         </div>
       </DialogContent>
     </Dialog>
