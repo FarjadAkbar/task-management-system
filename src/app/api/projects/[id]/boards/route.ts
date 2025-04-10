@@ -103,7 +103,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const defaultSections = [
       { name: "To Do", color: "#E2E8F0", position: 0 },
       { name: "In Progress", color: "#e5f2ff", position: 1 },
-      { name: "Done", color: "#dcffe9", position: 2 },
+      { name: "Approval", color: "#f8c9c9", position: 2 },
+      { name: "Done", color: "#dcffe9", position: 3 },
     ]
 
     await Promise.all(

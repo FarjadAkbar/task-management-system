@@ -31,6 +31,10 @@ const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   firstName: z.string().min(1, { message: "First name is required" }),
   lastName: z.string().min(1, { message: "Last name is required" }),
+  webmailEmail: z.string().email({ message: "Please enter a valid email address" }),
+  webmailPassword: z.string().min(1, { message: "Webmail password is required" }),
+  clockinUsername: z.string().min(1, { message: "Please enter a valid email address" }),
+  clockinPassword: z.string().min(1, { message: "Clockin password is required" }),
   role: z.enum([
     RoleEnum.ADMIN,
     RoleEnum.DEVELOPER,
@@ -55,6 +59,10 @@ export function InviteForm() {
       email: "",
       firstName: "",
       lastName: "",
+      webmailEmail: "",
+      webmailPassword: "",
+      clockinUsername: "",
+      clockinPassword: "",
       role: RoleEnum.DEVELOPER,
     },
   });
@@ -84,7 +92,7 @@ export function InviteForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-wrap gap-4 w-full items-end md:flex-nowrap"
+        className="grid grid-cols-4 gap-4 w-full"
       >
         <FormField
           control={form.control}
@@ -117,8 +125,8 @@ export function InviteForm() {
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem className="w-full md:w-1/3">
-              <FormLabel>E-main</FormLabel>
+            <FormItem className="w-full md:w-auto">
+              <FormLabel>E-mail</FormLabel>
               <FormControl>
                 <Input placeholder="name@domain.com" {...field} />
               </FormControl>
@@ -161,6 +169,63 @@ export function InviteForm() {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="webmailEmail"
+          render={({ field }) => (
+            <FormItem className="w-full md:w-auto">
+              <FormLabel>Webmail Email</FormLabel>
+              <FormControl>
+                <Input placeholder="name@domain.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="webmailPassword"
+          render={({ field }) => (
+            <FormItem className="w-full md:w-auto">
+              <FormLabel>Webmail Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="*****" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+<FormField
+          control={form.control}
+          name="clockinUsername"
+          render={({ field }) => (
+            <FormItem className="w-full md:w-auto">
+              <FormLabel>Clockin Email</FormLabel>
+              <FormControl>
+                <Input placeholder="name@domain.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="clockinPassword"
+          render={({ field }) => (
+            <FormItem className="w-full md:w-auto">
+              <FormLabel>Clockin Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="*****" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <Button className="w-full md:w-[150px] bg-black text-gold hover:bg-gold hover:text-black font-semibold" type="submit" disabled={isPending}>
           {isPending ? (
             <Icons.spinner className="animate-spin" />

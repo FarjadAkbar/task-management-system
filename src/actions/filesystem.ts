@@ -220,7 +220,6 @@ export async function listFiles(folderId?: string, query?: string) {
 
       // Filter out any null results
       const validFiles = fileDetails.filter(Boolean)
-
       return { success: true, files: validFiles }
     }
 
