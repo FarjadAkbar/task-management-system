@@ -4,8 +4,6 @@ import { PasswordForm } from "@/components/dashboard/profile/password-form";
 import { ProfilePic } from "@/components/dashboard/profile/profile-pic";
 import { Credentials } from "@/components/dashboard/profile/credentials";
 import H4Title from "@/components/typography/h4";
-import Link from "next/link";
-import LoginCredentails from "@/components/dashboard/profile/LoginCredentails";
 
 
 export default async function Profile() {

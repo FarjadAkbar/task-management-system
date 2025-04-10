@@ -8,7 +8,9 @@ import { TaskDetailDialog } from "./task-detail-dialog"
 import { TaskType } from "@/service/tasks/type"
 import { useDeleteTask } from "@/service/tasks"
 import { toast } from "@/hooks/use-toast"
-import DeleteConfirmationDialog from "@/components/modals/delete-confitmation"
+import AlertModal from "@/components/modals/alert-modal";
+import { Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface TaskCardProps {
   task: TaskType
@@ -20,6 +22,7 @@ interface TaskCardProps {
 export function TaskCard({ task, taskId, open, onOpenChange }: TaskCardProps) {
   const [showDetailDialog, setShowDetailDialog] = useState(false)
   const { mutate: deleteTask, isPending: isDeleting } = useDeleteTask()
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const onDeleteTask = () => {
     deleteTask(taskId, {
@@ -27,18 +30,19 @@ export function TaskCard({ task, taskId, open, onOpenChange }: TaskCardProps) {
         toast({
           title: "Task deleted",
           description: "The task has been deleted",
-        })
-        onOpenChange(false)
+        });
+        onOpenChange(false);
+        setIsDeleteModalOpen(false);
       },
       onError: (error) => {
         toast({
           title: "Failed to delete task",
           description: error.message,
           variant: "destructive",
-        })
+        });
       },
-    })
-  }
+    });
+  };
   // Determine priority color
   const priorityColor =
     task.priority === "HIGH" ? "text-red-500" : task.priority === "MEDIUM" ? "text-amber-500" : "text-blue-500"
@@ -149,16 +153,27 @@ export function TaskCard({ task, taskId, open, onOpenChange }: TaskCardProps) {
 
             {/* Push the delete button to the right */}
             <div className="ml-auto">
-              <DeleteConfirmationDialog
-                name={task.title}
-                onDelete={onDeleteTask}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent card click from opening detail dialog
+                  setIsDeleteModalOpen(true);
+                }}
                 disabled={isDeleting}
-              />
+              >
+                <Trash className="h-4 w-4 text-red-700" />
+              </Button>
             </div>
           </div>
         </div>
       </div>
-
+      <AlertModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={onDeleteTask}
+        loading={isDeleting}
+      />
       {showDetailDialog && (
         <TaskDetailDialog taskId={task.id} open={showDetailDialog} onOpenChange={setShowDetailDialog} />
       )}
