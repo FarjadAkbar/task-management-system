@@ -36,7 +36,7 @@ import AdminWrapper from "../admin-wrapper"
 
 interface TaskBoardProps {
   boardId: string
-  sprintId?: string
+  sprintId: string
 }
 
 // Create a sortable wrapper for TaskCard
@@ -109,7 +109,8 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
 
   const sectionColors: Record<string, { bg: string; header: string }> = {
     "To Do": { bg: "#D3D5D6FF", header: "#1E293B" },
-    "In Progress": { bg: "#C9E5F8FF", header: "#0284C7 " },
+    "In Progress": { bg: "#C9E5F8FF", header: "#0284C7" },
+    "Approval": { bg: "#f8c9c9", header: "#d02c06" },
     Done: { bg: "#BCF5D0FF ", header: "#059669" },
   }
 
@@ -347,8 +348,8 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
 
   if (loadingSections || loadingSprintTasks) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {Array.from({ length: 3 }).map((_, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
           <Card key={i}>
             <CardHeader className="pb-2">
               <Skeleton className="h-5 w-24" />
@@ -373,7 +374,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {sections?.map((section) => {
             // Get tasks for this section
             const sectionTasks: TaskType[] = sprintId ? sectionTasksMap.get(section.id) || [] : []
