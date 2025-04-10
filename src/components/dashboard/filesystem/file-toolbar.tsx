@@ -21,6 +21,7 @@ import { createNewFolder } from "@/actions/filesystem"
 import { FolderPlus, Upload, RefreshCw } from "lucide-react"
 import { FileUploaderDropzone } from "@/components/ui/file-uploader-dropzone"
 import { revalidatePath } from "next/cache"
+import { Separator } from "@/components/ui/separator"
 
 interface FileToolbarProps {
   isAdmin: boolean
@@ -100,7 +101,7 @@ export function FileToolbar({ isAdmin, currentFolder, onFilesUploaded }: FileToo
 
   return (
     <>
-          {isAdmin && (
+          {isAdmin ? (
       <Card className="p-2">
         <div className="flex flex-wrap items-center gap-2">
             <>
@@ -136,7 +137,7 @@ export function FileToolbar({ isAdmin, currentFolder, onFilesUploaded }: FileToo
           </Button> */}
         </div>
       </Card>
-          )}
+          ) : <Separator className="my-4" />}
 
 
 
