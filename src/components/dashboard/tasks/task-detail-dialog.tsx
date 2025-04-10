@@ -119,7 +119,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[700px] max-h-[70vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex justify-between items-start">
               <div className="flex items-start gap-2">
