@@ -26,7 +26,7 @@ const initGoogleDriveClient = () => {
 export const createFolder = async (
   folderName: string,
   parentFolderId?: string,
-): Promise<{ id: string; name: string }> => {
+): Promise<{ id: string; name: string; webViewLink: string }> => {
   const drive = initGoogleDriveClient()
 
   const fileMetadata = {
@@ -44,6 +44,7 @@ export const createFolder = async (
   return {
     id: response.data.id!,
     name: response.data.name!,
+    webViewLink: response.data.webViewLink!
   }
 }
 

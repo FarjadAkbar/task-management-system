@@ -5,22 +5,45 @@ import { deleteFileFromDrive } from "@/lib/google-drive"
 
 export async function POST(req: NextRequest, { params }: { params: { fileId: string } }) {
   try {
+    const admin = await getUser()
+    if (!admin?.id || admin.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { fileId } = await params;
 
     if (!fileId) {
       return NextResponse.json({ error: "File ID is required" }, { status: 400 })
     }
     const body = await req.json();
+    const userId = body.userId;
+    const permission = "edit";
 
-    if (!body.userId) {
+    if (!userId) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 })
     }
 
-    console.log(fileId, ".......")
     await prismadb.users.update({
-      where: { id: body.userId },
+      where: { id: userId },
       data: { folderId: fileId },
     });
+
+    await prismadb.fileShare.upsert({
+          where: {
+            fileId_sharedWithId: {
+              fileId: fileId,
+              sharedWithId: userId,
+            },
+          },
+          update: {
+            permissions: permission,
+          },
+          create: {
+            fileId: fileId,
+            sharedById: admin.id,
+            sharedWithId: userId,
+            permissions: permission,
+          },
+        })
 
     return NextResponse.json({ success: true })
   } catch (error) {

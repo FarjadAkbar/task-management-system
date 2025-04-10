@@ -37,7 +37,7 @@ interface FileGridProps {
     webViewLink?: string;
     createdTime?: string;
     modifiedTime?: string;
-    dbId?: string;
+    dbId: string;
     permission?: string;
   }>;
   onFolderClick: (folderId: string) => void;
@@ -247,7 +247,7 @@ export function FileGrid({ files, onFolderClick, isAdmin }: FileGridProps) {
             <AssignFolderModal
               open={showAssignFolderModal}
               onOpenChange={setShowAssignFolderModal}
-              folderId={file.id}
+              folderId={file.dbId}
               folderName={file.name}
             />
           </>

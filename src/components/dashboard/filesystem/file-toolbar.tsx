@@ -100,9 +100,9 @@ export function FileToolbar({ isAdmin, currentFolder, onFilesUploaded }: FileToo
 
   return (
     <>
+          {isAdmin && (
       <Card className="p-2">
         <div className="flex flex-wrap items-center gap-2">
-          {isAdmin && (
             <>
               <Button
                 variant="outline"
@@ -124,7 +124,6 @@ export function FileToolbar({ isAdmin, currentFolder, onFilesUploaded }: FileToo
                 Upload Files
               </Button>
             </>
-          )}
 
           {/* <Button
             variant="ghost"
@@ -137,6 +136,8 @@ export function FileToolbar({ isAdmin, currentFolder, onFilesUploaded }: FileToo
           </Button> */}
         </div>
       </Card>
+          )}
+
 
 
       {/* New Folder Dialog */}
