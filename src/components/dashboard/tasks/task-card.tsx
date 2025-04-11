@@ -15,26 +15,26 @@ import { Button } from "@/components/ui/button";
 interface TaskCardProps {
   task: TaskType
   taskId: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
 }
 
-export function TaskCard({ task, taskId, open, onOpenChange }: TaskCardProps) {
+export function TaskCard({ task, taskId }: TaskCardProps) {
   const [showDetailDialog, setShowDetailDialog] = useState(false)
   const { mutate: deleteTask, isPending: isDeleting } = useDeleteTask()
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const onDeleteTask = () => {
+    console.log("Deleting task with ID:", taskId);
     deleteTask(taskId, {
       onSuccess: () => {
+        console.log("Deleting task with ID:", taskId);
         toast({
           title: "Task deleted",
           description: "The task has been deleted",
         });
-        onOpenChange(false);
         setIsDeleteModalOpen(false);
       },
       onError: (error) => {
+        console.error("Delete error:", error);
         toast({
           title: "Failed to delete task",
           description: error.message,
@@ -43,6 +43,10 @@ export function TaskCard({ task, taskId, open, onOpenChange }: TaskCardProps) {
       },
     });
   };
+
+  if (taskId !== task.id) {
+    console.warn(`taskId prop (${taskId}) does not match task.id (${task.id})`);
+  }
   // Determine priority color
   const priorityColor =
     task.priority === "HIGH" ? "text-red-500" : task.priority === "MEDIUM" ? "text-amber-500" : "text-blue-500"
@@ -157,7 +161,8 @@ export function TaskCard({ task, taskId, open, onOpenChange }: TaskCardProps) {
                 variant="ghost"
                 size="sm"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent card click from opening detail dialog
+                  e.stopPropagation();
+                  console.log("Delete button clicked for task:", taskId);
                   setIsDeleteModalOpen(true);
                 }}
                 disabled={isDeleting}

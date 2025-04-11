@@ -74,7 +74,7 @@ const SortableTaskCard = memo(({ task, id, bgColor }: { task: TaskType; id: stri
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="touch-manipulation">
-      <TaskCard task={task} />
+      <TaskCard task={task} taskId={task.id} />
     </div>
   )
 })
