@@ -183,7 +183,7 @@ export function InviteForm() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="webmailPassword"
@@ -198,20 +198,20 @@ export function InviteForm() {
           )}
         />
 
-<FormField
+        <FormField
           control={form.control}
           name="clockinUsername"
           render={({ field }) => (
             <FormItem className="w-full md:w-auto">
-              <FormLabel>Clockin Email</FormLabel>
+              <FormLabel>Clockin Username</FormLabel>
               <FormControl>
-                <Input placeholder="name@domain.com" {...field} />
+                <Input placeholder="John" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="clockinPassword"
