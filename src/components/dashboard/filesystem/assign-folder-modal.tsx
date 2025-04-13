@@ -33,6 +33,7 @@ export function AssignFolderModal({
   folderId,
   folderName,
 }: AssignFolderModalProps) {
+  console.log(folderId, "folderId");
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [selectedUserName, setSelectedUserName] = useState<string>("")
   const [openCombobox, setOpenCombobox] = useState(false)

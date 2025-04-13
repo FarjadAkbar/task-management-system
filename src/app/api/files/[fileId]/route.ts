@@ -47,7 +47,7 @@ export async function POST(req: NextRequest, { params }: { params: { fileId: str
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting file:", error.message)
+    // console.error("Error deleting file:", error.message)
     return NextResponse.json({ error: "Failed to assign folder" }, { status: 500 })
   }  
 }
