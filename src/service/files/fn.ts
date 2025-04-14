@@ -50,3 +50,9 @@ export const deleteFileMutationFn = async (
     const response = await API.delete(`/files/share?fileId=${fileId}&userId=${userId}`)
     return response.data
   }
+
+
+  export const assignFolderMutationFn = async ({userId, folderId}: {userId: string; folderId: string}) => {
+    const response = await API.post(`/files/${folderId}`, { userId })
+    return response.data
+  }
