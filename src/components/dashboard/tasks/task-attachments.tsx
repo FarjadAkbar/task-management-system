@@ -25,7 +25,6 @@ interface TaskAttachmentsProps {
 
 export function TaskAttachments({ taskId, attachments = [] }: TaskAttachmentsProps) {
   const { mutate: addTaskAttachments } = useAddTaskAttachmentsMutation()
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Memoize event handlers with useCallback
   const handleFileUpload = useCallback(
