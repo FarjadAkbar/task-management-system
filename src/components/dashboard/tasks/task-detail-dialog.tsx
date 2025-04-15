@@ -1,17 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
+import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
 import { format } from "date-fns"
 import { Calendar, Clock, BarChart, CheckCircle2, Edit } from "lucide-react"
-import { TaskSubtasks } from "./task-subtasks"
 import { TaskChecklist } from "./task-checklist"
 import { TaskComments } from "./task-comments"
 import { TaskAttachments } from "./task-attachments"
@@ -34,7 +32,8 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
 
   const [showEditDialog, setShowEditDialog] = useState(false)
 
-  const handleCompleteTask = () => {
+  // Memoize event handlers
+  const handleCompleteTask = useCallback(() => {
     completeTask(taskId, {
       onSuccess: () => {
         toast({
@@ -50,7 +49,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
         })
       },
     })
-  }
+  }, [completeTask, taskId])
 
   // const onDeleteTask = () => {
   //   deleteTask(taskId, {
@@ -71,18 +70,44 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
   //   })
   // }
 
-  // Calculate completion stats
-  const subtaskCount = task?.subtasks?.length || 0
-  const completedSubtasks = task?.subtasks?.filter((subtask) => subtask.completed)?.length || 0
-  const subtaskProgress = subtaskCount > 0 ? (completedSubtasks / subtaskCount) * 100 : 0
+  // Memoize calculated values
+  const taskStats = useMemo(() => {
+    if (!task) {
+      return {
+        subtaskCount: 0,
+        completedSubtasks: 0,
+        subtaskProgress: 0,
+        checklistCount: 0,
+        completedChecklists: 0,
+        checklistProgress: 0,
+        isCompleted: false,
+      }
+    }
 
-  const checklistCount = task?.checklists?.length || 0
-  const completedChecklists = task?.checklists?.filter((item) => item.completed)?.length || 0
-  const checklistProgress = checklistCount > 0 ? (completedChecklists / checklistCount) * 100 : 0
+    const subtaskCount = task.subtasks?.length || 0
+    const completedSubtasks = task.subtasks?.filter((subtask) => subtask.completed)?.length || 0
+    const subtaskProgress = subtaskCount > 0 ? (completedSubtasks / subtaskCount) * 100 : 0
 
-  const isCompleted = task?.taskStatus === "COMPLETE"
-  if (isLoading) {
-    return (
+    const checklistCount = task.checklists?.length || 0
+    const completedChecklists = task.checklists?.filter((item) => item.completed)?.length || 0
+    const checklistProgress = checklistCount > 0 ? (completedChecklists / checklistCount) * 100 : 0
+
+    const isCompleted = task.taskStatus === "COMPLETE"
+
+    return {
+      subtaskCount,
+      completedSubtasks,
+      subtaskProgress,
+      checklistCount,
+      completedChecklists,
+      checklistProgress,
+      isCompleted,
+    }
+  }, [task])
+
+  // Memoize loading state UI
+  const loadingContent = useMemo(
+    () => (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[700px]">
           <DialogHeader>
@@ -95,11 +120,13 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
           </div>
         </DialogContent>
       </Dialog>
-    )
-  }
+    ),
+    [open, onOpenChange],
+  )
 
-  if (isError || !task) {
-    return (
+  // Memoize error state UI
+  const errorContent = useMemo(
+    () => (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
@@ -113,19 +140,154 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
           </div>
         </DialogContent>
       </Dialog>
+    ),
+    [open, onOpenChange],
+  )
+
+  // Memoize task details section
+  const taskDetailsSection = useMemo(() => {
+    if (!task) return null
+
+    return (
+      <div className="space-y-4">
+        {task.content && <div className="text-sm">{task.content}</div>}
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center text-sm">
+              <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+              <span className="text-muted-foreground">Created: </span>
+              <span className="ml-1">{format(new Date(task.createdAt), "MMM d, yyyy")}</span>
+            </div>
+
+            {task.startDate && (
+              <div className="flex items-center text-sm">
+                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Start Date: </span>
+                <span className="ml-1">{format(new Date(task.startDate), "MMM d, yyyy")}</span>
+              </div>
+            )}
+
+            {task.dueDateAt && (
+              <div className="flex items-center text-sm">
+                <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Due Date: </span>
+                <span className="ml-1">{format(new Date(task.dueDateAt), "MMM d, yyyy")}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center text-sm">
+              <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
+              <span className="text-muted-foreground">Priority: </span>
+              <Badge variant="outline" className="ml-1">
+                {task.priority}
+              </Badge>
+            </div>
+
+            <div className="flex items-center text-sm">
+              <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
+              <span className="text-muted-foreground">Weight: </span>
+              <span className="ml-1">{task.weight}</span>
+            </div>
+
+            {task.estimatedHours && (
+              <div className="flex items-center text-sm">
+                <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Estimated Hours: </span>
+                <span className="ml-1">{task.estimatedHours}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tags */}
+        {task.tags && task.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {task.tags.map((tag: string) => (
+              <Badge key={tag} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        {/* Assignees */}
+        {task.assignees && task.assignees.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium">Assignees</h4>
+            <div className="flex flex-wrap gap-2">
+              {task.assignees.map((assignee: any) => (
+                <div key={assignee.id} className="flex items-center gap-2 bg-muted/50 rounded-full px-2 py-1">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={assignee.user?.avatar || "/placeholder.svg"} />
+                    <AvatarFallback>{assignee.user?.name?.charAt(0) || assignee.user?.email?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm">{assignee.user?.name || assignee.user?.email}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     )
+  }, [task])
+
+  // Memoize progress section
+  const progressSection = useMemo(() => {
+    if (!task) return null
+    const { subtaskCount, completedSubtasks, subtaskProgress, checklistCount, completedChecklists, checklistProgress } =
+      taskStats
+
+    return (
+      <div className="space-y-4">
+        {subtaskCount > 0 && (
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Subtasks</span>
+              <span>
+                {completedSubtasks}/{subtaskCount}
+              </span>
+            </div>
+            <Progress value={subtaskProgress} className="h-2" />
+          </div>
+        )}
+
+        {checklistCount > 0 && (
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Checklist</span>
+              <span>
+                {completedChecklists}/{checklistCount}
+              </span>
+            </div>
+            <Progress value={checklistProgress} className="h-2" />
+          </div>
+        )}
+      </div>
+    )
+  }, [task, taskStats])
+
+  // Handle loading and error states
+  if (isLoading) {
+    return loadingContent
+  }
+
+  if (isError || !task) {
+    return errorContent
   }
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[700px] max-h-[70vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex justify-between items-start">
               <div className="flex items-start gap-2">
                 <DialogTitle className="text-xl">{task.title}</DialogTitle>
-                <Badge variant={isCompleted ? "default" : "outline"} className="ml-2">
-                  {isCompleted ? "Completed" : "In Progress"}
+                <Badge variant={taskStats.isCompleted ? "default" : "outline"} className="ml-2">
+                  {taskStats.isCompleted ? "Completed" : "In Progress"}
                 </Badge>
               </div>
               <div className="flex gap-2">
@@ -134,7 +296,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
                 </Button>
                 {/* <DeleteConfirmationDialog name={task.title} onDelete={onDeleteTask} disabled={isDeleting} /> */}
 
-                {!isCompleted && (
+                {!taskStats.isCompleted && (
                   <Button size="sm" onClick={handleCompleteTask} disabled={isCompleting}>
                     <CheckCircle2 className="h-4 w-4 mr-1" />
                     {isCompleting ? "Completing..." : "Complete"}
@@ -146,150 +308,18 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
 
           <div className="space-y-6">
             {/* Task details */}
-            <div className="space-y-4">
-              {task.content && <div className="text-sm">{task.content}</div>}
+            {taskDetailsSection}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span className="text-muted-foreground">Created: </span>
-                    <span className="ml-1">{format(new Date(task.createdAt), "MMM d, yyyy")}</span>
-                  </div>
-
-                  {task.startDate && (
-                    <div className="flex items-center text-sm">
-                      <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <span className="text-muted-foreground">Start Date: </span>
-                      <span className="ml-1">{format(new Date(task.startDate), "MMM d, yyyy")}</span>
-                    </div>
-                  )}
-
-                  {task.dueDateAt && (
-                    <div className="flex items-center text-sm">
-                      <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <span className="text-muted-foreground">Due Date: </span>
-                      <span className="ml-1">{format(new Date(task.dueDateAt), "MMM d, yyyy")}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span className="text-muted-foreground">Priority: </span>
-                    <Badge variant="outline" className="ml-1">
-                      {task.priority}
-                    </Badge>
-                  </div>
-
-                  <div className="flex items-center text-sm">
-                    <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span className="text-muted-foreground">Weight: </span>
-                    <span className="ml-1">{task.weight}</span>
-                  </div>
-
-                  {task.estimatedHours && (
-                    <div className="flex items-center text-sm">
-                      <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <span className="text-muted-foreground">Estimated Hours: </span>
-                      <span className="ml-1">{task.estimatedHours}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Tags */}
-              {task.tags && task.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {task.tags.map((tag: string) => (
-                    <Badge key={tag} variant="secondary" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-
-              {/* Assignees */}
-              {task.assignees && task.assignees.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium">Assignees</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {task.assignees.map((assignee: any) => (
-                      <div key={assignee.id} className="flex items-center gap-2 bg-muted/50 rounded-full px-2 py-1">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={assignee.user?.avatar} />
-                          <AvatarFallback>
-                            {assignee.user?.name?.charAt(0) || assignee.user?.email?.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm">{assignee.user?.name || assignee.user?.email}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Progress */}
+            {progressSection}
 
             <Separator />
 
-            {/* Tabs for subtasks, checklist, comments, etc. */}
-            {/*<Tabs defaultValue="checklist">
-              <TabsList className="grid grid-cols-4">
-                 <TabsTrigger value="subtasks">Subtasks</TabsTrigger>
-                <TabsTrigger value="checklist">Checklist</TabsTrigger>
-                <TabsTrigger value="comments">Comments</TabsTrigger>
-                <TabsTrigger value="attachments">Attachments</TabsTrigger>
-                <TabsTrigger value="feedback">Feedback</TabsTrigger>
-              </TabsList>
- */}
-            {/* <TabsContent value="subtasks" className="space-y-4 mt-4">
-                <TaskSubtasks taskId={task.id} subtasks={task.subtasks} />
-              </TabsContent> */}
-
-            {/* <TabsContent value="attachments" className="space-y-4 mt-4"> */}
+            {/* Task components */}
             <TaskAttachments taskId={task.id} attachments={task.documents} />
-            {/* </TabsContent> */}
-            {/* Progress */}
-            <div className="space-y-4">
-              {subtaskCount > 0 && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Subtasks</span>
-                    <span>
-                      {completedSubtasks}/{subtaskCount}
-                    </span>
-                  </div>
-                  <Progress value={subtaskProgress} className="h-2" />
-                </div>
-              )}
-
-              {checklistCount > 0 && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Checklist</span>
-                    <span>
-                      {completedChecklists}/{checklistCount}
-                    </span>
-                  </div>
-                  <Progress value={checklistProgress} className="h-2" />
-                </div>
-              )}
-            </div>
-
-            {/* <TabsContent value="checklist" className="space-y-4 mt-4"> */}
             <TaskChecklist taskId={task.id} checklist={task.checklists} />
-            {/* </TabsContent> */}
-
-            {/* <TabsContent value="comments" className="space-y-4 mt-4"> */}
             <TaskComments taskId={task.id} comments={task.comments} />
-            {/* </TabsContent> */}
-
-
-            {/* <TabsContent value="feedback" className="space-y-4 mt-4"> */}
             <TaskFeedback taskId={task.id} feedback={task.task_feedback} />
-            {/* </TabsContent> */}
-            {/* </Tabs> */}
           </div>
         </DialogContent>
       </Dialog>
@@ -298,4 +328,3 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
     </>
   )
 }
-

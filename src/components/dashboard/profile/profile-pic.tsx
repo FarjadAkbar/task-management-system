@@ -15,7 +15,7 @@ interface ProfileFormProps {
   data: Users;
 }
 
-export function ProfilePhotoForm({ data }: ProfileFormProps) {
+export function ProfilePic({ data }: ProfileFormProps) {
   const [avatar, setAvatar] = useState(data.avatar);
 
   const { toast } = useToast();

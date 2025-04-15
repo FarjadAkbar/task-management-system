@@ -27,4 +27,9 @@ export type InvitePayloadType = {
   firstName: string;
   lastName: string;
   role: RoleEnum;
+
+  webmailEmail: string;
+  webmailPassword: string;
+  clockinUsername: string;
+  clockinPassword: string;
 }

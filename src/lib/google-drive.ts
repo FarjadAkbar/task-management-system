@@ -1,9 +1,21 @@
 import { google } from "googleapis"
 import { JWT } from "google-auth-library"
 import { Readable } from "stream"
-import { prismadb } from "./prisma"
-import fs from 'fs'
-import readline from 'readline'
+
+
+
+// List files and folders in a folder
+interface DriveFile {
+  id: string
+  name: string
+  mimeType: string
+  fullPath: string
+  size?: number
+  webViewLink?: string
+  thumbnailLink?: string
+  createdTime?: string
+  modifiedTime?: string
+}
 
 // Initialize Google Drive client
 const initGoogleDriveClient = () => {
@@ -26,7 +38,7 @@ const initGoogleDriveClient = () => {
 export const createFolder = async (
   folderName: string,
   parentFolderId?: string,
-): Promise<{ id: string; name: string }> => {
+): Promise<{ id: string; name: string; webViewLink: string }> => {
   const drive = initGoogleDriveClient()
 
   const fileMetadata = {
@@ -44,52 +56,62 @@ export const createFolder = async (
   return {
     id: response.data.id!,
     name: response.data.name!,
+    webViewLink: response.data.webViewLink!
   }
 }
 
-// List files and folders in a folder
 export const listFilesInFolder = async (
   folderId: string,
   query?: string,
-): Promise<
-  Array<{
-    id: string
-    name: string
-    mimeType: string
-    size?: number
-    webViewLink?: string
-    thumbnailLink?: string
-    createdTime?: string
-    modifiedTime?: string
-  }>
-> => {
+): Promise<DriveFile[]> => {
   const drive = initGoogleDriveClient()
 
-  console.log(folderId, "folder....");
-  let q = 'trashed = false';
+  // Step 1: Get full path of current folderId (e.g., /abc/notes)
+  const buildFolderPath = async (id: string): Promise<string> => {
+    let pathParts: string[] = []
+    let currentId: string | undefined = id
 
-  if(folderId){
-    q = `'${folderId}' in parents and trashed = false`
-  }
-  if (query) {
-    q += ` and name contains '${query}'`
-  }
-  // console.log(q, "query");
+    while (currentId) {
+      const res = await drive.files.get({
+        fileId: currentId,
+        fields: 'id, name, parents',
+        supportsAllDrives: true,
+      })
 
-  const response = await drive.files.list({
+      pathParts.unshift(res.data.name!)
+      currentId = res.data.parents?.[0]
+    }
+
+    return '/' + pathParts.join('/')
+  }
+
+  // Step 2: List direct children of the folderId
+  let q = `'${folderId}' in parents and trashed = false`
+  if (query) q += ` and name contains '${query}'`
+
+  const res = await drive.files.list({
     q,
-    fields: "files(id, name, mimeType, size, webViewLink, thumbnailLink, createdTime, modifiedTime)",
-    orderBy: "modifiedTime desc",
+    fields: 'files(id, name, mimeType, size, webViewLink, thumbnailLink, createdTime, modifiedTime)',
     supportsAllDrives: true,
     includeItemsFromAllDrives: true,
-    corpora: "allDrives"
+    corpora: 'allDrives',
   })
-  return response.data.files || []
+
+  const children = res.data.files || []
+  const parentPath = await buildFolderPath(folderId)
+
+  // Step 3: Build final DriveFile array
+  return children.map((file) => ({
+    ...file,
+    fullPath: `${parentPath}/${file.name}`,
+  }))
 }
+
 
 // Get file or folder details
 export const getFileDetails = async (fileId: string) => {
   const drive = initGoogleDriveClient()
+  console.log(drive, "drive");
 
   const response = await drive.files.get({
     fileId,
@@ -97,6 +119,7 @@ export const getFileDetails = async (fileId: string) => {
     supportsAllDrives: true,
   })
 
+  console.log(response.data, "response");
   return response.data
 }
 
@@ -133,14 +156,14 @@ export const uploadFileToDrive = async (
   })
 
   // Make file publicly accessible for viewing
-  await drive.permissions.create({
-    fileId: response.data.id!,
-    requestBody: {
-      role: "reader",
-      type: "anyone",
-    },
-    supportsAllDrives: true,
-  })
+  // await drive.permissions.create({
+  //   fileId: response.data.id!,
+  //   requestBody: {
+  //     role: "reader",
+  //     type: "anyone",
+  //   },
+  //   supportsAllDrives: true,
+  // })
 
   // Get updated file with webViewLink
   const file_data = await drive.files.get({

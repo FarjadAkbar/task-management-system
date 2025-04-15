@@ -98,7 +98,7 @@ export async function createNewFolder(formData: z.infer<typeof folderSchema>) {
       data: {
         key: folder.id,
         document_name: folder.name,
-        document_file_url: `https://drive.google.com/drive/folders/${folder.id}`,
+        document_file_url: folder.webViewLink || `https://drive.google.com/drive/folders/${folder.id}`,
         document_file_mimeType: "application/vnd.google-apps.folder",
         document_system_type: "folder",
         description: `Folder: ${folder.name}`,
@@ -220,7 +220,6 @@ export async function listFiles(folderId?: string, query?: string) {
 
       // Filter out any null results
       const validFiles = fileDetails.filter(Boolean)
-
       return { success: true, files: validFiles }
     }
 
@@ -237,13 +236,30 @@ export async function listFiles(folderId?: string, query?: string) {
     })
 
     // Map Google Drive files to include database IDs
-    const mappedFiles = files.map((file) => {
-      const dbFile = dbFiles.find((db) => db.key === file.id)
-      return {
-        ...file,
-        dbId: dbFile?.id,
-      }
-    })
+    const mappedFiles = await Promise.all(
+      files.map(async (file) => {
+        const dbFile = dbFiles.find((db) => db.key === file.id);
+      
+        // If file does not exist in the DB, add it
+        if (!dbFile) {
+          await prismadb.documents.create({
+            data: {
+              key: file.id,
+              document_name: file.name,
+              document_file_url: file.webViewLink || `https://drive.google.com/drive/folders/${file.id}`,
+              document_file_mimeType: file.mimeType,
+              document_system_type: "folder",
+              description: `File: ${file.name}`,
+              created_by_user: user.id,
+            },
+          });
+        }
+        return {
+          ...file,
+          dbId: dbFile?.id,
+        };
+      })
+    );
 
     return { success: true, files: mappedFiles }
   } catch (error) {
