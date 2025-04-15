@@ -162,7 +162,6 @@ export function TaskCard({ task, taskId }: TaskCardProps) {
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  console.log("Delete button clicked for task:", taskId);
                   setIsDeleteModalOpen(true);
                 }}
                 disabled={isDeleting}

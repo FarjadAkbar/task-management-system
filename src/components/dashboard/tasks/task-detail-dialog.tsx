@@ -14,10 +14,19 @@ import { TaskChecklist } from "./task-checklist"
 import { TaskComments } from "./task-comments"
 import { TaskAttachments } from "./task-attachments"
 import { TaskFeedback } from "./task-feedback"
-import { EditTaskDialog } from "./edit-task-dialog"
-import { useCompleteTask, useDeleteTask, useTask } from "@/service/tasks"
+import { parse } from "date-fns";
+import { useCompleteTask, useTask, useUpdateTask } from "@/service/tasks"
 import { toast } from "@/hooks/use-toast"
-import DeleteConfirmationDialog from "@/components/modals/delete-confitmation"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useGetUsersQuery } from "@/service/users";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { EditableField } from "./editable-field";
 
 interface TaskDetailDialogProps {
   taskId: string;
@@ -28,70 +37,141 @@ interface TaskDetailDialogProps {
 export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialogProps) {
   const { data: task, isLoading, isError } = useTask(taskId)
   const { mutate: completeTask, isPending: isCompleting } = useCompleteTask()
-  const { mutate: deleteTask, isPending: isDeleting } = useDeleteTask()
+  const { mutate: updateTask, isPending: isUpdating } = useUpdateTask();
+  const { data: usersData } = useGetUsersQuery({ search: "" });
 
-  const [showEditDialog, setShowEditDialog] = useState(false)
+  const [isEditingPriority, setIsEditingPriority] = useState(false);
+
+  const handleSave = (field: string, value: string) => {
+    if (!task) return;
+
+    let updatedValue: any = value.trim();
+    const originalValue = (task as any)[field] || "";
+
+    if (field === "tags") {
+      updatedValue = value.split(",").map((tag) => tag.trim()).filter(Boolean);
+    } else if (field === "weight" || field === "estimatedHours") {
+      updatedValue = Number(value) || 0;
+    } else if (field === "startDate" || field === "dueDateAt") {
+      try {
+        updatedValue = parse(value, "MMM d, yyyy", new Date());
+        if (isNaN(updatedValue.getTime())) {
+          toast({ title: "Invalid date", description: "Use format: MMM d, yyyy" });
+          return;
+        }
+      } catch {
+        toast({ title: "Invalid date", description: "Use format: MMM d, yyyy" });
+        return;
+      }
+    }
+
+    if (updatedValue !== originalValue && (typeof updatedValue !== "string" || updatedValue)) {
+      updateTask(
+        { id: taskId, [field]: updatedValue },
+        {
+          onSuccess: () => toast({ title: "Task updated", description: `${field} saved.` }),
+          onError: (error: Error) =>
+            toast({
+              title: "Update failed",
+              description: `Failed to update ${field}: ${error.message}`,
+              variant: "destructive",
+            }),
+        }
+      );
+    }
+  };
+
+  const handlePriorityChange = (value: string) => {
+    if (task?.priority !== value) {
+      updateTask(
+        { id: taskId, priority: value },
+        {
+          onSuccess: () => toast({ title: "Task updated", description: `Priority saved.` }),
+          onError: (error: Error) =>
+            toast({
+              title: "Update failed",
+              description: `Failed to update priority: ${error.message}`,
+              variant: "destructive",
+            }),
+        }
+      );
+    }
+    setIsEditingPriority(false);
+  };
+
+  const handleAssigneesChange = (value: string[]) => {
+    if (JSON.stringify(task?.assignees?.map((a: any) => a.userId)) !== JSON.stringify(value)) {
+      updateTask(
+        { id: taskId, assignees: value },
+        {
+          onSuccess: () => toast({ title: "Task updated", description: `Assignees saved.` }),
+          onError: (error: Error) =>
+            toast({
+              title: "Update failed",
+              description: `Failed to update assignees: ${error.message}`,
+              variant: "destructive",
+            }),
+        }
+      );
+    }
+  };
 
   // Memoize event handlers
   const handleCompleteTask = useCallback(() => {
     completeTask(taskId, {
-      onSuccess: () => toast({ title: "Task completed", description: "The task has been marked as complete" }),
+      onSuccess: () =>
+        toast({
+          title: "Task completed",
+          description: "The task has been marked as complete",
+        }),
       onError: (error) =>
         toast({
           title: "Failed to complete task",
           description: error.message,
           variant: "destructive",
-        })
-    },
-    })
-}
+        }),
+    });
+  }, [completeTask, taskId]);
 
-const onDeleteTask = () => {
-  deleteTask(taskId, {
-    onSuccess: () => {
-      toast({
-        title: "Task deleted",
-        description: "The task has been deleted",
-      })
-      onOpenChange(false)
-    },
-    onError: (error) => {
-      toast({
-        title: "Failed to delete task",
-        description: error.message,
-        variant: "destructive",
-      })
-    },
-  })
-}
+  const userOptions = usersData?.users.map((user) => ({
+    label: user.name || user.email,
+    value: user.id,
+  })) || [];
 
-// Calculate completion stats
-const subtaskCount = task?.subtasks?.length || 0
-const completedSubtasks = task?.subtasks?.filter((subtask) => subtask.completed)?.length || 0
-const subtaskProgress = subtaskCount > 0 ? (completedSubtasks / subtaskCount) * 100 : 0
+  const tagOptions = [
+    { label: "Bug", value: "bug" },
+    { label: "Feature", value: "feature" },
+    { label: "Enhancement", value: "enhancement" },
+    { label: "Documentation", value: "documentation" },
+    { label: "Design", value: "design" },
+    { label: "Testing", value: "testing" },
+  ];
+  // Calculate completion stats
+  const subtaskCount = task?.subtasks?.length || 0
+  const completedSubtasks = task?.subtasks?.filter((subtask) => subtask.completed)?.length || 0
+  const subtaskProgress = subtaskCount > 0 ? (completedSubtasks / subtaskCount) * 100 : 0
 
-const checklistCount = task.checklists?.length || 0
-const completedChecklists = task.checklists?.filter((item) => item.completed)?.length || 0
-const checklistProgress = checklistCount > 0 ? (completedChecklists / checklistCount) * 100 : 0
+  const checklistCount = task?.checklists?.length || 0
+  const completedChecklists = task?.checklists?.filter((item) => item.completed)?.length || 0
+  const checklistProgress = checklistCount > 0 ? (completedChecklists / checklistCount) * 100 : 0
 
-const isCompleted = task?.taskStatus === "COMPLETE"
-if (isLoading) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px]">
-        <DialogHeader>
-          <Skeleton className="h-6 w-3/4" />
-        </DialogHeader>
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
-        </div>
-      </DialogContent>
-    </Dialog>
-  ),
-    [open, onOpenChange],
-  )
+  const isCompleted = task?.taskStatus === "COMPLETE"
+  if (isLoading) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[700px]">
+          <DialogHeader>
+            <Skeleton className="h-6 w-3/4" />
+          </DialogHeader>
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   if (isError || !task) {
     return (
@@ -108,100 +188,158 @@ if (isLoading) {
           </div>
         </DialogContent>
       </Dialog>
-    ),
-      [open, onOpenChange],
-  )
-
-    // Memoize task details section
-    const taskDetailsSection = useMemo(() => {
-      if (!task) return null
-
-      return (
-        <div className="space-y-4">
-          {task.content && <div className="text-sm">{task.content}</div>}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center text-sm">
-                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                <span className="text-muted-foreground">Created: </span>
-                <span className="ml-1">{format(new Date(task.createdAt), "MMM d, yyyy")}</span>
-              </div>
-
-              {task.startDate && (
-                <div className="flex items-center text-sm">
-                  <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-muted-foreground">Start Date: </span>
-                  <span className="ml-1">{format(new Date(task.startDate), "MMM d, yyyy")}</span>
-                </div>
-              )}
-
-              {task.dueDateAt && (
-                <div className="flex items-center text-sm">
-                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-muted-foreground">Due Date: </span>
-                  <span className="ml-1">{format(new Date(task.dueDateAt), "MMM d, yyyy")}</span>
-                </div>
-              )}
+    );
+  }
+  // Memoize task details section
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <div className="flex justify-between items-start">
+            <div className="flex items-start gap-2">
+              <DialogTitle className="text-xl">
+                <EditableField
+                  field="title"
+                  value={task.title || "Untitled"}
+                  onSave={handleSave}
+                  displayClassName="text-xl font-semibold"
+                  inputClassName="w-full p-0 border-none focus:outline-none focus:ring-0 text-xl font-semibold"
+                />
+              </DialogTitle>
+              <Badge variant={isCompleted ? "default" : "outline"} className="ml-2">
+                {isCompleted ? "Completed" : "In Progress"}
+              </Badge>
             </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center text-sm">
-                <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
-                <span className="text-muted-foreground">Priority: </span>
-                <Badge variant="outline" className="ml-1">
-                  {task.priority}
-                </Badge>
-              </div>
-
-              <div className="flex items-center text-sm">
-                <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
-                <span className="text-muted-foreground">Weight: </span>
-                <span className="ml-1">{task.weight}</span>
-              </div>
-
-              {task.estimatedHours && (
-                <div className="flex items-center text-sm">
-                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-muted-foreground">Estimated Hours: </span>
-                  <span className="ml-1">{task.estimatedHours}</span>
-                </div>
+            <div className="flex gap-2">
+              {!isCompleted && (
+                <Button size="sm" onClick={handleCompleteTask} disabled={isCompleting}>
+                  <CheckCircle2 className="h-4 w-4 mr-1" />
+                  {isCompleting ? "Completing..." : "Complete"}
+                </Button>
               )}
             </div>
           </div>
+        </DialogHeader>
 
-          {/* Tags */}
-          {task.tags && task.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {task.tags.map((tag: string) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <EditableField
+              field="content"
+              value={task.content || "Add a description..."}
+              onSave={handleSave}
+              displayClassName="text-sm text-gray-700"
+              inputClassName="w-full p-0 border-none focus:outline-none focus:ring-0 text-sm"
+              asTextarea
+            />
 
-          {/* Assignees */}
-          {task.assignees && task.assignees.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Assignees</h4>
-              <div className="flex flex-wrap gap-2">
-                {task.assignees.map((assignee: any) => (
-                  <div key={assignee.id} className="flex items-center gap-2 bg-muted/50 rounded-full px-2 py-1">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={assignee.user?.avatar} />
-                      <AvatarFallback>
-                        {assignee.user?.name?.charAt(0) || assignee.user?.email?.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm">{assignee.user?.name || assignee.user?.email}</span>
-                  </div>
-                ))}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center text-sm">
+                  <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Created: </span>
+                  <span className="ml-1">{format(new Date(task.createdAt), "MMM d, yyyy")}</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Start Date: </span>
+                  <EditableField
+                    field="startDate"
+                    value={task.startDate ? format(new Date(task.startDate), "MMM d, yyyy") : "Set start date"}
+                    onSave={handleSave}
+                    displayClassName="ml-1 text-sm"
+                    inputClassName="ml-1 h-6 w-32 p-1 border border-border rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex items-center text-sm">
+                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Due Date: </span>
+                  <EditableField
+                    field="dueDateAt"
+                    value={task.dueDateAt ? format(new Date(task.dueDateAt), "MMM d, yyyy") : "Set due date"}
+                    onSave={handleSave}
+                    displayClassName="ml-1 text-sm"
+                    inputClassName="ml-1 h-6 w-32 p-1 border border-border rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center text-sm">
+                  <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Priority: </span>
+                  {isEditingPriority ? (
+                    <Select
+                      value={task.priority || "MEDIUM"}
+                      onValueChange={handlePriorityChange}
+                      onOpenChange={(open) => !open && setIsEditingPriority(false)}
+                    >
+                      <SelectTrigger className="ml-2 h-6 w-24 text-xs">
+                        <SelectValue placeholder="Select priority" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="LOW">Low</SelectItem>
+                        <SelectItem value="MEDIUM">Medium</SelectItem>
+                        <SelectItem value="HIGH">High</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <span
+                      className="ml-2 text-sm cursor-pointer hover:bg-gray-100 p-1 rounded"
+                      onClick={() => setIsEditingPriority(true)}
+                    >
+                      {task.priority || "Set priority"}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center text-sm">
+                  <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Weight: </span>
+                  <EditableField
+                    field="weight"
+                    value={task.weight?.toString() || "1"}
+                    onSave={handleSave}
+                    displayClassName="ml-2 text-sm"
+                    inputClassName="ml-2 h-6 w-24 p-1 border border-border rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex items-center text-sm">
+                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Estimated Hours: </span>
+                  <EditableField
+                    field="estimatedHours"
+                    value={task.estimatedHours?.toString() || "Set hours"}
+                    onSave={handleSave}
+                    displayClassName="ml-2 text-sm"
+                    inputClassName="ml-2 h-6 w-24 p-1 border border-border rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
             </div>
-          )}
 
-          {/* Progress */}
+            <div className="space-y-2">
+              <span className="text-sm font-medium">Tags: </span>
+              <MultiSelect
+                placeholder="Select tags"
+                options={tagOptions}
+                defaultValue={task.tags || []}
+                onValueChange={(value) => handleSave("tags", value.join(", "))}
+                maxCount={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Assignees</h4>
+              <MultiSelect
+                placeholder="Select assignees"
+                options={userOptions}
+                defaultValue={task.assignees?.map((a: any) => a.userId) || []}
+                onValueChange={handleAssigneesChange}
+              />
+            </div>
+          </div>
+
+          <Separator />
+          <TaskAttachments taskId={task.id} attachments={task.documents} />
           <div className="space-y-4">
             {subtaskCount > 0 && (
               <div className="space-y-2">
@@ -214,7 +352,6 @@ if (isLoading) {
                 <Progress value={subtaskProgress} className="h-2" />
               </div>
             )}
-
             {checklistCount > 0 && (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
@@ -227,65 +364,11 @@ if (isLoading) {
               </div>
             )}
           </div>
-          )
-  }, [task, taskStats])
-
-          // Handle loading and error states
-          if (isLoading) {
-    return loadingContent
-  }
-
-          if (isError || !task) {
-    return errorContent
-  }
-
-          return (
-          <>
-            <Dialog open={open} onOpenChange={onOpenChange}>
-              <DialogContent className="sm:max-w-[700px] max-h-[70vh] overflow-y-auto">
-                <DialogHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-start gap-2">
-                      <DialogTitle className="text-xl">{task.title}</DialogTitle>
-                      <Badge variant={taskStats.isCompleted ? "default" : "outline"} className="ml-2">
-                        {taskStats.isCompleted ? "Completed" : "In Progress"}
-                      </Badge>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => setShowEditDialog(true)} disabled={isDeleting}>
-                        <Edit className="h-4 w-4 mr-1" /> Edit
-                      </Button>
-                      <DeleteConfirmationDialog name={task.title} onDelete={onDeleteTask} disabled={isDeleting} />
-
-                      {!taskStats.isCompleted && (
-                        <Button size="sm" onClick={handleCompleteTask} disabled={isCompleting}>
-                          <CheckCircle2 className="h-4 w-4 mr-1" />
-                          {isCompleting ? "Completing..." : "Complete"}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </DialogHeader>
-
-                <div className="space-y-6">
-                  {/* Task details */}
-                  {taskDetailsSection}
-
-                  {/* Progress */}
-                  {progressSection}
-
-                  <Separator />
-
-                  {/* Task components */}
-                  <TaskAttachments taskId={task.id} attachments={task.documents} />
-                  <TaskChecklist taskId={task.id} checklist={task.checklists} />
-                  <TaskComments taskId={task.id} comments={task.comments} />
-                  <TaskFeedback taskId={task.id} feedback={task.task_feedback} />
-                </div>
-              </DialogContent>
-            </Dialog>
-
-            {showEditDialog && <EditTaskDialog taskId={task.id} open={showEditDialog} onOpenChange={setShowEditDialog} />}
-          </>
-          )
+          <TaskChecklist taskId={task.id} checklist={task.checklists} />
+          <TaskComments taskId={task.id} comments={task.comments} />
+          <TaskFeedback taskId={task.id} feedback={task.task_feedback} />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }

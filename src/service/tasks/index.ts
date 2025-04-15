@@ -54,7 +54,6 @@ export function useDeleteTask() {
   return useMutation({
     mutationFn: deleteTask,
     onSuccess: (data) => {
-      console.log("Deleted task:", data);
       // queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
       queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId], exact: true })
     },
