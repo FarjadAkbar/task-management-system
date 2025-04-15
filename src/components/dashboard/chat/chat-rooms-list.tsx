@@ -14,6 +14,18 @@ interface ChatRoomsListProps {
 
 export function ChatRoomsList({ search, activeRoomId, onRoomSelect }: ChatRoomsListProps) {
   const { data, isLoading, isError } = useGetChatRoomsQuery({ keyword: search })
+  function stringToColor(str: string) {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    let color = '#'
+    for (let i = 0; i < 3; i++) {
+      const value = (hash >> (i * 8)) & 0xff
+      color += ('00' + value.toString(16)).substr(-2)
+    }
+    return color
+  }
 
   if (isLoading) {
     return (
@@ -56,9 +68,8 @@ export function ChatRoomsList({ search, activeRoomId, onRoomSelect }: ChatRoomsL
         return (
           <div
             key={room.id}
-            className={`flex items-start gap-3 p-2 rounded-md cursor-pointer hover:bg-muted transition-colors ${
-              isActive ? "bg-muted" : ""
-            }`}
+            className={`flex items-start gap-3 p-2 rounded-md cursor-pointer hover:bg-muted transition-colors bg-white ${isActive ? "bg-muted" : ""
+              }`}
             onClick={() => onRoomSelect(room.id)}
           >
             {room.isGroup ? (
@@ -68,7 +79,7 @@ export function ChatRoomsList({ search, activeRoomId, onRoomSelect }: ChatRoomsL
             ) : (
               <Avatar className="h-10 w-10">
                 <AvatarImage src={room.participants[0]?.avatar} />
-                <AvatarFallback>
+                <AvatarFallback className="h-10 w-10" style={{ backgroundColor: stringToColor(room.participants[0]?.name || room.participants[0]?.email) }}>
                   {room.participants[0]?.name?.substring(0, 2) || room.participants[0]?.email?.substring(0, 2) || "DM"}
                 </AvatarFallback>
               </Avatar>

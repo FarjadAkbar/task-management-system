@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addShareMutationFn, deleteFileMutationFn, getFilesSharedWithMeFn, getPrivarteFilesQueryFn, getSharedFilesQueryFn, removeShareMutationFn } from "./fn";
+import { addShareMutationFn, assignFolderMutationFn, deleteFileMutationFn, getFilesSharedWithMeFn, getPrivarteFilesQueryFn, getSharedFilesQueryFn, removeShareMutationFn } from "./fn";
 import { FileQueryParams } from "./type";
 
 
@@ -69,3 +69,16 @@ export const useDeleteFileMutation = () => {
     // },
   });
 };
+
+
+export const useAssignFolderMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: assignFolderMutationFn,
+    // onSuccess: () => {
+    //   queryClient.invalidateQueries({ queryKey: ["privateFiles"] })
+    //   queryClient.invalidateQueries({ queryKey: ["sharedFiles"] })
+    // },
+  })
+}
