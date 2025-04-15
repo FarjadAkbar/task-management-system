@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useMemo, useCallback } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -20,9 +20,9 @@ import { toast } from "@/hooks/use-toast"
 import DeleteConfirmationDialog from "@/components/modals/delete-confitmation"
 
 interface TaskDetailDialogProps {
-  taskId: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  taskId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialogProps) {
@@ -35,21 +35,16 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
   // Memoize event handlers
   const handleCompleteTask = useCallback(() => {
     completeTask(taskId, {
-      onSuccess: () => {
-        toast({
-          title: "Task completed",
-          description: "The task has been marked as complete",
-        })
-      },
-      onError: (error) => {
+      onSuccess: () => toast({ title: "Task completed", description: "The task has been marked as complete" }),
+      onError: (error) =>
         toast({
           title: "Failed to complete task",
           description: error.message,
           variant: "destructive",
         })
-      },
+    },
     })
-  }, [completeTask, taskId])
+}
 
   // const onDeleteTask = () => {
   //   deleteTask(taskId, {
@@ -70,63 +65,36 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
   //   })
   // }
 
-  // Memoize calculated values
-  const taskStats = useMemo(() => {
-    if (!task) {
-      return {
-        subtaskCount: 0,
-        completedSubtasks: 0,
-        subtaskProgress: 0,
-        checklistCount: 0,
-        completedChecklists: 0,
-        checklistProgress: 0,
-        isCompleted: false,
-      }
-    }
+// Calculate completion stats
+const subtaskCount = task?.subtasks?.length || 0
+const completedSubtasks = task?.subtasks?.filter((subtask) => subtask.completed)?.length || 0
+const subtaskProgress = subtaskCount > 0 ? (completedSubtasks / subtaskCount) * 100 : 0
 
-    const subtaskCount = task.subtasks?.length || 0
-    const completedSubtasks = task.subtasks?.filter((subtask) => subtask.completed)?.length || 0
-    const subtaskProgress = subtaskCount > 0 ? (completedSubtasks / subtaskCount) * 100 : 0
+const checklistCount = task.checklists?.length || 0
+const completedChecklists = task.checklists?.filter((item) => item.completed)?.length || 0
+const checklistProgress = checklistCount > 0 ? (completedChecklists / checklistCount) * 100 : 0
 
-    const checklistCount = task.checklists?.length || 0
-    const completedChecklists = task.checklists?.filter((item) => item.completed)?.length || 0
-    const checklistProgress = checklistCount > 0 ? (completedChecklists / checklistCount) * 100 : 0
-
-    const isCompleted = task.taskStatus === "COMPLETE"
-
-    return {
-      subtaskCount,
-      completedSubtasks,
-      subtaskProgress,
-      checklistCount,
-      completedChecklists,
-      checklistProgress,
-      isCompleted,
-    }
-  }, [task])
-
-  // Memoize loading state UI
-  const loadingContent = useMemo(
-    () => (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[700px]">
-          <DialogHeader>
-            <Skeleton className="h-6 w-3/4" />
-          </DialogHeader>
-          <div className="space-y-4">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-2/3" />
-          </div>
-        </DialogContent>
-      </Dialog>
-    ),
+const isCompleted = task?.taskStatus === "COMPLETE"
+if (isLoading) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[700px]">
+        <DialogHeader>
+          <Skeleton className="h-6 w-3/4" />
+        </DialogHeader>
+        <div className="space-y-4">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-2/3" />
+        </div>
+      </DialogContent>
+    </Dialog>
+  ),
     [open, onOpenChange],
   )
 
-  // Memoize error state UI
-  const errorContent = useMemo(
-    () => (
+  if (isError || !task) {
+    return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
@@ -141,140 +109,133 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
         </DialogContent>
       </Dialog>
     ),
-    [open, onOpenChange],
+      [open, onOpenChange],
   )
 
-  // Memoize task details section
-  const taskDetailsSection = useMemo(() => {
-    if (!task) return null
+    // Memoize task details section
+    const taskDetailsSection = useMemo(() => {
+      if (!task) return null
 
-    return (
-      <div className="space-y-4">
-        {task.content && <div className="text-sm">{task.content}</div>}
+      return (
+        <div className="space-y-4">
+          {task.content && <div className="text-sm">{task.content}</div>}
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center text-sm">
-              <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-              <span className="text-muted-foreground">Created: </span>
-              <span className="ml-1">{format(new Date(task.createdAt), "MMM d, yyyy")}</span>
-            </div>
-
-            {task.startDate && (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
               <div className="flex items-center text-sm">
                 <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                <span className="text-muted-foreground">Start Date: </span>
-                <span className="ml-1">{format(new Date(task.startDate), "MMM d, yyyy")}</span>
+                <span className="text-muted-foreground">Created: </span>
+                <span className="ml-1">{format(new Date(task.createdAt), "MMM d, yyyy")}</span>
               </div>
-            )}
 
-            {task.dueDateAt && (
-              <div className="flex items-center text-sm">
-                <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                <span className="text-muted-foreground">Due Date: </span>
-                <span className="ml-1">{format(new Date(task.dueDateAt), "MMM d, yyyy")}</span>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center text-sm">
-              <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
-              <span className="text-muted-foreground">Priority: </span>
-              <Badge variant="outline" className="ml-1">
-                {task.priority}
-              </Badge>
-            </div>
-
-            <div className="flex items-center text-sm">
-              <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
-              <span className="text-muted-foreground">Weight: </span>
-              <span className="ml-1">{task.weight}</span>
-            </div>
-
-            {task.estimatedHours && (
-              <div className="flex items-center text-sm">
-                <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                <span className="text-muted-foreground">Estimated Hours: </span>
-                <span className="ml-1">{task.estimatedHours}</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Tags */}
-        {task.tags && task.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {task.tags.map((tag: string) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
-
-        {/* Assignees */}
-        {task.assignees && task.assignees.length > 0 && (
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium">Assignees</h4>
-            <div className="flex flex-wrap gap-2">
-              {task.assignees.map((assignee: any) => (
-                <div key={assignee.id} className="flex items-center gap-2 bg-muted/50 rounded-full px-2 py-1">
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src={assignee.user?.avatar || "/placeholder.svg"} />
-                    <AvatarFallback>{assignee.user?.name?.charAt(0) || assignee.user?.email?.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm">{assignee.user?.name || assignee.user?.email}</span>
+              {task.startDate && (
+                <div className="flex items-center text-sm">
+                  <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Start Date: </span>
+                  <span className="ml-1">{format(new Date(task.startDate), "MMM d, yyyy")}</span>
                 </div>
+              )}
+
+              {task.dueDateAt && (
+                <div className="flex items-center text-sm">
+                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Due Date: </span>
+                  <span className="ml-1">{format(new Date(task.dueDateAt), "MMM d, yyyy")}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center text-sm">
+                <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Priority: </span>
+                <Badge variant="outline" className="ml-1">
+                  {task.priority}
+                </Badge>
+              </div>
+
+              <div className="flex items-center text-sm">
+                <BarChart className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Weight: </span>
+                <span className="ml-1">{task.weight}</span>
+              </div>
+
+              {task.estimatedHours && (
+                <div className="flex items-center text-sm">
+                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Estimated Hours: </span>
+                  <span className="ml-1">{task.estimatedHours}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Tags */}
+          {task.tags && task.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {task.tags.map((tag: string) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
               ))}
             </div>
-          </div>
-        )}
-      </div>
-    )
-  }, [task])
+          )}
 
-  // Memoize progress section
-  const progressSection = useMemo(() => {
-    if (!task) return null
-    const { subtaskCount, completedSubtasks, subtaskProgress, checklistCount, completedChecklists, checklistProgress } =
-      taskStats
-
-    return (
-      <div className="space-y-4">
-        {subtaskCount > 0 && (
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Subtasks</span>
-              <span>
-                {completedSubtasks}/{subtaskCount}
-              </span>
+          {/* Assignees */}
+          {task.assignees && task.assignees.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Assignees</h4>
+              <div className="flex flex-wrap gap-2">
+                {task.assignees.map((assignee: any) => (
+                  <div key={assignee.id} className="flex items-center gap-2 bg-muted/50 rounded-full px-2 py-1">
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={assignee.user?.avatar} />
+                      <AvatarFallback>
+                        {assignee.user?.name?.charAt(0) || assignee.user?.email?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm">{assignee.user?.name || assignee.user?.email}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <Progress value={subtaskProgress} className="h-2" />
-          </div>
-        )}
+          )}
 
-        {checklistCount > 0 && (
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Checklist</span>
-              <span>
-                {completedChecklists}/{checklistCount}
-              </span>
-            </div>
-            <Progress value={checklistProgress} className="h-2" />
+          {/* Progress */}
+          <div className="space-y-4">
+            {subtaskCount > 0 && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Subtasks</span>
+                  <span>
+                    {completedSubtasks}/{subtaskCount}
+                  </span>
+                </div>
+                <Progress value={subtaskProgress} className="h-2" />
+              </div>
+            )}
+
+            {checklistCount > 0 && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Checklist</span>
+                  <span>
+                    {completedChecklists}/{checklistCount}
+                  </span>
+                </div>
+                <Progress value={checklistProgress} className="h-2" />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    )
+          )
   }, [task, taskStats])
 
-  // Handle loading and error states
-  if (isLoading) {
+          // Handle loading and error states
+          if (isLoading) {
     return loadingContent
   }
 
-  if (isError || !task) {
+          if (isError || !task) {
     return errorContent
   }
 

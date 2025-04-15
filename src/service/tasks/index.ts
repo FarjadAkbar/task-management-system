@@ -38,7 +38,7 @@ export function useUpdateTask() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn:  updateTask,
+    mutationFn: updateTask,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["task", data.id] })
       queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
@@ -54,6 +54,7 @@ export function useDeleteTask() {
   return useMutation({
     mutationFn: deleteTask,
     onSuccess: (data) => {
+      console.log("Deleted task:", data);
       // queryClient.invalidateQueries({ queryKey: ["section-tasks", data.section] })
       queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId], exact: true })
     },
@@ -67,7 +68,7 @@ export function useMoveTask() {
   return useMutation({
     mutationFn: moveTask,
     onSuccess: (data) => {
-        queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId], exact: true })
+      queryClient.invalidateQueries({ queryKey: ["sprint-tasks", data.sprintId], exact: true })
     },
   })
 }

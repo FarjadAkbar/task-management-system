@@ -104,20 +104,20 @@ export function TaskAttachments({ taskId, attachments = [] }: TaskAttachmentsPro
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-      <Dialog>
-  <DialogTrigger>
-    <Button>Attachment</Button>
-  </DialogTrigger>
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>Attachments</DialogTitle>
-      <DialogDescription>Add files to this task.</DialogDescription>
-    </DialogHeader>
+        <Dialog>
+          <DialogTrigger>
+            <Button>Attachment</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Attachments</DialogTitle>
+              <DialogDescription>Add files to this task.</DialogDescription>
+            </DialogHeader>
 
-    {/* File uploader dropzone */}
-  <FileUploaderDropzone onUploadSuccess={handleFileUpload} taskId={taskId} />
-  </DialogContent>
-</Dialog>
+            {/* File uploader dropzone */}
+            <FileUploaderDropzone onUploadSuccess={handleFileUpload} taskId={taskId} />
+          </DialogContent>
+        </Dialog>
 
       </div>
 

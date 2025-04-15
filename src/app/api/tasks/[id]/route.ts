@@ -172,7 +172,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { id } = await params;
+    const { id } = params;
     const taskId = id
     // Get task
     const task = await prismadb.tasks.findUnique({
