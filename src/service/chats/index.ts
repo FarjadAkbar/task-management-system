@@ -10,7 +10,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { createChatMutationFn, getChatRoomsFn, getRoomFn, sendMessageFn } from "./fn";
+import { addMembersToGroupFn, createChatMutationFn, getChatRoomsFn, getRoomFn, leaveGroupFn, removeMemberFromGroupFn, sendMessageFn } from "./fn";
 import { AllChatRoomPayloadType, GetRoomPayloadType, TypingUserType } from "./type";
 
 export const useChatSocket = (activeUser: User, roomId?: string) => {
@@ -212,3 +212,52 @@ export const useSendMessageMutation = (activeUser: User, roomId: string) => {
     })
   }
   
+
+  
+// Hook for adding members to a group
+export const useAddMembersToGroup = (roomId: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (userIds: string[]) => addMembersToGroupFn({ roomId, userIds }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["chatRooms"],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ["chatRoom", roomId],
+      })
+    },
+  })
+}
+
+// Hook for removing a member from a group
+export const useRemoveMemberFromGroup = (roomId: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (memberId: string) => removeMemberFromGroupFn({ roomId, memberId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["chatRooms"],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ["chatRoom", roomId],
+      })
+    },
+  })
+}
+
+// Hook for leaving a group
+export const useLeaveGroup = (roomId: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => leaveGroupFn(roomId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["chatRooms"],
+      })
+    },
+  })
+}

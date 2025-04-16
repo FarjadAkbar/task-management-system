@@ -58,24 +58,12 @@ export function ChatHeader({ room, typingUsers, currentUserId }: ChatHeaderProps
             </AvatarFallback>
           </Avatar>
 
-          {/* <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
           <GroupInfo
             room={room}
             currentUserId={currentUserId}
-            onAddMembers={(userIds) => {
-              // Implement add members functionality
-              console.log("Add members", userIds)
-            }}
-            onRemoveMember={(userId) => {
-              // Implement remove member functionality
-              console.log("Remove member", userId)
-            }}
-            onLeaveGroup={() => {
-              // Implement leave group functionality
-              console.log("Leave group")
-            }}
           />
-        </div> */}
+        </div>
           </>
         ) : (
           <Avatar className="h-10 w-10">
