@@ -90,6 +90,11 @@ export async function GET(req: Request) {
           },
           take: 1,
           include: {
+            attachments: {
+              include: {
+                document: true,
+              },
+            },
             sender: {
               select: {
                 id: true,

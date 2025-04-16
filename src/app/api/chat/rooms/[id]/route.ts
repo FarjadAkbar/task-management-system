@@ -63,6 +63,11 @@ export async function GET(req: Request, props: { params: Promise<{ id: string }>
         ...(before ? { createdAt: { lt: new Date(before) } } : {}),
       },
       include: {
+        attachments: {
+          include: {
+            document: true,
+          },
+        },
         sender: {
           select: {
             id: true,

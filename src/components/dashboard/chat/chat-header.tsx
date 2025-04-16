@@ -57,13 +57,6 @@ export function ChatHeader({ room, typingUsers, currentUserId }: ChatHeaderProps
               {room.name?.substring(0, 2) || "GR"}
             </AvatarFallback>
           </Avatar>
-
-          <div className="flex items-center gap-2">
-          <GroupInfo
-            room={room}
-            currentUserId={currentUserId}
-          />
-        </div>
           </>
         ) : (
           <Avatar className="h-10 w-10">
@@ -91,6 +84,10 @@ export function ChatHeader({ room, typingUsers, currentUserId }: ChatHeaderProps
       </div>
 
       <div className="flex items-center gap-2">
+          <GroupInfo
+            room={room}
+            currentUserId={currentUserId}
+          />
         <Button
           size="icon"
           className="bg-green-500 hover:bg-green-600 text-white rounded-full h-8 w-8"

@@ -195,7 +195,7 @@ export const useLoadMoreMessagesQuery = ({
 
 
 // Send a new message
-export const useSendMessageMutation = (activeUser: User, roomId: string) => {
+export const useSendMessageMutation = (activeUser: User, roomId: string, files?: Array<{ id: string; name: string; url: string }>) => {
     const queryClient = useQueryClient()
     const { emitNewMessage } = useChatSocket(activeUser, roomId)
   
