@@ -98,7 +98,7 @@ const SortableTaskCard = memo(
         {...listeners}
         className="touch-manipulation"
       >
-        <TaskCard task={task} />
+        <TaskCard task={task} taskId={task.id} />
       </div>
     );
   }
