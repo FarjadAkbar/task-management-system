@@ -6,14 +6,47 @@ import { Clock, CheckCircle2, BarChart, ListChecks, MessageSquare, Paperclip } f
 import { format } from "date-fns"
 import { TaskDetailDialog } from "./task-detail-dialog"
 import { TaskType } from "@/service/tasks/type"
+import { useDeleteTask } from "@/service/tasks"
+import { toast } from "@/hooks/use-toast"
+import AlertModal from "@/components/modals/alert-modal";
+import { Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface TaskCardProps {
   task: TaskType
+  taskId: string
 }
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({ task, taskId }: TaskCardProps) {
   const [showDetailDialog, setShowDetailDialog] = useState(false)
+  const { mutate: deleteTask, isPending: isDeleting } = useDeleteTask()
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  const onDeleteTask = () => {
+    console.log("Deleting task with ID:", taskId);
+    deleteTask(taskId, {
+      onSuccess: () => {
+        console.log("Deleting task with ID:", taskId);
+        toast({
+          title: "Task deleted",
+          description: "The task has been deleted",
+        });
+        setIsDeleteModalOpen(false);
+      },
+      onError: (error) => {
+        console.error("Delete error:", error);
+        toast({
+          title: "Failed to delete task",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
+  };
+
+  if (taskId !== task.id) {
+    console.warn(`taskId prop (${taskId}) does not match task.id (${task.id})`);
+  }
   // Determine priority color
   const priorityColor =
     task.priority === "HIGH" ? "text-red-500" : task.priority === "MEDIUM" ? "text-amber-500" : "text-blue-500"
@@ -121,10 +154,30 @@ export function TaskCard({ task }: TaskCardProps) {
                 <span>{task.documents.length}</span>
               </div>
             )}
+
+            {/* Push the delete button to the right */}
+            <div className="ml-auto">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDeleteModalOpen(true);
+                }}
+                disabled={isDeleting}
+              >
+                <Trash className="h-4 w-4 text-red-700" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-
+      <AlertModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={onDeleteTask}
+        loading={isDeleting}
+      />
       {showDetailDialog && (
         <TaskDetailDialog taskId={task.id} open={showDetailDialog} onOpenChange={setShowDetailDialog} />
       )}
