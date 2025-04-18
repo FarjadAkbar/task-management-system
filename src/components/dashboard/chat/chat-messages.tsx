@@ -4,9 +4,12 @@ import { useRef, useEffect } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import { FileIcon, FileTextIcon, ImageIcon } from "lucide-react"
+import { ChatMessageType } from "@/service/chats/type"
+
 
 interface ChatMessagesProps {
-  messages: any[]
+  messages: ChatMessageType[]
   currentUserId: string
 }
 
@@ -28,7 +31,7 @@ export function ChatMessages({ messages, currentUserId }: ChatMessagesProps) {
   }
 
   // Group messages by date
-  const groupedMessages: { [date: string]: any[] } = {}
+  const groupedMessages: { [date: string]: ChatMessageType[] } = {}
 
   messages.forEach((message) => {
     const date = new Date(message.createdAt).toDateString()
@@ -37,6 +40,23 @@ export function ChatMessages({ messages, currentUserId }: ChatMessagesProps) {
     }
     groupedMessages[date].push(message)
   })
+
+  const getFileIcon = (mimeType: string) => {
+    if (mimeType.startsWith("image/")) {
+      return <ImageIcon className="h-4 w-4" />
+    } else if (mimeType.startsWith("text/")) {
+      return <FileTextIcon className="h-4 w-4" />
+    } else {
+      return <FileIcon className="h-4 w-4" />
+    }
+  }
+
+  const formatFileSize = (bytes?: number) => {
+    if (!bytes) return "Unknown size"
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
 
   return (
     <div className="space-y-6">
@@ -61,7 +81,7 @@ export function ChatMessages({ messages, currentUserId }: ChatMessagesProps) {
               >
                 {!isCurrentUser && showAvatar ? (
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={message.sender.avatar} />
+                    <AvatarImage src={message.sender.avatar || "/placeholder.svg"} />
                     <AvatarFallback className="bg-gray-300">
                       {message.sender.name?.substring(0, 2) || message.sender.email?.substring(0, 2) || "U"}
                     </AvatarFallback>
@@ -77,7 +97,29 @@ export function ChatMessages({ messages, currentUserId }: ChatMessagesProps) {
                   })}
                 >
                   {!isCurrentUser && showAvatar && <p className="text-xs font-medium mb-1">{message.sender.name}</p>}
-                  <p >{message.content}</p>
+
+                  {message.content && <p>{message.content}</p>}
+
+                  {message.attachments && message.attachments.length > 0 && (
+                    <div className={cn("mt-2", { "mt-0": !message.content })}>
+                      {message.attachments.map((attachment) => (
+                        <a
+                          key={attachment.id}
+                          href={attachment.document.document_file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2 bg-black/5 rounded-md mt-1 hover:bg-black/10 transition"
+                        >
+                          {getFileIcon(attachment.document.document_file_mimeType)}
+                          <div className="overflow-hidden">
+                            <p className="text-xs font-medium truncate">{attachment.document.document_name}</p>
+                            <p className="text-xs text-muted-foreground">{formatFileSize(attachment.document.size)}</p>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+
                   <p className="text-xs opacity-70 text-right mt-1">{format(new Date(message.createdAt), "h:mm a")}</p>
                 </div>
               </div>

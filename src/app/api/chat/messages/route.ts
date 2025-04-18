@@ -34,12 +34,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "You are not a participant in this chat room" }, { status: 403 })
     }
 
+    // Check if there are file attachments
+    const hasAttachments = body.files && body.files.length > 0
+
     // Create the message
     const message = await prismadb.chatMessage.create({
       data: {
         content: body.content,
         senderId: userId,
         roomId: body.roomId,
+        hasAttachments: hasAttachments, // Add this flag to indicate attachments
       },
       include: {
         sender: {
@@ -52,6 +56,21 @@ export async function POST(req: Request) {
         },
       },
     })
+
+    // Create chat attachments if files are provided
+    if (hasAttachments) {
+      // Create ChatAttachment entries for each file
+      const attachmentPromises = body.files.map((file: { id: string }) => {
+        return prismadb.chatAttachment.create({
+          data: {
+            messageId: message.id,
+            documentId: file.id,
+          },
+        })
+      })
+
+      await Promise.all(attachmentPromises)
+    }
 
     // Update the room's updatedAt timestamp
     await prismadb.chatRoom.update({

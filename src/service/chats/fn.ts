@@ -46,3 +46,38 @@ export const sendMessageFn = async (
   const response = await API.post(`/chat/messages`, data);
   return response.data;
 };
+
+
+
+
+// Add members to a group
+export const addMembersToGroupFn = async ({
+  roomId,
+  userIds,
+}: {
+  roomId: string
+  userIds: string[]
+}): Promise<RoomResponseType> => {
+  const response = await API.post(`/chat/rooms/${roomId}/members`, { userIds })
+  return response.data
+}
+
+// Remove a member from a group
+export const removeMemberFromGroupFn = async ({
+  roomId,
+  memberId,
+}: {
+  roomId: string
+  memberId: string
+}): Promise<RoomResponseType> => {
+  const response = await API.delete(`/chat/rooms/${roomId}/members`, {
+    data: { memberId },
+  })
+  return response.data
+}
+
+// Leave a group
+export const leaveGroupFn = async (roomId: string): Promise<{ message: string }> => {
+  const response = await API.post(`/chat/rooms/${roomId}`)
+  return response.data
+}

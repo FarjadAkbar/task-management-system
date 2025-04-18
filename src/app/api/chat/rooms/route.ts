@@ -90,6 +90,11 @@ export async function GET(req: Request) {
           },
           take: 1,
           include: {
+            attachments: {
+              include: {
+                document: true,
+              },
+            },
             sender: {
               select: {
                 id: true,
@@ -124,6 +129,7 @@ export async function GET(req: Request) {
         lastMessage: room.messages[0] || null,
         unreadCount: participant?.unreadCount || 0,
         participants: room.participants.map((p) => p.user),
+        createdBy: room.createdBy,
         updatedAt: room.updatedAt,
       }
     })
