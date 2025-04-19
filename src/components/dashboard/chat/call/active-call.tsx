@@ -1,93 +1,127 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Mic, MicOff, Phone, Video, VideoOff, Users, Maximize, Minimize } from "lucide-react"
-import { useCall } from "@/context/call-context"
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Mic, MicOff, Phone, Video, VideoOff, Users, Maximize, Minimize } from "lucide-react";
+import { useCall } from "@/context/call-context";
+import * as OT from "opentok";
 
 export function ActiveCall() {
-  const { callState, endCall } = useCall()
-  const { callType, isGroup, participants } = callState
-  const [isMuted, setIsMuted] = useState(false)
-  const [isVideoOff, setIsVideoOff] = useState(callType === "audio")
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [activeSpeaker, setActiveSpeaker] = useState<string | null>(null)
-  const localVideoRef = useRef<HTMLVideoElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const videoRefs = useRef<Record<string, HTMLVideoElement>>({})
+  const { callState, endCall } = useCall();
+  const { callType, isGroup, participants, sessionId } = callState;
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(callType === "audio");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const publisherRef = useRef<HTMLDivElement>(null);
+  const subscriberRefs = useRef<Record<string, HTMLDivElement>>({});
 
-  // Timer for call duration
-  const [duration, setDuration] = useState(0)
   useEffect(() => {
     const interval = setInterval(() => {
-      setDuration((prev) => prev + 1)
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [])
+      setDuration((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  // Format duration as mm:ss
+  const [duration, setDuration] = useState(0);
+
   const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
 
-  // Handle mute toggle
   const toggleMute = () => {
-    setIsMuted(!isMuted)
-    // Implementation would connect to WebRTC to mute audio
-  }
+    setIsMuted(!isMuted);
+    const publisher = OT.publishers.find((p) => p.element === publisherRef.current);
+    if (publisher) {
+      publisher.publishAudio(!isMuted);
+    }
+  };
 
-  // Handle video toggle
   const toggleVideo = () => {
-    setIsVideoOff(!isVideoOff)
-    // Implementation would connect to WebRTC to disable video
-  }
+    setIsVideoOff(!isVideoOff);
+    const publisher = OT.publishers.find((p) => p.element === publisherRef.current);
+    if (publisher) {
+      publisher.publishVideo(!isVideoOff);
+    }
+  };
 
-  // Handle fullscreen toggle
   const toggleFullscreen = () => {
-    if (!containerRef.current) return
+    if (!containerRef.current) return;
 
     if (!isFullscreen) {
       if (containerRef.current.requestFullscreen) {
-        containerRef.current.requestFullscreen()
+        containerRef.current.requestFullscreen();
       }
     } else {
       if (document.exitFullscreen) {
-        document.exitFullscreen()
+        document.exitFullscreen();
       }
     }
-  }
+  };
 
-  // Listen for fullscreen change
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement)
-    }
+      setIsFullscreen(!!document.fullscreenElement);
+    };
 
-    document.addEventListener("fullscreenchange", handleFullscreenChange)
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange)
-    }
-  }, [])
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const session = OT.sessions.find((s) => s.sessionId === sessionId);
+    if (!session) return;
+
+    session.on("streamCreated", (event: OT.Event<"streamCreated", OT.Session> & { stream: OT.Stream }) => {
+      const subscriber = session.subscribe(
+        event.stream,
+        subscriberRefs.current[event.stream.streamId],
+        {
+          insertMode: "append",
+          width: "100%",
+          height: "100%",
+        },
+        (err: Error | undefined) => {
+          if (err) console.error("Error subscribing to stream:", err);
+        }
+      );
+      subscriber.on("videoDisabled", () => {
+        // Handle video disabled
+      });
+    });
+
+    session.on("streamDestroyed", () => {
+      // Clean up subscriber
+    });
+
+    return () => {
+      session.off("streamCreated");
+      session.off("streamDestroyed");
+    };
+  }, [sessionId]);
 
   function stringToColor(str: string) {
-    let hash = 0
+    let hash = 0;
     for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash)
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    let color = "#"
+    let color = "#";
     for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff
-      color += ("00" + value.toString(16)).substr(-2)
+      const value = (hash >> (i * 8)) & 0xff;
+      color += ("00" + value.toString(16)).substr(-2);
     }
-    return color
+    return color;
   }
 
   return (
     <div ref={containerRef} className="fixed inset-0 z-50 bg-black flex flex-col">
-      {/* Call header */}
       <div className="p-4 flex items-center justify-between bg-black/50 text-white">
         <div>
           <h3 className="font-medium">{isGroup ? "Group Call" : participants[0]?.name}</h3>
@@ -100,27 +134,21 @@ export function ActiveCall() {
         </div>
       </div>
 
-      {/* Video grid */}
       <div className="flex-1 flex items-center justify-center p-4">
         {callType === "video" ? (
           <div
-            className={`grid gap-4 w-full h-full ${
-              isGroup
-                ? participants.length <= 2
-                  ? "grid-cols-1"
-                  : participants.length <= 4
-                    ? "grid-cols-2"
-                    : "grid-cols-3"
-                : "grid-cols-1"
-            }`}
+            className={`grid gap-4 w-full h-full ${isGroup
+              ? participants.length <= 2
+                ? "grid-cols-1"
+                : participants.length <= 4
+                  ? "grid-cols-2"
+                  : "grid-cols-3"
+              : "grid-cols-1"
+              }`}
           >
-            {/* Local video */}
             <div className="relative bg-gray-800 rounded-lg overflow-hidden">
-              <video
-                ref={localVideoRef}
-                autoPlay
-                muted
-                playsInline
+              <div
+                ref={publisherRef}
                 className={`w-full h-full object-cover ${isVideoOff ? "hidden" : "block"}`}
               />
               {isVideoOff && (
@@ -133,15 +161,12 @@ export function ActiveCall() {
               <div className="absolute bottom-2 left-2 bg-black/50 text-white text-xs py-1 px-2 rounded">You</div>
             </div>
 
-            {/* Remote videos */}
-            {participants.map((participant) => (
+            {participants.map((participant: any) => (
               <div key={participant.id} className="relative bg-gray-800 rounded-lg overflow-hidden">
-                <video
+                <div
                   ref={(el) => {
-                    if (el) videoRefs.current[participant.id] = el
+                    if (el) subscriberRefs.current[participant.id] = el;
                   }}
-                  autoPlay
-                  playsInline
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -167,7 +192,7 @@ export function ActiveCall() {
           <div className="flex flex-col items-center justify-center">
             {isGroup ? (
               <div className="flex -space-x-4 mb-4">
-                {participants.slice(0, 3).map((participant) => (
+                {participants.slice(0, 3).map((participant: any) => (
                   <Avatar key={participant.id} className="h-20 w-20 border-4 border-black">
                     <AvatarImage src={participant.avatar || "/placeholder.svg"} />
                     <AvatarFallback
@@ -207,7 +232,6 @@ export function ActiveCall() {
         )}
       </div>
 
-      {/* Call controls */}
       <div className="p-6 bg-black/50 flex items-center justify-center gap-4">
         <Button
           size="lg"
@@ -244,5 +268,5 @@ export function ActiveCall() {
         </Button>
       </div>
     </div>
-  )
+  );
 }

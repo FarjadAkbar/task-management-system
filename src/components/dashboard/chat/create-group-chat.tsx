@@ -1,82 +1,103 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Users } from "lucide-react"
-import { useGetUsersQuery } from "@/service/users"
-import { useCreateChatRoomMutation } from "@/service/chats"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus } from "lucide-react";
+import { useGetUsersQuery } from "@/service/users";
+import { useCreateChatRoomMutation } from "@/service/chats";
+import { useToast } from "@/hooks/use-toast";
 
 interface CreateGroupChatProps {
-  onGroupCreated: (roomId: string) => void
+  onClose: () => void;
+  onRoomSelect: (roomId: string | null) => void;
 }
 
-export function CreateGroupChat({ onGroupCreated }: CreateGroupChatProps) {
-  const [open, setOpen] = useState(false)
-  const [groupName, setGroupName] = useState("")
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([])
-  const [search, setSearch] = useState("")
-
-  const { data, isLoading } = useGetUsersQuery({ search })
-  const { mutate: createRoom, isPending } = useCreateChatRoomMutation()
+export function CreateGroupChat({ onClose, onRoomSelect }: CreateGroupChatProps) {
+  const [open, setOpen] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [search, setSearch] = useState("");
+  const { data, isLoading } = useGetUsersQuery({ search });
+  const { mutate: createRoom, isPending } = useCreateChatRoomMutation();
+  const { toast } = useToast();
 
   const handleUserToggle = (userId: string) => {
-    setSelectedUsers((prev) => (prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]))
-  }
+    setSelectedUsers((prev) =>
+      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
+    );
+  };
 
   const handleCreateGroup = () => {
-    if (groupName.trim() && selectedUsers.length > 0) {
-      createRoom(
-        {
-          name: groupName.trim(),
-          participants: selectedUsers,
-          isGroup: true,
-        },
-        {
-          onSuccess: (data) => {
-            onGroupCreated(data.room.id)
-            setOpen(false)
-            resetForm()
-          },
-        },
-      )
+    if (!groupName.trim() || selectedUsers.length === 0) {
+      toast({
+        title: "Error",
+        description: "Group name and at least one participant are required",
+        variant: "destructive",
+      });
+      return;
     }
-  }
+
+    createRoom(
+      {
+        name: groupName.trim(),
+        participants: selectedUsers,
+        isGroup: true,
+      },
+      {
+        onSuccess: (data) => {
+          onRoomSelect(data.room.id);
+          setOpen(false);
+          resetForm();
+          toast({
+            title: "Group Created",
+            description: `Group ${groupName} created successfully`,
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Failed to create group",
+            variant: "destructive",
+          });
+        },
+      }
+    );
+  };
 
   const resetForm = () => {
-    setGroupName("")
-    setSelectedUsers([])
-    setSearch("")
-  }
+    setGroupName("");
+    setSelectedUsers([]);
+    setSearch("");
+  };
 
   function stringToColor(str: string) {
-    let hash = 0
+    let hash = 0;
     for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash)
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    let color = "#"
+    let color = "#";
     for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff
-      color += ("00" + value.toString(16)).substr(-2)
+      const value = (hash >> (i * 8)) & 0xff;
+      color += ("00" + value.toString(16)).substr(-2);
     }
-    return color
+    return color;
   }
 
   return (
     <Dialog
       open={open}
       onOpenChange={(newOpen) => {
-        setOpen(newOpen)
-        if (!newOpen) resetForm()
+        setOpen(newOpen);
+        if (!newOpen) resetForm();
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Users className="h-4 w-4" />
-          <span>New Group</span>
+        <Button size="icon" className="shrink-0" title="Create Group Chat">
+          <Plus className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -121,7 +142,7 @@ export function CreateGroupChat({ onGroupCreated }: CreateGroupChatProps) {
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={user.avatar || "/placeholder.svg"} />
                         <AvatarFallback style={{ backgroundColor: stringToColor(user.id), color: "#fff" }}>
-                          {user.name?.substring(0, 2) || user.email?.substring(0, 2) || "U"}
+                          {user.name?.substring(0, 2) || "U"}
                         </AvatarFallback>
                       </Avatar>
 
@@ -142,12 +163,15 @@ export function CreateGroupChat({ onGroupCreated }: CreateGroupChatProps) {
             <p className="text-sm text-muted-foreground">
               {selectedUsers.length} user{selectedUsers.length !== 1 ? "s" : ""} selected
             </p>
-            <Button onClick={handleCreateGroup} disabled={!groupName.trim() || selectedUsers.length === 0 || isPending}>
+            <Button
+              onClick={handleCreateGroup}
+              disabled={!groupName.trim() || selectedUsers.length === 0 || isPending}
+            >
               {isPending ? "Creating..." : "Create Group"}
             </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -77,3 +77,13 @@ export type ChatMessagesResponseType = {
   chatMessage: ChatMessageType[];
 };
 
+// Vonage-specific types
+export type VonageSessionPayloadType = {
+  roomId: string;
+};
+
+export type VonageSessionResponseType = {
+  message: string;
+  sessionId: string;
+  token: string;
+};

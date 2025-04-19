@@ -1,54 +1,44 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import { ChatHeader } from "./chat-header"
-import { ChatMessages } from "./chat-messages"
-import { ChatInput } from "./chat-input"
-import { Loader2 } from "lucide-react"
-import { useChatSocket, useGetChatRoomQuery, useSendMessageMutation } from "@/service/chats"
+import { useEffect, useRef, useState } from "react";
+import { ChatHeader } from "./chat-header";
+import { ChatMessages } from "./chat-messages";
+import { ChatInput } from "./chat-input";
+import { Loader2 } from "lucide-react";
+import { useGetChatRoomQuery, useSendMessageMutation } from "@/service/chats";
 import { User } from "next-auth";
 
 interface ChatWindowProps {
-  roomId: string | null
-  user: User
+  roomId: string | null;
+  user: User;
 }
 
 export function ChatWindow({ roomId, user }: ChatWindowProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [message, setMessage] = useState("")
-  const { typingUsers, emitTyping, emitStopTyping } = useChatSocket(user, roomId || undefined)
-
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [message, setMessage] = useState("");
   const { data, isLoading } = useGetChatRoomQuery({ roomId: roomId || "", limit: 50 });
-  const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation(user, roomId || "")
+  const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation(roomId || "");
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [data?.room?.messages])
+  }, [data?.room?.messages]);
 
   const handleSendMessage = () => {
-    if (!roomId || !message.trim() || isSending) return
+    if (!roomId || !message.trim() || isSending) return;
 
     sendMessage({
       content: message.trim(),
       roomId,
-    })
+    });
 
-    setMessage("")
-    emitStopTyping()
-  }
+    setMessage("");
+  };
 
   const handleInputChange = (value: string) => {
-    setMessage(value)
-
-    if (value.trim()) {
-      emitTyping()
-    } else {
-      emitStopTyping()
-    }
-  }
+    setMessage(value);
+  };
 
   if (!roomId) {
     return (
@@ -58,7 +48,7 @@ export function ChatWindow({ roomId, user }: ChatWindowProps) {
           <p className="text-sm text-muted-foreground mt-1">Choose an existing conversation or start a new one</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (isLoading) {
@@ -66,18 +56,16 @@ export function ChatWindow({ roomId, user }: ChatWindowProps) {
       <div className="flex-1 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
-    )
+    );
   }
 
   return (
     <div className="flex-1 flex flex-col h-full">
-      <ChatHeader room={data?.room} typingUsers={typingUsers} currentUserId={user.id} />
-
+      <ChatHeader room={data?.room} currentUserId={user.id} />
       <div className="flex-1 overflow-y-auto p-4">
         <ChatMessages messages={data?.room?.messages || []} currentUserId={user.id} />
         <div ref={messagesEndRef} />
       </div>
-
       <ChatInput
         value={message}
         onChange={handleInputChange}
@@ -86,6 +74,5 @@ export function ChatWindow({ roomId, user }: ChatWindowProps) {
         disabled={!roomId}
       />
     </div>
-  )
+  );
 }
-

@@ -1,38 +1,37 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Phone, PhoneOff, Video } from "lucide-react"
-import { useCall } from "@/context/call-context"
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Phone, PhoneOff, Video } from "lucide-react";
+import { useCall } from "@/context/call-context";
 
 export function IncomingCall() {
-  const { callState, answerCall, rejectCall } = useCall()
-  const { caller, callType, isGroup, participants } = callState
+  const { callState, answerCall, rejectCall } = useCall();
+  const { caller, callType, isGroup, participants } = callState;
 
-  // Auto-play ringtone
   useEffect(() => {
-    const audio = new Audio("/sounds/ringtone.mp3")
-    audio.loop = true
-    audio.play().catch((e) => console.error("Could not play ringtone:", e))
+    const audio = new Audio("/sounds/ringtone.mp3");
+    audio.loop = true;
+    audio.play().catch((e) => console.error("Could not play ringtone:", e));
 
     return () => {
-      audio.pause()
-      audio.currentTime = 0
-    }
-  }, [])
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, []);
 
   function stringToColor(str: string) {
-    let hash = 0
+    let hash = 0;
     for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash)
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    let color = "#"
+    let color = "#";
     for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff
-      color += ("00" + value.toString(16)).substr(-2)
+      const value = (hash >> (i * 8)) & 0xff;
+      color += ("00" + value.toString(16)).substr(-2);
     }
-    return color
+    return color;
   }
 
   return (
@@ -44,7 +43,7 @@ export function IncomingCall() {
         <div className="flex justify-center mb-6">
           {isGroup ? (
             <div className="flex -space-x-4">
-              {participants.slice(0, 3).map((participant, i) => (
+              {participants.slice(0, 3).map((participant: any) => (
                 <Avatar key={participant.id} className="h-16 w-16 border-4 border-white">
                   <AvatarImage src={participant.avatar || "/placeholder.svg"} />
                   <AvatarFallback
@@ -97,5 +96,5 @@ export function IncomingCall() {
         </div>
       </div>
     </div>
-  )
+  );
 }

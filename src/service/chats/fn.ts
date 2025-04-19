@@ -3,15 +3,14 @@ import {
   AllChatRoomPayloadType,
   AllChatRoomResponseType,
   ChatMessagesResponseType,
-  ChatMessageType,
-  ChatRoomType,
   CreateRoomPayloadType,
   GetRoomPayloadType,
   RoomResponseType,
   SendMessagePayloadType,
+  VonageSessionPayloadType,
+  VonageSessionResponseType,
 } from "./type";
 
-// CHAT ROOM
 export const getChatRoomsFn = async (
   params: AllChatRoomPayloadType
 ): Promise<AllChatRoomResponseType> => {
@@ -39,10 +38,16 @@ export const createChatMutationFn = async (
   return response.data;
 };
 
-// MESSAGES
 export const sendMessageFn = async (
   data: SendMessagePayloadType
 ): Promise<ChatMessagesResponseType> => {
   const response = await API.post(`/chat/messages`, data);
+  return response.data;
+};
+
+export const createVonageSessionFn = async (
+  data: VonageSessionPayloadType
+): Promise<VonageSessionResponseType> => {
+  const response = await API.post(`/vonage/session`, data);
   return response.data;
 };

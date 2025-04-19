@@ -1,29 +1,34 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { createContext, useContext, useState, useEffect, useRef } from "react"
-import { useToast } from "@/hooks/use-toast"
+import type React from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
+import * as OT from "opentok";
+import { useCreateVonageSessionMutation } from "@/service/chats";
+import API from "@/lib/axios-client";
 
-type CallType = "audio" | "video"
+type CallType = "audio" | "video";
 
 interface CallState {
-  isIncoming: boolean
-  isOutgoing: boolean
-  isActive: boolean
-  isGroup: boolean
-  callType: CallType
-  roomId: string | null
-  participants: any[]
-  caller: any | null
+  isIncoming: boolean;
+  isOutgoing: boolean;
+  isActive: boolean;
+  isGroup: boolean;
+  callType: CallType;
+  roomId: string | null;
+  participants: any[];
+  caller: any | null;
+  sessionId: string | null;
+  token: string | null;
 }
 
 interface CallContextType {
-  callState: CallState
-  startCall: (roomId: string, participants: any[], callType: CallType, isGroup: boolean) => void
-  answerCall: () => void
-  rejectCall: () => void
-  endCall: () => void
-  incomingCall: (caller: any, roomId: string, callType: CallType, isGroup: boolean, participants: any[]) => void
+  callState: CallState;
+  startCall: (roomId: string, participants: any[], callType: CallType, isGroup: boolean) => void;
+  answerCall: () => void;
+  rejectCall: () => void;
+  endCall: () => void;
+  incomingCall: (caller: any, roomId: string, callType: CallType, isGroup: boolean, participants: any[], sessionId: string, token: string) => void;
 }
 
 const initialCallState: CallState = {
@@ -35,47 +40,69 @@ const initialCallState: CallState = {
   roomId: null,
   participants: [],
   caller: null,
-}
+  sessionId: null,
+  token: null,
+};
 
-const CallContext = createContext<CallContextType | undefined>(undefined)
+const CallContext = createContext<CallContextType | undefined>(undefined);
 
-export function CallProvider({ children, user, socket }: { children: React.ReactNode; user: any; socket: any }) {
-  const [callState, setCallState] = useState<CallState>(initialCallState)
-  const { toast } = useToast()
-  const localStreamRef = useRef<MediaStream | null>(null)
-  const peerConnectionsRef = useRef<Record<string, RTCPeerConnection>>({})
+export function CallProvider({
+  children,
+  user,
+  apiKey,
+}: {
+  children: React.ReactNode;
+  user: any;
+  apiKey: string;
+}) {
+  const [callState, setCallState] = useState<CallState>(initialCallState);
+  const { toast } = useToast();
+  const sessionRef = useRef<OT.Session | null>(null);
+  const publisherRef = useRef<OT.Publisher | null>(null);
+  const { mutateAsync: createVonageSession } = useCreateVonageSessionMutation();
 
-  // Clean up function for media streams and connections
   const cleanupCall = () => {
-    // Stop all tracks in the local stream
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach((track) => track.stop())
-      localStreamRef.current = null
+    if (publisherRef.current) {
+      publisherRef.current.destroy();
+      publisherRef.current = null;
     }
+    if (sessionRef.current) {
+      sessionRef.current.disconnect();
+      sessionRef.current = null;
+    }
+  };
 
-    // Close all peer connections
-    Object.values(peerConnectionsRef.current).forEach((pc) => pc.close())
-    peerConnectionsRef.current = {}
-  }
-
-  // Reset call state
   const resetCallState = () => {
-    setCallState(initialCallState)
-  }
+    setCallState(initialCallState);
+  };
 
-  // Handle starting a call
   const startCall = async (roomId: string, participants: any[], callType: CallType, isGroup: boolean) => {
     try {
-      // Request media based on call type
-      const constraints = {
-        audio: true,
-        video: callType === "video",
-      }
+      const { sessionId, token } = await createVonageSession({ roomId });
+      const session = OT.initSession(apiKey, sessionId);
+      sessionRef.current = session;
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints)
-      localStreamRef.current = stream
+      const publisher = OT.initPublisher(undefined, {
+        publishAudio: true,
+        publishVideo: callType === "video",
+        name: user.name || user.email,
+      });
+      publisherRef.current = publisher;
 
-      // Update call state
+      await new Promise<void>((resolve, reject) => {
+        session.connect(token, (err: Error | undefined) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      await new Promise<void>((resolve, reject) => {
+        session.publish(publisher, (err: Error | undefined) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
       setCallState({
         isIncoming: false,
         isOutgoing: true,
@@ -85,35 +112,40 @@ export function CallProvider({ children, user, socket }: { children: React.React
         roomId,
         participants,
         caller: null,
-      })
+        sessionId,
+        token,
+      });
 
-      // Emit call event to server
-      socket.emit("call:start", {
+      await API.post("/chat/messages", {
+        content: `${user.name} started a ${callType} call`,
         roomId,
-        participants: participants.map((p) => p.id),
-        callType,
-        isGroup,
-        caller: user,
-      })
+      });
 
-      // Show toast notification
       toast({
         title: "Calling...",
         description: isGroup ? "Starting group call" : `Calling ${participants[0]?.name}`,
-      })
+      });
     } catch (error) {
-      console.error("Error starting call:", error)
+      console.error("Error starting call:", error);
       toast({
         title: "Call Failed",
-        description: "Could not access camera or microphone",
+        description: "Could not start the call",
         variant: "destructive",
-      })
-      resetCallState()
+      });
+      cleanupCall();
+      resetCallState();
     }
-  }
+  };
 
-  // Handle incoming call
-  const incomingCall = (caller: any, roomId: string, callType: CallType, isGroup: boolean, participants: any[]) => {
+  const incomingCall = (
+    caller: any,
+    roomId: string,
+    callType: CallType,
+    isGroup: boolean,
+    participants: any[],
+    sessionId: string,
+    token: string
+  ) => {
     setCallState({
       isIncoming: true,
       isOutgoing: false,
@@ -123,127 +155,92 @@ export function CallProvider({ children, user, socket }: { children: React.React
       roomId,
       participants,
       caller,
-    })
-  }
+      sessionId,
+      token,
+    });
+  };
 
-  // Handle answering a call
   const answerCall = async () => {
     try {
-      // Request media based on call type
-      const constraints = {
-        audio: true,
-        video: callState.callType === "video",
+      if (!callState.sessionId || !callState.token) {
+        throw new Error("Session ID or token missing");
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints)
-      localStreamRef.current = stream
+      const session = OT.initSession(apiKey, callState.sessionId);
+      sessionRef.current = session;
 
-      // Update call state
+      const publisher = OT.initPublisher(undefined, {
+        publishAudio: true,
+        publishVideo: callState.callType === "video",
+        name: user.name || user.email,
+      });
+      publisherRef.current = publisher;
+
+      await new Promise<void>((resolve, reject) => {
+        session.connect(callState.token, (err: Error | undefined) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      await new Promise<void>((resolve, reject) => {
+        session.publish(publisher, (err: Error | undefined) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
       setCallState((prev) => ({
         ...prev,
         isIncoming: false,
         isActive: true,
-      }))
+      }));
 
-      // Emit answer event to server
-      socket.emit("call:answer", {
+      await API.post("/chat/messages", {
+        content: `${user.name} joined the call`,
         roomId: callState.roomId,
-        answerer: user,
-      })
+      });
     } catch (error) {
-      console.error("Error answering call:", error)
+      console.error("Error answering call:", error);
       toast({
         title: "Call Failed",
-        description: "Could not access camera or microphone",
+        description: "Could not join the call",
         variant: "destructive",
-      })
-      resetCallState()
+      });
+      cleanupCall();
+      resetCallState();
     }
-  }
+  };
 
-  // Handle rejecting a call
-  const rejectCall = () => {
-    // Emit reject event to server
+  const rejectCall = async () => {
     if (callState.roomId) {
-      socket.emit("call:reject", {
+      await API.post("/chat/messages", {
+        content: `${user.name} rejected the call`,
         roomId: callState.roomId,
-        rejecter: user,
-      })
+      });
     }
 
-    // Clean up and reset state
-    cleanupCall()
-    resetCallState()
-  }
+    cleanupCall();
+    resetCallState();
+  };
 
-  // Handle ending a call
-  const endCall = () => {
-    // Emit end event to server
+  const endCall = async () => {
     if (callState.roomId) {
-      socket.emit("call:end", {
+      await API.post("/chat/messages", {
+        content: `${user.name} ended the call`,
         roomId: callState.roomId,
-        ender: user,
-      })
+      });
     }
 
-    // Clean up and reset state
-    cleanupCall()
-    resetCallState()
-  }
+    cleanupCall();
+    resetCallState();
+  };
 
-  // Socket event listeners
-  useEffect(() => {
-    if (!socket) return
-
-    // Handle incoming call
-    socket.on("call:incoming", (data: any) => {
-      incomingCall(data.caller, data.roomId, data.callType, data.isGroup, data.participants)
-    })
-
-    // Handle call accepted
-    socket.on("call:accepted", (data: any) => {
-      setCallState((prev) => ({
-        ...prev,
-        isOutgoing: false,
-        isActive: true,
-      }))
-    })
-
-    // Handle call rejected
-    socket.on("call:rejected", (data: any) => {
-      toast({
-        title: "Call Rejected",
-        description: `${data.rejecter.name} rejected the call`,
-      })
-      cleanupCall()
-      resetCallState()
-    })
-
-    // Handle call ended
-    socket.on("call:ended", (data: any) => {
-      toast({
-        title: "Call Ended",
-        description: `${data.ender.name} ended the call`,
-      })
-      cleanupCall()
-      resetCallState()
-    })
-
-    // Clean up event listeners
-    return () => {
-      socket.off("call:incoming")
-      socket.off("call:accepted")
-      socket.off("call:rejected")
-      socket.off("call:ended")
-    }
-  }, [socket, user])
-
-  // Clean up on unmount
   useEffect(() => {
     return () => {
-      cleanupCall()
-    }
-  }, [])
+      cleanupCall();
+    };
+  }, []);
 
   return (
     <CallContext.Provider
@@ -258,13 +255,13 @@ export function CallProvider({ children, user, socket }: { children: React.React
     >
       {children}
     </CallContext.Provider>
-  )
+  );
 }
 
 export const useCall = () => {
-  const context = useContext(CallContext)
+  const context = useContext(CallContext);
   if (context === undefined) {
-    throw new Error("useCall must be used within a CallProvider")
+    throw new Error("useCall must be used within a CallProvider");
   }
-  return context
-}
+  return context;
+};
