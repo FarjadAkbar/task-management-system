@@ -107,7 +107,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
           </div>
         </div>
 
-        <Button className="w-[150px]" type="submit">
+        <Button className="w-[150px] bg-black text-gold hover:text-black hover:bg-gold" type="submit">
           Save Changes
         </Button>
       </form>

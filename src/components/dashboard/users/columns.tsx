@@ -20,7 +20,7 @@ export const columns: ColumnDef<UserType>[] = [
   {
     accessorKey: "created_at",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date created" />
+      <DataTableColumnHeader column={column} title="Date Created" />
     ),
     cell: ({ row }) => (
       <div className="w-[130px]">
@@ -33,7 +33,7 @@ export const columns: ColumnDef<UserType>[] = [
   {
     accessorKey: "lastLoginAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last login" />
+      <DataTableColumnHeader column={column} title="Last Login" />
     ),
     cell: ({ row }) => (
       <div className="min-w-[150px]">

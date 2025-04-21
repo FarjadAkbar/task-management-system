@@ -11,11 +11,11 @@ export default async function Profile() {
   console.log("user data", data.first_name)
 
   if (!data) {
-    return <div>No user data.</div>;
+    return <div>No User Data.</div>;
   }
   return (
     <>
-      <H4Title>Profile photo</H4Title>
+      <H4Title>Profile Photo</H4Title>
       <ProfilePic data={data} />
 
       <H4Title>Profile</H4Title>

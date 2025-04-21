@@ -76,10 +76,12 @@ export default async function Dashboard() {
       <div className="bg-gradient-to-r from-amber-300 to-gold rounded-2xl p-6 md:p-8 mb-8 shadow-lg">
         <div className="max-w-3xl">
           <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">
-            Welcome back, {data.name}!
+            Welcome, {data.name}!
           </h1>
           <p className="text-black text-base md:text-lg">
-            <span className="font-medium">{data.role}</span> • Access all your
+            <span className="font-medium">
+              {data.role.charAt(0).toUpperCase() + data.role.slice(1).toLowerCase()}
+            </span> • Access all your
             workspace tools and resources
           </p>
         </div>

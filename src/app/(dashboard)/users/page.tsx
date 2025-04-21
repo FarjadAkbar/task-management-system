@@ -8,13 +8,11 @@ import UsersList from "@/components/dashboard/users/users-list";
 const AdminUsersPage = async () => {
   return (
     <Container
-      title="Users administration"
-      description={"Here you can manage your DolceCRM users"}
+      title="Users Administration"
+      description={""}
     >
       <div className="flex flex-col gap-4">
-        <h4 className=" text-lg sm:text-xl font-semibold">
-          Invite new user to DolceCRM
-        </h4>
+
         <InviteForm />
       </div>
       {/* <Separator />
