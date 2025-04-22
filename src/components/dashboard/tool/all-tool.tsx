@@ -58,7 +58,7 @@ const AllTools = () => {
 
   return (
     <main className="min-h-screen mx-auto px-4 sm:px-8 py-6 bg-white">
-      <h2 className="text-3xl mb-10 text-center font-extrabold text-gray-900 tracking-tight transition-all duration-500 hover:text-gold hover:scale-105">
+      <h2 className="text-3xl mb-10 text-center font-extrabold text-gray-900 tracking-tight transition-all duration-500">
         Paid Tools By DolceFrutti
       </h2>
 
@@ -67,7 +67,7 @@ const AllTools = () => {
           {/* Glass Reflection Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-gold/15 to-transparent opacity-0 hover:opacity-60 transition-opacity duration-600" />
           <div className="relative z-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight transition-colors duration-400 hover:text-gold">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">
               For Better Implementation and Efficiency
             </h2>
             <p className="text-gray-600 mb-6 text-sm">
