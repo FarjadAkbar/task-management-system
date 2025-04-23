@@ -116,11 +116,11 @@ const AllTools = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="bg-white/95 border-gold/30 text-gray-900 rounded-lg"
+                        className="bg-white border-gold/30 text-black rounded-lg"
                       >
                         <DropdownMenuItem
                           onClick={() => handleEditClick(tool)}
-                          className="hover:bg-gold/10 focus:bg-gold/10 transition-colors duration-200"
+                          className="focus:bg-gold/10 transition-colors duration-200"
                         >
                           <Edit className="mr-2 h-4 w-4" /> Edit
                         </DropdownMenuItem>

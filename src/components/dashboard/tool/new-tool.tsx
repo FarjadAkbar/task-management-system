@@ -117,7 +117,7 @@ export default function NewToolDialog({ userId }: { userId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-          <Button className="bg-black text-gold font-bold hover:bg-gold hover:text-black px-5 py-2 rounded-lg shadow-lg hover:scale-105 transition duration-300">+ New Tool</Button>
+        <Button className="bg-black text-gold font-bold hover:bg-gold hover:text-black px-5 py-2 rounded-lg shadow-lg hover:scale-105 transition duration-300">+ New Tool</Button>
       </DialogTrigger>
       <DialogContent className="w-[600px] max-h-[80vh] overflow-y-auto bg-white shadow-xl rounded-none z-[9999]">
         <DialogHeader>
@@ -198,7 +198,7 @@ export default function NewToolDialog({ userId }: { userId: string }) {
                           <SelectValue placeholder="Select department" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="z-[10000]">
                         <SelectItem value="Web Developer">
                           Web Developer
                         </SelectItem>
@@ -246,11 +246,11 @@ export default function NewToolDialog({ userId }: { userId: string }) {
               </div>
               <div className="flex w-full justify-end space-x-2 pt-2">
                 <DialogTrigger asChild>
-                  <Button variant={"destructive"}>Cancel</Button>
+                  <Button variant={"destructive"} className="bg-slate-200 text-black hover:bg-slate-300">Cancel</Button>
                 </DialogTrigger>
                 <Button
                   disabled={isPending}
-                  className="flex place-self-end  h-[40px] text-white font-semibold"
+                  className="flex place-self-end  h-[40px] text-gold bg-black hover:bg-gold hover:text-black  font-semibold "
                   type="submit"
                 >
                   {isPending && <Loader className="animate-spin" />}

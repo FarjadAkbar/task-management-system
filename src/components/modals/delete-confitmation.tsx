@@ -24,7 +24,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ nam
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" disabled={disabled}>
+                <Button variant="destructive" size="sm" disabled={disabled} className="text-black bg-transparent hover:bg-transparent">
                     <RiDeleteBin6Line /> Delete
                 </Button>
             </AlertDialogTrigger>

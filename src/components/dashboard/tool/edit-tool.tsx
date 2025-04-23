@@ -204,7 +204,7 @@ export default function EditToolDialog({ tool, open, onOpenChange }: EditToolDia
                           <SelectValue placeholder="Select department" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="z-[1000]">
                         <SelectItem value="Web Developer">Web Developer</SelectItem>
                         <SelectItem value="Graphic Designer">Graphic Designer</SelectItem>
                         <SelectItem value="SEO Content Writer">SEO Content Writer</SelectItem>
@@ -239,10 +239,10 @@ export default function EditToolDialog({ tool, open, onOpenChange }: EditToolDia
               </div>
 
               <div className="flex w-full justify-end space-x-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                <Button type="button" className="bg-slate-200 text-black hover:bg-slate-300" onClick={() => onOpenChange(false)}>
                   Cancel
                 </Button>
-                <Button disabled={isPending} type="submit">
+                <Button disabled={isPending} type="submit" className="text-gold bg-black hover:bg-gold hover:text-black">
                   {isPending ? (
                     <>
                       <Loader className="mr-2 h-4 w-4 animate-spin" />
