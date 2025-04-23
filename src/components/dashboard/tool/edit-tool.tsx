@@ -204,7 +204,7 @@ export default function EditToolDialog({ tool, open, onOpenChange }: EditToolDia
                           <SelectValue placeholder="Select department" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="z-[10000]">
                         <SelectItem value="Web Developer">Web Developer</SelectItem>
                         <SelectItem value="Graphic Designer">Graphic Designer</SelectItem>
                         <SelectItem value="SEO Content Writer">SEO Content Writer</SelectItem>
@@ -256,7 +256,7 @@ export default function EditToolDialog({ tool, open, onOpenChange }: EditToolDia
             </form>
           </Form>
         </div>
-      </DialogContent>
+      </DialogContent >
     </Dialog >
   )
 }
