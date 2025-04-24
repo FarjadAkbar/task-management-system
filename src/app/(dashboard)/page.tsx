@@ -21,7 +21,7 @@ const cards = [
     allowedUser: true,
   },
   {
-    title: "Our Team",
+    title: "Team",
     src: "/images/team.png",
     href: "/users",
     allowedUser: false,
