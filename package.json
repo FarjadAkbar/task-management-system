@@ -1,15 +1,49 @@
 {
-  "name": "team-dolcefrutti",
-  "version": "0.1.0",
-  "private": true,
+  "name": "workflow-sync",
+  "version": "1.0.0",
+  "description": "A comprehensive team task management platform with real-time collaboration, project management, team chat, file sharing, and calendar integration.",
+  "private": false,
+  "author": {
+    "name": "Farjad Akbar",
+    "email": "farjadakbar4@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/FarjadAkbar/workflow-sync#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FarjadAkbar/workflow-sync.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FarjadAkbar/workflow-sync/issues"
+  },
+  "keywords": [
+    "task-management",
+    "project-management",
+    "team-collaboration",
+    "real-time-chat",
+    "file-sharing",
+    "calendar-integration",
+    "nextjs",
+    "typescript",
+    "mongodb",
+    "prisma"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "migrate": "npx prisma db push",
     "generate": "npx prisma generate",
-    "seed": "npx prisma db seed"
+    "seed": "npx prisma db seed",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky install"
   },
   "prisma": {
     "seed": "ts-node ./prisma/seeds/seed.ts"
@@ -103,9 +137,41 @@
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-big-calendar": "^1.16.1",
     "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "eslint-config-next": "^15.1.4",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "lint-staged": "^15.0.0",
     "postcss": "^8",
+    "prettier": "^3.0.0",
     "prisma": "^6.2.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
+    "testPathIgnorePatterns": ["<rootDir>/.next/", "<rootDir>/node_modules/"],
+    "moduleNameMapping": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
   }
 }
