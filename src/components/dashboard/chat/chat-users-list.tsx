@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCreateChatRoomMutation } from "@/service/chats"
 import { useGetUsersQuery } from "@/service/users"
@@ -73,7 +74,7 @@ export function ChatUsersList({ search, onUserSelect }: ChatUsersListProps) {
   }
 
   return (
-    <div className="space-y-1 p-2">
+    <ScrollArea className="h-[300px] space-y-1 p-2">
       {data?.users.map((user) => (
         <div
           key={user.id}
@@ -102,7 +103,7 @@ export function ChatUsersList({ search, onUserSelect }: ChatUsersListProps) {
           </Button>
         </div>
       ))}
-    </div>
+    </ScrollArea>
   )
 }
 

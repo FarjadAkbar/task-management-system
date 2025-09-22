@@ -28,12 +28,13 @@ export function ChatWindow({ roomId, user }: ChatWindowProps) {
     }
   }, [data?.room?.messages])
 
-  const handleSendMessage = () => {
-    if (!roomId || !message.trim() || isSending) return
+  const handleSendMessage = (files?: Array<{ id: string; name: string; url: string }>) => {
+    if (!roomId || (!message.trim() && !files?.length) || isSending) return
 
     sendMessage({
       content: message.trim(),
       roomId,
+      files, // Include files in the payload
     })
 
     setMessage("")
@@ -71,7 +72,7 @@ export function ChatWindow({ roomId, user }: ChatWindowProps) {
 
   return (
     <div className="flex-1 flex flex-col h-full">
-      <ChatHeader room={data?.room} typingUsers={typingUsers} />
+      <ChatHeader room={data?.room} typingUsers={typingUsers} currentUserId={user.id} />
 
       <div className="flex-1 overflow-y-auto p-4">
         <ChatMessages messages={data?.room?.messages || []} currentUserId={user.id} />

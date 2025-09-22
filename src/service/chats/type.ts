@@ -1,4 +1,5 @@
 import { PaginationType } from "@/types";
+import { UserType } from "../users/type";
 
 export type CreateRoomPayloadType = {
   name?: string;
@@ -23,12 +24,12 @@ export type ChatRoomType = {
   id: string;
   name: string;
   isGroup: boolean;
-  lastMessage: string;
+  lastMessage: {
+    sender: UserType;
+    content: string;
+  };
   unreadCount: number;
-  participants: {
-    id: string;
-    name: string;
-  }[];
+  participants: UserType[];
   messages?: ChatMessageType[];
   updatedAt: string;
 };
@@ -49,6 +50,17 @@ export type RoomResponseType = {
   room: ChatRoomType;
 };
 
+export type ChatAttachment = {
+  id: string
+  document: {
+    id: string
+    document_name: string
+    document_file_url: string
+    document_file_mimeType: string
+    size?: number
+  }
+}
+
 export type ChatMessageType = {
   id: string;
   content: string;
@@ -60,8 +72,10 @@ export type ChatMessageType = {
   sender: {
     id: string;
     name: string;
+    avatar: string;
+    email: string;
   };
-
+  attachments: ChatAttachment[];
   room: ChatRoomType;
 };
 
@@ -69,6 +83,7 @@ export type ChatMessageType = {
 export type SendMessagePayloadType = {
   content: string;
   roomId: string;
+  files?: Array<{ id: string; name: string; url: string }>
 };
 
 

@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ChatRoomsList } from "./chat-rooms-list"
 import { ChatUsersList } from "./chat-users-list"
-import { Search, MessageSquare, Users } from "lucide-react"
+import { Search, MessageSquare, Users, Plus } from "lucide-react"
+import { CreateGroupChat } from "./create-group-chat"
+import { Button } from "@/components/ui/button"
 
 interface ChatSidebarProps {
   activeRoomId: string | null
@@ -21,6 +23,18 @@ export function ChatSidebar({ activeRoomId, onRoomSelect }: ChatSidebarProps) {
     <div className="w-80 border-r flex flex-col h-full">
       <div className="p-4 border-b">
         <h2 className="text-xl font-semibold mb-4">Messages</h2>
+        <div className="flex gap-2">
+            <CreateGroupChat
+              onGroupCreated={(roomId) => {
+                onRoomSelect(roomId)
+                setActiveTab("chats")
+              }}
+            />
+
+            <Button variant="outline" size="icon" onClick={() => setActiveTab("users")} title="New Chat">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input

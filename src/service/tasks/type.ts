@@ -2,7 +2,7 @@ import type { Tasks, SubTask, ChecklistItem, Sprint, TaskFeedback, TasksComments
 import { UserType } from "../users/type";
 
 
-export type TaskType =  Tasks & {
+export type TaskType = Tasks & {
   assignees: UserType[];
   sprint: Sprint;
   assigned_section: Sections;
@@ -13,15 +13,15 @@ export type TaskType =  Tasks & {
   documents: TaskAttachment[]
 }
 
-export type TaskAttachment = { 
-  document: { 
+export type TaskAttachment = {
+  document: {
     size: number;
     document_name: string;
-    document_file_url: string; 
+    document_file_url: string;
     document_file_mimeType: string;
-  }; 
-  taskId: string; 
-  documentId: string 
+  };
+  taskId: string;
+  documentId: string
 }
 
 export type CreateTaskPayloadType = {
@@ -34,7 +34,8 @@ export type CreateTaskPayloadType = {
 }
 
 export type UpdateTaskPayloadType = Partial<CreateTaskPayloadType> & {
-  id: string
+  id: string,
+  priority?: string;
 }
 
 export type SubTaskPayloadType = {

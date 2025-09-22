@@ -102,6 +102,7 @@ model Documents {
   sharedWith FileShare[]
   tasks      TaskDocument[]
   Tools      Tools[]
+  chatAttachments ChatAttachment[] 
 }
 
 model TaskDocument {
@@ -455,9 +456,11 @@ model ChatMessage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isRead    Boolean  @default(false)
-
+  hasAttachments Boolean @default(false)
+  
   sender Users    @relation(fields: [senderId], references: [id])
   room   ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  attachments ChatAttachment[]
 }
 
 model ChatParticipant {
@@ -472,6 +475,18 @@ model ChatParticipant {
   room ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@unique([userId, roomId])
+}
+
+model ChatAttachment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  messageId String   @db.ObjectId
+  documentId String  @db.ObjectId
+  createdAt DateTime @default(now())
+  
+  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  document  Documents   @relation(fields: [documentId], references: [id])
+  
+  @@unique([messageId, documentId])
 }
 
 // Enums
