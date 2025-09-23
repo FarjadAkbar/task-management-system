@@ -3,7 +3,7 @@ import { getUser } from "@/lib/get-user"
 import { prismadb } from "@/lib/prisma"
 import { getProjectWithDetails } from "@/actions/projects"
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
@@ -45,14 +45,15 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const projectId = params.id
+    const { id } = await params;
+    const projectId = id
     const body = await req.json()
 
     // Check if user has permission to update the project
@@ -95,14 +96,15 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const projectId = params.id
+    const { id } = await params;
+    const projectId = id
 
     // Check if user has permission to delete the project
     const membership = await prismadb.projectMember.findFirst({

@@ -2,14 +2,15 @@ import { NextResponse } from "next/server"
 import { getUser } from "@/lib/get-user"
 import { prismadb } from "@/lib/prisma"
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const projectId = params.id
+    const { id } = await params;
+    const projectId = id
 
     // Check if user has access to the project
     const hasAccess =
@@ -56,7 +57,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {

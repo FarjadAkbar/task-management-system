@@ -2,14 +2,15 @@ import { NextResponse } from "next/server"
 import { getUser } from "@/lib/get-user"
 import { prismadb } from "@/lib/prisma"
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const availabilityId = params.id
+    const { id } = await params;
+    const availabilityId = id
     const body = await req.json()
 
     // Check if availability exists and belongs to user
@@ -43,14 +44,15 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const availabilityId = params.id
+    const { id } = await params;
+    const availabilityId = id
 
     // Check if availability exists and belongs to user
     const existingAvailability = await prismadb.availability.findUnique({
