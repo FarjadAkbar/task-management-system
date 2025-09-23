@@ -27,12 +27,7 @@ import {
 import { useGetUsersQuery } from "@/service/users";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { EditableField } from "./editable-field";
-
-interface TaskDetailDialogProps {
-  taskId: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
+import { TaskDetailDialogProps } from "@/types/tasks";
 export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialogProps) {
   const { data: task, isLoading, isError } = useTask(taskId)
   const { mutate: completeTask, isPending: isCompleting } = useCompleteTask()
@@ -44,8 +39,8 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
   const handleSave = (field: string, value: string) => {
     if (!task) return
 
-    let updatedValue: any = value.trim()
-    const originalValue = (task as any)[field] || ""
+    let updatedValue: string | number | string[] | Date = value.trim()
+    const originalValue = (task as Record<string, any>)[field] || ""
 
     if (field === "tags") {
       updatedValue = value
@@ -56,11 +51,12 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
       updatedValue = Number(value) || 0
     } else if (field === "startDate" || field === "dueDateAt") {
       try {
-        updatedValue = parse(value, "MMM d, yyyy", new Date())
-        if (isNaN(updatedValue.getTime())) {
+        const parsedDate = parse(value, "MMM d, yyyy", new Date())
+        if (isNaN(parsedDate.getTime())) {
           toast({ title: "Invalid date", description: "Use format: MMM d, yyyy" })
           return
         }
+        updatedValue = parsedDate
       } catch {
         toast({ title: "Invalid date", description: "Use format: MMM d, yyyy" })
         return
@@ -102,7 +98,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
   }
 
   const handleAssigneesChange = (value: string[]) => {
-    if (JSON.stringify(task?.assignees?.map((a: any) => a.userId)) !== JSON.stringify(value)) {
+    if (JSON.stringify(task?.assignees?.map((a) => a.userId)) !== JSON.stringify(value)) {
       updateTask(
         { id: taskId, assignees: value },
         {
@@ -382,7 +378,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
               <MultiSelect
                 placeholder="Select assignees"
                 options={userOptions}
-                defaultValue={task.assignees?.map((a: any) => a.userId) || []}
+                defaultValue={task.assignees?.map((a) => a.userId) || []}
                 onValueChange={handleAssigneesChange}
               />
             </div>

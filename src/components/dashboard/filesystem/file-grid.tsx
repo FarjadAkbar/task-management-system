@@ -18,31 +18,16 @@ import { File, Folder, MoreVertical, Download, Share2, Trash, User } from "lucid
 import { formatDistanceToNow } from "date-fns"
 import Image from "next/image"
 import { AssignFolderModal } from "./assign-folder-modal"
-
-interface FileGridProps {
-  files: Array<{
-    id: string
-    name: string
-    mimeType: string
-    size?: number
-    webViewLink?: string
-    createdTime?: string
-    modifiedTime?: string
-    dbId: string
-    permission?: string
-  }>
-  onFolderClick: (folderId: string) => void
-  isAdmin: boolean
-}
+import { FileSystemItem, FileGridProps, ShareFileDialogProps, AssignFolderModalProps } from "@/types/filesystem"
 
 export function FileGrid({ files, onFolderClick, isAdmin }: FileGridProps) {
-  const [selectedFile, setSelectedFile] = useState<any>(null)
+  const [selectedFile, setSelectedFile] = useState<FileSystemItem | null>(null)
   const [showShareDialog, setShowShareDialog] = useState(false)
   const [showAssignFolderModal, setShowAssignFolderModal] = useState(false)
 
   // Memoize event handlers with useCallback
   const handleFileClick = useCallback(
-    (file: any) => {
+    (file: FileSystemItem) => {
       if (file.mimeType === "application/vnd.google-apps.folder") {
         onFolderClick(file.id)
       } else if (file.webViewLink) {
@@ -52,12 +37,12 @@ export function FileGrid({ files, onFolderClick, isAdmin }: FileGridProps) {
     [onFolderClick],
   )
 
-  const handleAssignFolder = useCallback((file: any) => {
+  const handleAssignFolder = useCallback((file: FileSystemItem) => {
     setSelectedFile(file)
     setShowAssignFolderModal(true)
   }, [])
 
-  const handleDeleteFile = useCallback(async (file: any) => {
+  const handleDeleteFile = useCallback(async (file: FileSystemItem) => {
     try {
       const result = await deleteFile(file.id)
 
@@ -230,8 +215,8 @@ export function FileGrid({ files, onFolderClick, isAdmin }: FileGridProps) {
         <AssignFolderModal
           open={showAssignFolderModal}
           onOpenChange={setShowAssignFolderModal}
-          folderId={selectedFile?.dbId}
-          folderName={selectedFile?.name}
+          folderId={selectedFile.dbId || undefined}
+          folderName={selectedFile.name}
         />
       )}
 

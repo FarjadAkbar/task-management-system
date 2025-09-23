@@ -18,10 +18,7 @@ import { FileList } from "@/components/dashboard/filesystem/file-list"
 import { FolderBreadcrumb } from "@/components/dashboard/filesystem/folder-breadcrumb"
 import { FileToolbar } from "@/components/dashboard/filesystem/file-toolbar"
 import { listFiles } from "@/actions/filesystem"
-
-interface FileExplorerProps {
-  isAdmin: boolean
-}
+import { FileSystemItem, ListFilesResult, FileExplorerProps } from "@/types/filesystem"
 
 export function FileExplorer({ isAdmin }: FileExplorerProps) {
   // Use nuqs for folder parameter
@@ -29,7 +26,7 @@ export function FileExplorer({ isAdmin }: FileExplorerProps) {
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [isLoading, setIsLoading] = useState(true)
-  const [files, setFiles] = useState<any[]>([])
+  const [files, setFiles] = useState<FileSystemItem[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [debouncedQuery, setDebouncedQuery] = useState("")
   const [folderPath, setFolderPath] = useState<Array<{ id: string; name: string }>>([])
@@ -41,7 +38,7 @@ export function FileExplorer({ isAdmin }: FileExplorerProps) {
       try {
         const result = await listFiles(folder || undefined, searchQuery || undefined)
 
-        if (result.error) {
+        if ('error' in result) {
           toast({
             title: "Error",
             description: result.error,
@@ -50,8 +47,10 @@ export function FileExplorer({ isAdmin }: FileExplorerProps) {
           return
         }
 
-        if (result.success) {
-          setFiles(result.files || [])
+        if ('success' in result && result.success) {
+          // Filter out null values and cast to proper type
+          const validFiles = (result.files || []).filter(file => file !== null) as any[]
+          setFiles(validFiles)
         }
       } catch (error) {
         toast({
@@ -152,8 +151,10 @@ export function FileExplorer({ isAdmin }: FileExplorerProps) {
         onFilesUploaded={() => {
           // Refresh files after upload
           listFiles(folder || undefined).then((result) => {
-            if (result.success) {
-              setFiles(result.files || [])
+            if ('success' in result && result.success) {
+              // Filter out null values and cast to proper type
+              const validFiles = (result.files || []).filter(file => file !== null) as any[]
+              setFiles(validFiles)
             }
           })
         }}

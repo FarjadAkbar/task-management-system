@@ -17,31 +17,16 @@ import { File, Folder, MoreVertical, Download, Share2, Trash, Edit, User } from 
 import { format } from "date-fns"
 import Image from "next/image"
 import { AssignFolderModal } from "./assign-folder-modal"
-
-interface FileListProps {
-  files: Array<{
-    id: string
-    name: string
-    mimeType: string
-    size?: number
-    webViewLink?: string
-    createdTime?: string
-    modifiedTime?: string
-    dbId: string
-    permission?: string
-  }>
-  onFolderClick: (folderId: string) => void
-  isAdmin: boolean
-}
+import { FileSystemItem, FileListProps, ShareFileDialogProps, AssignFolderModalProps } from "@/types/filesystem"
 
 export function FileList({ files, onFolderClick, isAdmin }: FileListProps) {
-  const [selectedFile, setSelectedFile] = useState<any>(null)
+  const [selectedFile, setSelectedFile] = useState<FileSystemItem | null>(null)
   const [showShareDialog, setShowShareDialog] = useState(false)
   const [showAssignFolderModal, setShowAssignFolderModal] = useState(false)
 
   // Memoize event handlers with useCallback
   const handleFileClick = useCallback(
-    (file: any) => {
+    (file: FileSystemItem) => {
       if (file.mimeType === "application/vnd.google-apps.folder") {
         onFolderClick(file.id)
       } else if (file.webViewLink) {
@@ -51,7 +36,7 @@ export function FileList({ files, onFolderClick, isAdmin }: FileListProps) {
     [onFolderClick],
   )
 
-  const handleDeleteFile = useCallback(async (file: any) => {
+  const handleDeleteFile = useCallback(async (file: FileSystemItem) => {
     try {
       const result = await deleteFile(file.id)
 
@@ -97,7 +82,7 @@ export function FileList({ files, onFolderClick, isAdmin }: FileListProps) {
   }, [])
 
   // Memoize the file icon rendering
-  const renderFileIcon = useCallback((file: any) => {
+  const renderFileIcon = useCallback((file: FileSystemItem) => {
     if (file.mimeType === "application/vnd.google-apps.folder") {
       return <Folder className="h-5 w-5 text-blue-500" />
     } else if (file.mimeType.startsWith("image/")) {
@@ -122,7 +107,7 @@ export function FileList({ files, onFolderClick, isAdmin }: FileListProps) {
 
   // Memoize the dropdown menu content
   const renderDropdownMenu = useCallback(
-    (file: any) => (
+    (file: FileSystemItem) => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
           <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -241,7 +226,7 @@ export function FileList({ files, onFolderClick, isAdmin }: FileListProps) {
         <AssignFolderModal
           open={showAssignFolderModal}
           onOpenChange={setShowAssignFolderModal}
-          folderId={selectedFile.dbId}
+          folderId={selectedFile.dbId || undefined}
           folderName={selectedFile.name}
         />
       )}
