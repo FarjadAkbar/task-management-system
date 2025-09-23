@@ -3,7 +3,7 @@ import { getUser } from "@/lib/get-user"
 import { getEvent, updateEvent, deleteEvent } from "@/actions/google-calendar"
 import { UpdateEventInputType } from "@/service/events/type"
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
@@ -24,7 +24,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
@@ -58,14 +58,15 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const eventId = params.id
+    const { id } = await params;
+    const eventId = id
     await deleteEvent(user.id, eventId)
 
     return NextResponse.json({ success: true })

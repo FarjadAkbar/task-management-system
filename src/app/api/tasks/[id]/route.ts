@@ -4,7 +4,7 @@ import { prismadb } from "@/lib/prisma"
 import { getTaskDetails } from "@/actions/projects"
 import { deleteFileFromDrive } from "@/lib/google-drive"
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
@@ -61,14 +61,15 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const taskId = params.id
+    const { id } = await params;
+    const taskId = id
     const body = await req.json()
 
     // Get task
@@ -165,14 +166,14 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { id } = params;
+    const { id } = await params;
     const taskId = id
     // Get task
     const task = await prismadb.tasks.findUnique({

@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {

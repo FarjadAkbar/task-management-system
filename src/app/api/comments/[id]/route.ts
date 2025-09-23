@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { getUser } from "@/lib/get-user"
 import { prismadb } from "@/lib/prisma"
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
@@ -65,7 +65,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {

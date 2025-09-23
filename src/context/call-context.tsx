@@ -3,6 +3,7 @@
 import type React from "react"
 import { createContext, useContext, useState, useEffect, useRef } from "react"
 import { useToast } from "@/hooks/use-toast"
+import { SocketUser, SocketInstance } from "@/types/type"
 
 type CallType = "audio" | "video"
 
@@ -13,17 +14,17 @@ interface CallState {
   isGroup: boolean
   callType: CallType
   roomId: string | null
-  participants: any[]
-  caller: any | null
+  participants: SocketUser[]
+  caller: SocketUser | null
 }
 
 interface CallContextType {
   callState: CallState
-  startCall: (roomId: string, participants: any[], callType: CallType, isGroup: boolean) => void
+  startCall: (roomId: string, participants: SocketUser[], callType: CallType, isGroup: boolean) => void
   answerCall: () => void
   rejectCall: () => void
   endCall: () => void
-  incomingCall: (caller: any, roomId: string, callType: CallType, isGroup: boolean, participants: any[]) => void
+  incomingCall: (caller: SocketUser, roomId: string, callType: CallType, isGroup: boolean, participants: SocketUser[]) => void
 }
 
 const initialCallState: CallState = {
@@ -39,7 +40,7 @@ const initialCallState: CallState = {
 
 const CallContext = createContext<CallContextType | undefined>(undefined)
 
-export function CallProvider({ children, user, socket }: { children: React.ReactNode; user: any; socket: any }) {
+export function CallProvider({ children, user, socket }: { children: React.ReactNode; user: SocketUser; socket: SocketInstance }) {
   const [callState, setCallState] = useState<CallState>(initialCallState)
   const { toast } = useToast()
   const localStreamRef = useRef<MediaStream | null>(null)
@@ -64,7 +65,7 @@ export function CallProvider({ children, user, socket }: { children: React.React
   }
 
   // Handle starting a call
-  const startCall = async (roomId: string, participants: any[], callType: CallType, isGroup: boolean) => {
+  const startCall = async (roomId: string, participants: SocketUser[], callType: CallType, isGroup: boolean) => {
     try {
       // Request media based on call type
       const constraints = {
@@ -113,7 +114,7 @@ export function CallProvider({ children, user, socket }: { children: React.React
   }
 
   // Handle incoming call
-  const incomingCall = (caller: any, roomId: string, callType: CallType, isGroup: boolean, participants: any[]) => {
+  const incomingCall = (caller: SocketUser, roomId: string, callType: CallType, isGroup: boolean, participants: SocketUser[]) => {
     setCallState({
       isIncoming: true,
       isOutgoing: false,
@@ -196,12 +197,12 @@ export function CallProvider({ children, user, socket }: { children: React.React
     if (!socket) return
 
     // Handle incoming call
-    socket.on("call:incoming", (data: any) => {
+    socket.on("call:incoming", (data: { caller: SocketUser; roomId: string; callType: CallType; isGroup: boolean; participants: SocketUser[] }) => {
       incomingCall(data.caller, data.roomId, data.callType, data.isGroup, data.participants)
     })
 
     // Handle call accepted
-    socket.on("call:accepted", (data: any) => {
+    socket.on("call:accepted", (data: { answerer: SocketUser }) => {
       setCallState((prev) => ({
         ...prev,
         isOutgoing: false,
@@ -210,7 +211,7 @@ export function CallProvider({ children, user, socket }: { children: React.React
     })
 
     // Handle call rejected
-    socket.on("call:rejected", (data: any) => {
+    socket.on("call:rejected", (data: { rejecter: SocketUser }) => {
       toast({
         title: "Call Rejected",
         description: `${data.rejecter.name} rejected the call`,
@@ -220,7 +221,7 @@ export function CallProvider({ children, user, socket }: { children: React.React
     })
 
     // Handle call ended
-    socket.on("call:ended", (data: any) => {
+    socket.on("call:ended", (data: { ender: SocketUser }) => {
       toast({
         title: "Call Ended",
         description: `${data.ender.name} ended the call`,

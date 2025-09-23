@@ -3,7 +3,7 @@ import { getUser } from "@/lib/get-user"
 import { prismadb } from "@/lib/prisma"
 import { generateProjectReport } from "@/actions/projects"
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {

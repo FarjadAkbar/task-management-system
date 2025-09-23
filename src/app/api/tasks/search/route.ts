@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { getUser } from "@/lib/get-user"
 import { prismadb } from "@/lib/prisma"
+import { TaskWhereClause, TaskSearchFilters, TaskFilterClause } from "@/types/type"
+import { buildTaskFilters, buildTaskAccessClause } from "@/lib/filters"
 
 export async function GET(req: Request) {
   try {
@@ -10,94 +12,29 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url)
-    const query = searchParams.get("q") || ""
-    const priority = searchParams.get("priority")
-    const status = searchParams.get("status")
-    const assignedToMe = searchParams.get("assignedToMe") === "true"
-    const createdByMe = searchParams.get("createdByMe") === "true"
-    const sprintId = searchParams.get("sprintId")
-    const projectId = searchParams.get("projectId")
+    
+    // Parse search filters
+    const filters: TaskSearchFilters = {
+      query: searchParams.get("q") || undefined,
+      priority: searchParams.get("priority") || undefined,
+      status: searchParams.get("status") || undefined,
+      assignedToMe: searchParams.get("assignedToMe") === "true",
+      createdByMe: searchParams.get("createdByMe") === "true",
+      sprintId: searchParams.get("sprintId") || undefined,
+      projectId: searchParams.get("projectId") || undefined,
+    }
 
     // Build the where clause
-    const where: any = {}
-
-    // User must have access to the tasks
-    where.OR = [
-      // Tasks created by the user
-      { createdBy: user.id },
-      // Tasks assigned to the user
-      { assignees: { some: { userId: user.id } } },
-      // Tasks in projects where the user is a member
-      {
-        sprint: {
-          project: {
-            members: {
-              some: {
-                userId: user.id,
-              },
-            },
-          },
-        },
-      },
-      // Tasks in projects created by the user
-      {
-        sprint: {
-          project: {
-            createdById: user.id,
-          },
-        },
-      },
-    ]
+    const where: TaskWhereClause = {
+      ...buildTaskAccessClause(user.id),
+    }
 
     // Add search filters
-    const filters: any[] = []
-
-    if (query) {
-      filters.push({
-        OR: [
-          { title: { contains: query, mode: "insensitive" } },
-          { content: { contains: query, mode: "insensitive" } },
-        ],
-      })
-    }
-
-    if (priority) {
-      filters.push({ priority })
-    }
-
-    if (status) {
-      filters.push({ taskStatus: status })
-    }
-
-    if (assignedToMe) {
-      filters.push({
-        assignees: {
-          some: {
-            userId: user.id,
-          },
-        },
-      })
-    }
-
-    if (createdByMe) {
-      filters.push({ createdBy: user.id })
-    }
-
-    if (sprintId) {
-      filters.push({ sprintId })
-    }
-
-    if (projectId) {
-      filters.push({
-        sprint: {
-          projectId,
-        },
-      })
-    }
+    const filterClauses = buildTaskFilters(filters, user.id)
 
     // Add filters to where clause
-    if (filters.length > 0) {
-      where.AND = filters
+    if (filterClauses.length > 0) {
+      where.AND = filterClauses
     }
 
     // Get tasks

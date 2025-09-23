@@ -57,7 +57,7 @@ export async function PUT(
 }
 
 // ********** DELETE: Remove a Note **********
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
       const { id } = await params; 
 console.log(id, ".......")

@@ -1,16 +1,16 @@
 import type { Tasks, SubTask, ChecklistItem, Sprint, TaskFeedback, TasksComments, Sections } from "@prisma/client"
 import { UserType } from "../users/type";
-
+import { TaskAssignee } from "@/types/type";
 
 export type TaskType = Tasks & {
-  assignees: UserType[];
+  assignees: TaskAssignee[];
   sprint: Sprint;
   assigned_section: Sections;
-  task_feedback: TaskFeedback[]
+  task_feedback: TaskFeedback[];
   subtasks: SubTaskType[];
-  comments: TaskCommentType[]
+  comments: TaskCommentType[];
   checklists: ChecklistItemType[];
-  documents: TaskAttachment[]
+  documents: TaskAttachment[];
 }
 
 export type TaskAttachment = {

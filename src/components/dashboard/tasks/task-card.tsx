@@ -5,17 +5,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Clock, CheckCircle2, BarChart, ListChecks, MessageSquare, Paperclip } from "lucide-react"
 import { format } from "date-fns"
 import { TaskDetailDialog } from "./task-detail-dialog"
-import { TaskType } from "@/service/tasks/type"
+import { TaskType, TaskCardProps } from "@/types/tasks"
+import { TaskAssignee } from "@/types/type"
 import { useDeleteTask } from "@/service/tasks"
 import { toast } from "@/hooks/use-toast"
 import AlertModal from "@/components/modals/alert-modal";
 import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface TaskCardProps {
-  task: TaskType
-  taskId: string
-}
 
 export function TaskCard({ task, taskId }: TaskCardProps) {
   const [showDetailDialog, setShowDetailDialog] = useState(false)
@@ -56,10 +52,10 @@ export function TaskCard({ task, taskId }: TaskCardProps) {
 
   // Calculate completion stats
   const subtaskCount = task.subtasks?.length || 0
-  const completedSubtasks = task.subtasks?.filter((subtask: any) => subtask.completed)?.length || 0
+  const completedSubtasks = task.subtasks?.filter((subtask) => subtask.completed)?.length || 0
 
   const checklistCount = task.checklists?.length || 0
-  const completedChecklists = task.checklists?.filter((item: any) => item.completed)?.length || 0
+  const completedChecklists = task.checklists?.filter((item) => item.completed)?.length || 0
 
   const hasSubtasks = subtaskCount > 0
   const hasChecklists = checklistCount > 0
@@ -92,7 +88,7 @@ export function TaskCard({ task, taskId }: TaskCardProps) {
 
           <div className="flex justify-between items-center pt-2">
             <div className="flex -space-x-2">
-              {task.assignees?.slice(0, 3).map((assignee: any) => (
+              {task.assignees?.slice(0, 3).map((assignee: TaskAssignee) => (
                 <Avatar key={assignee.id} className="h-6 w-6 border-2 border-background">
                   <AvatarImage src={assignee.user?.avatar} />
                   <AvatarFallback className="text-xs">

@@ -3,14 +3,14 @@ import { getUser } from "@/lib/get-user"
 import { prismadb } from "@/lib/prisma"
 import { ProjectRole } from "@prisma/client";
 
-export async function PUT(req: Request, { params }: { params: { id: string; userId: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string; userId: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { id: projectId, userId: memberId } = params
+    const { id: projectId, userId: memberId } = await params
     const body = await req.json()
 
     // Check if user has permission to update members
@@ -75,14 +75,14 @@ export async function PUT(req: Request, { params }: { params: { id: string; user
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string; userId: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string; userId: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { id: projectId, userId: memberId } = params
+    const { id: projectId, userId: memberId } = await params
 
     // Check if user has permission to remove members
     const hasPermission =
