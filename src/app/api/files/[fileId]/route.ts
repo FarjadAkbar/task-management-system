@@ -3,7 +3,7 @@ import { getUser } from "@/lib/get-user"
 import { prismadb } from "@/lib/prisma"
 import { deleteFileFromDrive } from "@/lib/google-drive"
 
-export async function POST(req: NextRequest, { params }: { params: { fileId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ fileId: string }> }) {
   try {
     const admin = await getUser()
     if (!admin?.id || admin.role !== "ADMIN") {
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest, { params }: { params: { fileId: str
   }  
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { fileId: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ fileId: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
