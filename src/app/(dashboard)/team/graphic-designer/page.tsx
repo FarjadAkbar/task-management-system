@@ -7,8 +7,8 @@ const page = () => {
     const router = useRouter();
 
     const cards = [
-        { title: "Tools", description: "All Tools credentials", path: "/tools" },
-        { title: "Tasks", description: "See All Tasks", path: "/projects/67dfb82f97615f9768c9824f/board" },
+        { title: "Projects", description: "View all projects", path: "/projects" },
+        { title: "Tasks", description: "See All Tasks", path: "/projects" },
         { title: "Meetings", description: "See All Meetings", path: "/event" },
     ];
 
