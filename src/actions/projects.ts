@@ -316,6 +316,7 @@ export async function getSprintTasks(sprintId: string) {
             select: {
               id: true,
               name: true,
+              email: true,
               avatar: true,
             },
           },
@@ -355,7 +356,7 @@ export async function getSprintTasks(sprintId: string) {
 
 // Get task details
 export async function getTaskDetails(taskId: string): Promise<TaskType | null> {
-  return prismadb.tasks.findUnique({
+  const task = await prismadb.tasks.findUnique({
     where: { id: taskId },
     include: {
       assignees: {
@@ -376,6 +377,7 @@ export async function getTaskDetails(taskId: string): Promise<TaskType | null> {
             select: {
               id: true,
               name: true,
+              email: true,
               avatar: true,
             },
           },
@@ -387,6 +389,7 @@ export async function getTaskDetails(taskId: string): Promise<TaskType | null> {
             select: {
               id: true,
               name: true,
+              email: true,
               avatar: true,
             },
           },
@@ -394,6 +397,7 @@ export async function getTaskDetails(taskId: string): Promise<TaskType | null> {
             select: {
               id: true,
               name: true,
+              email: true,
               avatar: true,
             },
           },
@@ -418,6 +422,7 @@ export async function getTaskDetails(taskId: string): Promise<TaskType | null> {
             select: {
               id: true,
               name: true,
+              email: true,
               avatar: true,
             },
           },
@@ -432,6 +437,7 @@ export async function getTaskDetails(taskId: string): Promise<TaskType | null> {
             select: {
               id: true,
               name: true,
+              email: true,
               avatar: true,
               role: true,
             },
@@ -466,5 +472,7 @@ export async function getTaskDetails(taskId: string): Promise<TaskType | null> {
       },
     },
   })
+
+  return task as TaskType | null;
 }
 

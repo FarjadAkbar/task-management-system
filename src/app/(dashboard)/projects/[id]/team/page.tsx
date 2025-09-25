@@ -46,6 +46,21 @@ export default function ProjectTeamPage() {
   const params = useParams()
   const router = useRouter()
 
+  if (!params?.id) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center">
+            <p className="text-destructive">Invalid project ID</p>
+            <Button variant="outline" className="mt-4" onClick={() => router.push("/projects")}>
+              Back to Projects
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const projectId = params.id as string
 
   const { data: project, isLoading: loadingProject } = useProject(projectId)
@@ -205,7 +220,11 @@ export default function ProjectTeamPage() {
                           >
                             <div className="flex items-center gap-2">
                               <Avatar className="h-8 w-8">
-                                <AvatarImage src={user.avatar} />
+                                { 
+                                  user.avatar && (
+                                    <AvatarImage src={user.avatar} />
+                                  )
+                                }
                                 <AvatarFallback>{user.name?.charAt(0) || user.email?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <div>

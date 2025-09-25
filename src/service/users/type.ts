@@ -2,9 +2,9 @@ import { ActiveStatus, RoleEnum } from "@prisma/client";
 
 export type UserType = {
   id: string;
-  name: string;
+  name: string | null;
   email: string;
-  avatar?: string;
+  avatar?: string | null;
   role?: RoleEnum;
   userStatus?: ActiveStatus;
   first_name?: string;

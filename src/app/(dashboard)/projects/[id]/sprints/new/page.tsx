@@ -31,6 +31,23 @@ export default function NewSprintPage() {
   const params = useParams()
   const router = useRouter()
 
+  if (!params?.id) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-destructive">Invalid project ID</p>
+              <Button variant="outline" className="mt-4" onClick={() => router.push("/projects")}>
+                Back to Projects
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   const projectId = params.id as string
 
   const { mutate: createSprint, isPending } = useCreateSprint()
