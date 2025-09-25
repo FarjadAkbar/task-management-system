@@ -1,11 +1,7 @@
-export interface CustomError extends Error {
-  errorCode?: string;
-}
-export type PaginationType = {
-  totalCount: number;
-  pageSize: number;
-  pageNumber: number;
-  totalPages: number;
-  skip: number;
-  limit: number;
-};
+// Central type definitions for WorkSync
+// Re-export all types from individual files
+
+export * from './api'
+export * from './auth'
+export * from './components'
+export * from './database'

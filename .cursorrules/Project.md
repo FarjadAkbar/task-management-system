@@ -113,8 +113,24 @@ src/
 ├── app/                          # Next.js App Router
 │   ├── (auth)/                  # Auth route group
 │   ├── (dashboard)/             # Dashboard route group
-│   ├── api/                     # API routes only
+│   ├── api/                     # API routes - ALL business logic
+│   │   ├── auth/                # Authentication endpoints
+│   │   ├── projects/            # Project management endpoints
+│   │   ├── tasks/               # Task management endpoints
+│   │   ├── users/               # User management endpoints
+│   │   ├── chat/                # Chat system endpoints
+│   │   ├── calendar/            # Calendar and events endpoints
+│   │   ├── files/               # File management endpoints
+│   │   ├── tickets/             # Support ticket endpoints
+│   │   └── notes/               # Notes system endpoints
 │   └── globals.css
+├── actions/                      # Server Actions (calls API routes)
+│   ├── projects.ts              # Project-related actions
+│   ├── tasks.ts                 # Task-related actions
+│   ├── users.ts                 # User-related actions
+│   ├── filesystem.ts            # File system actions
+│   ├── google-calendar.ts       # Calendar integration actions
+│   └── upload.ts                # File upload actions
 ├── components/                  # Reusable UI components
 │   ├── ui/                      # Base UI components (shadcn/ui)
 │   ├── dashboard/              # Dashboard-specific components
@@ -122,21 +138,26 @@ src/
 │   └── layout/                  # Layout components
 ├── lib/                         # Utility functions and configurations
 │   ├── auth.ts                  # Authentication logic
-│   ├── db.ts                    # Database connection
+│   ├── prisma.ts                # Prisma client configuration
 │   ├── validations/             # Zod schemas
 │   └── utils.ts                 # Helper functions
+├── service/                      # Client-side API service layer
+│   ├── projects/                # Project API services
+│   ├── tasks/                   # Task API services
+│   ├── users/                   # User API services
+│   ├── chats/                   # Chat API services
+│   ├── events/                  # Calendar API services
+│   ├── files/                   # File API services
+│   ├── tickets/                 # Ticket API services
+│   └── notes/                   # Notes API services
 ├── hooks/                       # Custom React hooks
 ├── store/                       # State management (Zustand)
 ├── types/                       # TypeScript type definitions
 │   ├── api.ts                   # API response types
 │   ├── auth.ts                  # Authentication types
-│   ├── database.ts              # Database model types
+│   ├── database.ts              # Prisma model types
 │   └── index.ts                 # Re-export all types
-├── services/                    # Business logic and API calls
-│   ├── api/                     # API service functions
-│   ├── auth/                    # Authentication services
-│   └── storage/                 # File storage services
-├── constants/                    # Application constants
+├── constants/                   # Application constants
 └── middleware.ts                # Next.js middleware
 ```
 
@@ -144,11 +165,12 @@ src/
 
 #### **1. Separation of Concerns**
 - **Components**: Only UI logic and presentation
-- **Services**: Business logic and API calls
+- **Actions**: Server Actions that call API routes (no direct DB access)
+- **API Routes**: ALL business logic and database operations
+- **Service Layer**: Client-side API service functions
 - **Types**: All TypeScript definitions in `/types`
 - **Hooks**: Reusable stateful logic
 - **Store**: Global state management
-- **API Routes**: Server-side logic only
 
 #### **2. Type Safety**
 - All types defined in `/types` folder
@@ -179,9 +201,11 @@ src/
 - ✅ Consistent prop naming
 
 #### **API Rules:**
-- ✅ All API calls through `/services/api`
+- ✅ ALL business logic in `/app/api` routes
+- ✅ Actions call API routes, never direct database access
+- ✅ Service layer handles client-side API calls
 - ✅ No direct fetch calls in components
-- ✅ Proper error handling
+- ✅ Proper error handling and validation
 - ✅ Type-safe API responses
 - ✅ Consistent response format
 
@@ -197,6 +221,210 @@ src/
 - ✅ Optimize images with Next.js Image component
 - ✅ Implement proper caching strategies
 - ✅ Minimize bundle size
+
+#### **API-First Architecture Rules:**
+- ✅ ALL database operations in API routes
+- ✅ Actions are thin wrappers that call API routes
+- ✅ Service layer provides typed API client functions
+- ✅ Consistent error handling across all API endpoints
+- ✅ Future-proof: Easy to change ORM or API structure
+
+---
+
+## 🔄 API-First Architecture Pattern
+
+### **📋 Data Flow Architecture**
+```
+Component → Action → API Route → Prisma → Database
+    ↓         ↓         ↓         ↓
+  UI Logic  Server   Business   Data
+           Action    Logic     Access
+```
+
+### **🏗️ Implementation Pattern**
+
+#### **1. API Routes (Business Logic Layer)**
+```typescript
+// app/api/projects/route.ts
+export async function GET() {
+  try {
+    const projects = await prisma.project.findMany({
+      include: { members: true, tasks: true }
+    })
+    return NextResponse.json({ data: projects, success: true })
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+    const validatedData = createProjectSchema.parse(body)
+    
+    const project = await prisma.project.create({
+      data: validatedData,
+      include: { members: true }
+    })
+    
+    return NextResponse.json({ data: project, success: true })
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
+  }
+}
+```
+
+#### **2. Actions (Server Actions Layer)**
+```typescript
+// actions/projects.ts
+'use server'
+
+export async function createProject(data: CreateProjectData) {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/projects`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    
+    const result = await response.json()
+    
+    if (!result.success) {
+      throw new Error(result.error)
+    }
+    
+    return result.data
+  } catch (error) {
+    throw new Error('Failed to create project')
+  }
+}
+
+export async function getProjects() {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/projects`)
+    const result = await response.json()
+    
+    if (!result.success) {
+      throw new Error(result.error)
+    }
+    
+    return result.data
+  } catch (error) {
+    throw new Error('Failed to fetch projects')
+  }
+}
+```
+
+#### **3. Service Layer (Client-side API Client)**
+```typescript
+// service/projects/index.ts
+export const useGetProjectsQuery = () => {
+  return useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const response = await fetch('/api/projects')
+      const result = await response.json()
+      
+      if (!result.success) {
+        throw new Error(result.error)
+      }
+      
+      return result.data
+    }
+  })
+}
+
+export const useCreateProjectMutation = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: async (data: CreateProjectData) => {
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      
+      const result = await response.json()
+      
+      if (!result.success) {
+        throw new Error(result.error)
+      }
+      
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+    }
+  })
+}
+```
+
+#### **4. Components (UI Layer)**
+```typescript
+// components/dashboard/project-list.tsx
+'use client'
+
+import { useGetProjectsQuery } from '@/service/projects'
+
+export function ProjectList() {
+  const { data: projects, isLoading, error } = useGetProjectsQuery()
+  
+  if (isLoading) return <ProjectListSkeleton />
+  if (error) return <ErrorMessage message={error.message} />
+  
+  return (
+    <div className="grid gap-4">
+      {projects?.map(project => (
+        <ProjectCard key={project.id} project={project} />
+      ))}
+    </div>
+  )
+}
+```
+
+### **🎯 Benefits of This Architecture**
+
+#### **1. Flexibility**
+- Easy to change ORM (Prisma → Drizzle → TypeORM)
+- Easy to change API structure (REST → GraphQL → tRPC)
+- Easy to add caching layers (Redis, Memcached)
+- Easy to add API versioning
+
+#### **2. Consistency**
+- All business logic in one place (API routes)
+- Consistent error handling
+- Consistent response format
+- Consistent validation
+
+#### **3. Testability**
+- API routes can be tested independently
+- Actions can be mocked easily
+- Service layer can be tested with mock APIs
+- Components can be tested with mock data
+
+#### **4. Performance**
+- Server Actions for form submissions
+- Client-side caching with React Query
+- Optimistic updates
+- Proper error boundaries
+
+### **📋 Migration Strategy**
+
+#### **Phase 1: Refactor Existing Actions**
+- Move all direct Prisma calls from actions to API routes
+- Update actions to call API routes instead
+- Maintain existing functionality
+
+#### **Phase 2: Create Service Layer**
+- Create typed API client functions
+- Replace direct fetch calls in components
+- Implement proper error handling
+
+#### **Phase 3: Optimize Performance**
+- Add React Query for caching
+- Implement optimistic updates
+- Add proper loading states
 
 ---
 
@@ -397,22 +625,25 @@ enum ParticipantStatus {
 **Priority: HIGH**
 
 #### Week 1:
-- [ ] **Architecture Refactoring**: Reorganize project structure according to clean architecture
-- [ ] **Type System**: Move all types to `/types` folder with proper organization
+- [ ] **API-First Architecture Setup**: Implement consistent API-first pattern
+  - [ ] Move all Prisma calls from actions to API routes
+  - [ ] Update actions to call API routes instead of direct DB access
+  - [ ] Create consistent API response format
+  - [ ] Implement proper error handling in API routes
+- [ ] **Type System**: Create centralized type system
   - [ ] Create `/types/api.ts` for API response types
   - [ ] Create `/types/components.ts` for component props
   - [ ] Create `/types/database.ts` for Prisma types
   - [ ] Remove all inline type definitions from components
-- [ ] **Service Layer**: Create `/services` folder for all business logic
-  - [ ] Move all API calls from components to services
-  - [ ] Create `/services/api/projects.ts`, `/services/api/tasks.ts`, etc.
+- [ ] **Service Layer Refactoring**: Update service layer for API-first pattern
+  - [ ] Update service functions to call API routes
+  - [ ] Create typed API client functions
+  - [ ] Implement consistent error handling
   - [ ] Remove direct fetch calls from components
 - [ ] **Component Cleanup**: Separate Server and Client components properly
   - [ ] Convert components to Server Components by default
   - [ ] Add `"use client"` only where interactivity is needed
   - [ ] Remove business logic from components
-- [ ] **Remove Images**: Remove all images from `/public/images/` folder
-- [ ] **Icon System**: Install and configure Lucide React icons
 
 #### Week 2:
 - [ ] **Performance Optimization**: Implement proper SSR/CSR patterns to avoid hydration errors
