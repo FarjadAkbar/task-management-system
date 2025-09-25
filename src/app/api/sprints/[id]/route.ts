@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { getUser } from "@/lib/get-user"
 import { prismadb } from "@/lib/prisma"
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
@@ -76,14 +76,15 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const sprintId = params.id
+    const { id } = await params
+    const sprintId = id
     const body = await req.json()
 
     // Get sprint
@@ -138,14 +139,15 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser()
     if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const sprintId = params.id
+    const { id } = await params
+    const sprintId = id
 
     // Get sprint
     const sprint = await prismadb.sprint.findUnique({
