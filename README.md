@@ -1,4 +1,4 @@
-# 🔄 Workflow Sync - Team Task Management Platform
+# 🔄 WorkSync - Team Task Management Platform
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.1.4-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
@@ -52,8 +52,8 @@ A comprehensive team task management platform built with Next.js, featuring real
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/FarjadAkbar/workflow-sync
-   cd workflow-sync
+   git clone https://github.com/FarjadAkbar/worksync
+   cd worksync
    ```
 
 2. **Install dependencies**
@@ -73,7 +73,7 @@ A comprehensive team task management platform built with Next.js, featuring real
    Fill in your environment variables:
    ```env
    # Database
-   DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/workflow-sync"
+   DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/worksync"
    
    # Authentication
    NEXTAUTH_SECRET="your-secret-key"
@@ -237,7 +237,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - 📧 Email: farjadakbar4@gmail.com
-- 🐛 Issues: [GitHub Issues](https://github.com/FarjadAkbar/workflow-sync/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/FarjadAkbar/worksync/issues)
 
 ---
 

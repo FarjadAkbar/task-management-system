@@ -1,6 +1,6 @@
-# Contributing to Workflow Sync
+# Contributing to WorkSync
 
-Thank you for your interest in contributing to Workflow Sync! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to WorkSync! This document provides guidelines and information for contributors.
 
 ## 📋 Table of Contents
 
@@ -31,8 +31,8 @@ This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.
 
 1. **Fork and Clone**
    ```bash
-   git clone https://github.com/FarjadAkbar/workflow-sync
-   cd workflow-sync
+   git clone https://github.com/FarjadAkbar/worksync
+   cd worksync
    ```
 
 2. **Install Dependencies**
@@ -346,4 +346,4 @@ Contributors will be recognized in:
 - Project documentation
 - Community highlights
 
-Thank you for contributing to Workflow Sync! 🚀
+Thank you for contributing to WorkSync! 🚀

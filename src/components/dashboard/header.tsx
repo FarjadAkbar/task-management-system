@@ -1,9 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
 import Link from "next/link"
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Zap } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { AvatarDropdown } from "@/components/ui/avatar-dropdown"
@@ -20,41 +19,36 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
 
   const navItems = [
     { name: "Dashboard", href: "/" },
-    { name: "Tasks", href: "/projects/67dfb82f97615f9768c9824f/board" },
-    { name: "Tools", href: "/tools" },
-    { name: "Our Team", href: "/team" },
-    { name: "Meeting", href: "/event" },
-    // { name: "Suggestion", href: "/suggestion" },
+    { name: "Projects", href: "/projects" },
+    { name: "Team", href: "/users" },
+    { name: "Calendar", href: "/event" },
+    { name: "Messages", href: "/chat" },
   ]
 
   return (
     <header className="sticky top-0 z-50 w-full bg-black border-b border-white/10 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <div className="flex items-center">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/images/logo.png"
-              alt="Logo"
-              width={200}
-              height={40}
-              className="h-12 w-auto md:h-16"
-            />
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+              <Zap className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-xl font-bold text-white">WorkSync</span>
           </Link>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-4">
+        <nav className="hidden md:flex items-center space-x-1">
           {navItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="px-3 py-2 text-md font-medium text-white hover:text-gold transition-colors relative group"
+              className="px-4 py-2 text-sm font-medium text-white hover:text-blue-300 transition-colors relative group rounded-lg hover:bg-white/10"
             >
               {item.name}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-400 transition-all duration-300 group-hover:w-full"></span>
             </Link>
           ))}
-
         </nav>
 
         <div className="flex items-center space-x-3">
@@ -87,7 +81,7 @@ export function Header({ id, name, email, avatar }: HeaderProps) {
             <Link
               key={item.name}
               href={item.href}
-              className="px-4 py-3 text-white hover:bg-white/10 rounded-md transition-colors"
+              className="px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors font-medium"
               onClick={() => setMenuOpen(false)}
             >
               {item.name}

@@ -60,13 +60,13 @@ const page = () => {
                             Product Description Videos should include the following sections: Introduction, Characteristics and Morphology, Variants, Packing and Shipping. No CTA (Call to Action) to be added.
                         </li>
                         <li>
-                            Only use approved raw videos and images from the G-drive folder provided by Dolce Frutti. Request access if needed.
+                            Only use approved raw videos and images from the G-drive folder provided by WorkSync. Request access if needed.
                         </li>
                         <li>
                             Use minimal on-screen text (approved pop-up text, not complete voiceover as subtitle). Ensure text is clear, concise, and adds to the message without overpowering it.
                         </li>
                         <li>
-                            Follow the theme’s standard fonts (Arial), font sizes, and colors(Black, Golden Yellow and White). Use background and foreground colors that complement the Dolce Frutti brand.
+                            Follow the theme's standard fonts (Arial), font sizes, and colors(Black, Golden Yellow and White). Use background and foreground colors that complement the WorkSync brand.
                         </li>
                         <li>
                             All text, including button, header, and footer text, should be in lowercase with no italics or capital letters, maintaining the brand’s clean and organic feel.
@@ -93,7 +93,7 @@ const page = () => {
                             Use light background sounds (like orchard ambiance or soft wind) where applicable to create an immersive feel, keeping volume low to avoid distraction from the main content.
                         </li>
                         <li>
-                            Apply a subtle color grade to maintain a consistent look across all videos. Keep tones earthy, warm, and natural to highlight the freshness and organic quality of Dolce Frutti products.
+                            Apply a subtle color grade to maintain a consistent look across all videos. Keep tones earthy, warm, and natural to highlight the freshness and organic quality of WorkSync products.
                         </li>
                         <li>
                             Ensure scenes have a sense of depth. Use gentle camera movements to introduce products from various angles, providing a lifelike perspective.

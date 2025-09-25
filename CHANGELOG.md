@@ -203,7 +203,7 @@ Thank you to all contributors who have helped make this project better:
 ## Support
 
 - 📧 **Email**: farjadakbar4@gmail.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/FarjadAkbar/workflow-sync/issues)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/FarjadAkbar/worksync/issues)
 
 ---
 
