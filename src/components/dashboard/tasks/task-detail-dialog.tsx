@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
 import { format } from "date-fns"
-import { Calendar, Clock, BarChart, CheckCircle2, Edit } from "lucide-react"
+import { Calendar, Clock, BarChart, CheckCircle2, Edit, Home, ArrowLeft, KanbanSquare, ChevronRight } from "lucide-react"
 import { TaskChecklist } from "./task-checklist"
 import { TaskComments } from "./task-comments"
 import { TaskAttachments } from "./task-attachments"
@@ -28,6 +28,8 @@ import { useGetUsersQuery } from "@/service/users";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { EditableField } from "./editable-field";
 import { TaskDetailDialogProps } from "@/types/tasks";
+import { TaskNavigation } from "./task-navigation";
+import Link from "next/link";
 export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialogProps) {
   const { data: task, isLoading, isError } = useTask(taskId)
   const { mutate: completeTask, isPending: isCompleting } = useCompleteTask()
@@ -240,6 +242,9 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        {/* Navigation */}
+        <TaskNavigation task={task} className="mb-4" />
+
         <DialogHeader>
           <div className="flex justify-between items-start">
             <div className="flex items-start gap-2">

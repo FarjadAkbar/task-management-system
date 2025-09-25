@@ -252,7 +252,16 @@ export async function GET(req: Request) {
           },
         },
         assigned_section: true,
-        sprint: true,
+        sprint: {
+          include: {
+            project: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         updatedAt: "desc",

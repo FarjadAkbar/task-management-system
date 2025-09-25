@@ -27,18 +27,21 @@ import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus } from "lucide-react";
+import { Plus, KanbanSquare } from "lucide-react";
 import { TaskCard } from "./task-card";
 import { CreateTaskDialog } from "./create-task-dialog";
 import { useSprintTasks } from "@/service/sprints";
 import { useMoveTask } from "@/service/tasks";
 import { useSections } from "@/service/board";
+import { useProject } from "@/service/projects";
 import type { TaskType } from "@/service/tasks/type";
 import AdminWrapper from "../admin-wrapper";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 interface TaskBoardProps {
   boardId: string;
-  sprintId: string;
+  sprintId?: string;
 }
 
 // Create a droppable section component
@@ -127,6 +130,39 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     useSprintTasks(sprintId);
   const { mutate: moveTask } = useMoveTask();
 
+  // Get project ID from sections (assuming sections belong to a project)
+  const projectId = sections?.[0]?.board?.projectId;
+
+  // Fetch all project tasks when there's no sprint
+  const { data: projectTasks, isLoading: loadingProjectTasks } = useQuery({
+    queryKey: ["project-tasks", projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      const response = await axios.get(`/api/tasks/search?projectId=${projectId}`);
+      return response.data.tasks || [];
+    },
+    enabled: !sprintId && !!projectId,
+  });
+
+  // If no boardId is provided, we need to fetch the project's first board
+  const { data: projectBoards } = useQuery({
+    queryKey: ["project-boards", projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      const response = await axios.get(`/api/projects/${projectId}/boards`);
+      return response.data.boards || [];
+    },
+    enabled: !boardId && !!projectId,
+  });
+
+  // Use the first board if no boardId is provided
+  const effectiveBoardId = boardId || projectBoards?.[0]?.id;
+  const { data: fallbackSections, isLoading: loadingFallbackSections } = useSections(effectiveBoardId);
+  
+  // Use fallback sections if no sections from the original boardId
+  const effectiveSections = sections || fallbackSections;
+  const effectiveLoadingSections = loadingSections || loadingFallbackSections;
+
   const [createTaskSection, setCreateTaskSection] = useState<string | null>(
     null
   );
@@ -149,12 +185,14 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
   // Add local state to manage tasks
   const [localTasks, setLocalTasks] = useState<TaskType[]>([]);
 
-  // Initialize local tasks when sprintTasks changes
+  // Initialize local tasks when sprintTasks or projectTasks change
   useEffect(() => {
-    if (sprintTasks) {
+    if (sprintId && sprintTasks) {
       setLocalTasks(sprintTasks);
+    } else if (!sprintId && projectTasks) {
+      setLocalTasks(projectTasks);
     }
-  }, [sprintTasks]);
+  }, [sprintTasks, projectTasks, sprintId]);
 
   // Set up sensors for drag and drop - memoize to prevent recreation
   const sensors = useSensors(
@@ -172,26 +210,29 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
   const sectionTasksMap = useMemo(() => {
     const map = new Map();
 
-    if (sprintId && localTasks.length > 0 && sections) {
+    if (localTasks.length > 0 && effectiveSections) {
       // Initialize all sections with empty arrays
-      sections.forEach((section) => {
+      effectiveSections.forEach((section) => {
         map.set(section.id, []);
       });
 
       // Group tasks by section
       localTasks.forEach((task) => {
         const sectionId = task.assigned_section?.id;
-        if (sectionId) {
-          if (!map.has(sectionId)) {
-            map.set(sectionId, []);
-          }
+        if (sectionId && map.has(sectionId)) {
           map.get(sectionId).push(task);
+        } else if (!sectionId && effectiveSections.length > 0) {
+          // If task has no section, assign it to the first section (To Do)
+          const firstSection = effectiveSections[0];
+          if (firstSection) {
+            map.get(firstSection.id).push(task);
+          }
         }
       });
     }
 
     return map;
-  }, [sprintId, localTasks, sections]);
+  }, [localTasks, effectiveSections]);
 
   // Prepare items for SortableContext
   useEffect(() => {
@@ -438,13 +479,11 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
 
   // Memoize the section cards rendering
   const sectionCards = useMemo(() => {
-    if (!sections) return null;
+    if (!effectiveSections) return null;
 
-    return sections.map((section) => {
+    return effectiveSections.map((section) => {
       // Get tasks for this section
-      const sectionTasks: TaskType[] = sprintId
-        ? sectionTasksMap.get(section.id) || []
-        : [];
+      const sectionTasks: TaskType[] = sectionTasksMap.get(section.id) || [];
       const sectionColor = sectionColors[section.name as keyof typeof sectionColors] || {
         bg: "#FFFFFF",
         header: "#F1F5F9",
@@ -517,7 +556,7 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
       );
     });
   }, [
-    sections,
+    effectiveSections,
     sprintId,
     sectionTasksMap,
     items,
@@ -525,8 +564,31 @@ export function TaskBoard({ boardId, sprintId }: TaskBoardProps) {
     handleCreateTask,
   ]);
 
-  if (loadingSections || loadingSprintTasks) {
+  if (effectiveLoadingSections || (sprintId ? loadingSprintTasks : loadingProjectTasks)) {
     return loadingSkeleton;
+  }
+
+  // Debug information
+  console.log('TaskBoard Debug:', {
+    sprintId,
+    localTasks: localTasks.length,
+    effectiveSections: effectiveSections?.length,
+    sectionTasksMap: Array.from(sectionTasksMap.entries()).map(([id, tasks]) => ({ sectionId: id, taskCount: tasks.length }))
+  });
+
+  // If no sections available, show a message
+  if (!effectiveSections || effectiveSections.length === 0) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center py-12">
+            <KanbanSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">No board sections found</h3>
+            <p className="text-muted-foreground mb-4">Create a board with sections to organize your tasks</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (

@@ -23,10 +23,16 @@ import { CalendarIcon, Loader2 } from "lucide-react"
 import { MultiSelect } from "@/components/ui/multi-select"
 import { useGetUsersQuery } from "@/service/users"
 import { useCreateTask } from "@/service/tasks"
+import { SprintSelector } from "./sprint-selector"
 import { toast } from "@/hooks/use-toast"
 
 const formSchema = z.object({
   title: z.string().min(1, "Task title is required"),
+  content: z.string().optional(),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
+  estimatedHours: z.number().min(0).optional(),
+  dueDateAt: z.date().optional(),
+  sprintId: z.string().optional(),
   assignees: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
 })
@@ -39,9 +45,10 @@ interface CreateTaskDialogProps {
   sectionId: string | null
   sprintId?: string
   parentTaskId?: string
+  projectId?: string
 }
 
-export function CreateTaskDialog({ open, onOpenChange, sectionId, sprintId, parentTaskId }: CreateTaskDialogProps) {
+export function CreateTaskDialog({ open, onOpenChange, sectionId, sprintId, parentTaskId, projectId }: CreateTaskDialogProps) {
   const { mutate: createTask, isPending } = useCreateTask()
   const { data: usersData } = useGetUsersQuery({ search: "" })
 
@@ -49,6 +56,11 @@ export function CreateTaskDialog({ open, onOpenChange, sectionId, sprintId, pare
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
+      content: "",
+      priority: "MEDIUM",
+      estimatedHours: undefined,
+      dueDateAt: undefined,
+      sprintId: sprintId,
       assignees: [],
       tags: [],
     },
@@ -121,6 +133,121 @@ export function CreateTaskDialog({ open, onOpenChange, sectionId, sprintId, pare
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Enter task description" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Priority</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="LOW">Low</SelectItem>
+                        <SelectItem value="MEDIUM">Medium</SelectItem>
+                        <SelectItem value="HIGH">High</SelectItem>
+                        <SelectItem value="URGENT">Urgent</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="estimatedHours"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estimated Hours</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="0" 
+                        {...field} 
+                        onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="dueDateAt"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Due Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className="w-full pl-3 text-left font-normal"
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Sprint Selection - only show if projectId is provided and sprintId is not */}
+            {projectId && !sprintId && (
+              <FormItem>
+                <FormLabel>Sprint</FormLabel>
+                <FormControl>
+                  <SprintSelector
+                    projectId={projectId}
+                    value={sprintId}
+                    onValueChange={(value) => {
+                      // Update the form to include sprintId
+                      form.setValue("sprintId", value)
+                    }}
+                    placeholder="Select a sprint (optional)"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
 
             <FormField
               control={form.control}

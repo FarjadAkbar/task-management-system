@@ -11,7 +11,7 @@ import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { format } from "date-fns"
-import { Calendar, Clock, BarChart, CheckCircle2, Edit, ArrowLeft } from "lucide-react"
+import { Calendar, Clock, BarChart, CheckCircle2, Edit, ArrowLeft, ChevronRight, Home, KanbanSquare } from "lucide-react"
 
 import Link from "next/link"
 import { useCompleteTask, useTask } from "@/service/tasks"
@@ -22,6 +22,7 @@ import { TaskComments } from "./task-comments"
 import { TaskAttachments } from "./task-attachments"
 import { TaskFeedback } from "./task-feedback"
 import { EditTaskDialog } from "./edit-task-dialog"
+import { TaskNavigation } from "./task-navigation"
 
 export default function TaskList({ projectId, taskId }: { projectId: string; taskId: string }) {
   const router = useRouter()
@@ -88,14 +89,10 @@ export default function TaskList({ projectId, taskId }: { projectId: string; tas
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/projects/${projectId}/board`}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Board
-          </Link>
-        </Button>
+      {/* Navigation */}
+      <TaskNavigation task={task} />
 
+      <div className="flex justify-between items-center">
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => setShowEditDialog(true)}>
             <Edit className="h-4 w-4 mr-1" /> Edit

@@ -336,6 +336,16 @@ export async function getSprintTasks(sprintId: string) {
         },
       },
       assigned_section: true,
+      sprint: {
+        include: {
+          project: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
     },
     orderBy: {
       position: "asc",
@@ -429,7 +439,16 @@ export async function getTaskDetails(taskId: string): Promise<TaskType | null> {
         },
       },
       assigned_section: true,
-      sprint: true,
+      sprint: {
+        include: {
+          project: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
       childTasks: {
         include: {
           assignees: {

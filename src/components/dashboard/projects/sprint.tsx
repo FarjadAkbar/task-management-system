@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Calendar, CheckCircle2, KanbanSquare, Table2, Play, CheckSquare, AlertTriangle } from "lucide-react"
+import { Calendar, CheckCircle2, KanbanSquare, Table2, Play, CheckSquare, AlertTriangle, Plus, ChevronRight } from "lucide-react"
 import { format } from "date-fns"
 import Link from "next/link"
 import {
@@ -23,10 +23,14 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useCompleteSprint, useSprint, useSprintTasks, useStartSprint } from "@/service/sprints"
 import { TaskBoard } from "@/components/dashboard/tasks/task-board"
+import { CreateTaskDialog } from "@/components/dashboard/tasks/create-task-dialog"
+import { SprintMetrics } from "./sprint-metrics"
 import { toast } from "@/hooks/use-toast"
+import { useState } from "react"
 
 export default function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: string }) {
   const router = useRouter()
+  const [showCreateTaskDialog, setShowCreateTaskDialog] = useState(false)
 
   const { data: sprint, isLoading: loadingSprint } = useSprint(sprintId)
   const { data: tasks, isLoading: loadingTasks } = useSprintTasks(sprintId)
@@ -108,6 +112,19 @@ export default function SprintDetail({ projectId, sprintId }: { projectId: strin
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb Navigation */}
+      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <Link href="/projects" className="hover:text-foreground">
+          Projects
+        </Link>
+        <ChevronRight className="h-4 w-4" />
+        <Link href={`/projects/${projectId}`} className="hover:text-foreground">
+          {sprint.project?.name || "Project"}
+        </Link>
+        <ChevronRight className="h-4 w-4" />
+        <span className="text-foreground">{sprint.name}</span>
+      </nav>
+
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">{sprint.name}</h1>
@@ -153,11 +170,19 @@ export default function SprintDetail({ projectId, sprintId }: { projectId: strin
             </AlertDialog>
           )}
 
+          <Button onClick={() => setShowCreateTaskDialog(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Task
+          </Button>
+
           <Button variant="outline" asChild>
             <Link href={`/projects/${projectId}`}>Back to Project</Link>
           </Button>
         </div>
       </div>
+
+      {/* Sprint Metrics */}
+      <SprintMetrics sprint={sprint} tasks={tasks || []} />
 
       {/* Sprint info card */}
       <Card>
@@ -168,7 +193,7 @@ export default function SprintDetail({ projectId, sprintId }: { projectId: strin
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <div className="flex items-center text-sm">
                 <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -180,18 +205,6 @@ export default function SprintDetail({ projectId, sprintId }: { projectId: strin
                 <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
                 <span className="text-muted-foreground">End Date: </span>
                 <span className="ml-1">{format(new Date(sprint.endDate), "MMM d, yyyy")}</span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Progress</span>
-                <span>{completionPercentage}%</span>
-              </div>
-              <Progress value={completionPercentage} className="h-2" />
-              <div className="flex justify-between text-sm text-muted-foreground bg-red-900">
-                <span>{completedTasks} completed</span>
-                <span>{totalTasks} total</span>
               </div>
             </div>
 
@@ -233,7 +246,10 @@ export default function SprintDetail({ projectId, sprintId }: { projectId: strin
               ))}
             </div>
           ) : (
-            <TaskBoard boardId={sprint.project?.boards?.[0]?.id} sprintId={sprintId} />
+            <TaskBoard 
+              boardId={sprint.project?.boards?.[0]?.id || ''} 
+              sprintId={sprintId} 
+            />
           )}
         </TabsContent>
 
@@ -249,6 +265,14 @@ export default function SprintDetail({ projectId, sprintId }: { projectId: strin
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Create Task Dialog */}
+      <CreateTaskDialog
+        open={showCreateTaskDialog}
+        onOpenChange={setShowCreateTaskDialog}
+        sectionId={null}
+        sprintId={sprintId}
+      />
     </div>
   )
 }
