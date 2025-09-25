@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Plus, KanbanSquare, Table2 } from "lucide-react"
+import { Plus, KanbanSquare, Table2, Home, ArrowLeft, ChevronRight } from "lucide-react"
 import { useProject } from "@/service/projects"
 import { TaskBoard } from "@/components/dashboard/tasks/task-board"
 import { useBoards } from "@/service/board"
@@ -14,6 +14,7 @@ import { CreateTaskDialog } from "../tasks/create-task-dialog"
 import { CreateBoardDialog } from "./create-board-dialog"
 import { TaskTableView } from "../tasks/task-table-view"
 import AdminWrapper from "../admin-wrapper"
+import Link from "next/link"
 
 export default function ProjectBoard({ projectId }: { projectId: string }) {
   const { data: project, isLoading: loadingProject } = useProject(projectId)
@@ -57,20 +58,65 @@ export default function ProjectBoard({ projectId }: { projectId: string }) {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb Navigation */}
+      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <Link href="/dashboard" className="hover:text-foreground flex items-center">
+          <Home className="h-4 w-4 mr-1" />
+          Dashboard
+        </Link>
+        <ChevronRight className="h-4 w-4" />
+        <Link href="/projects" className="hover:text-foreground">
+          Projects
+        </Link>
+        <ChevronRight className="h-4 w-4" />
+        <Link href={`/projects/${projectId}`} className="hover:text-foreground">
+          {project?.name || "Project"}
+        </Link>
+        <ChevronRight className="h-4 w-4" />
+        <span className="text-foreground font-medium">Board</span>
+      </nav>
+
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className=" text-xl sm:text-2xl font-bold">{project?.name} Board</h1>
-          <p className="text-muted-foreground">
-            {activeSprint ? `Current Sprint: ${activeSprint.name}` : "No active sprint"}
-          </p>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard">
+              <Home className="h-4 w-4 mr-1" />
+              Dashboard
+            </Link>
+          </Button>
+          
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/projects/${projectId}`}>
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Project
+            </Link>
+          </Button>
+
+          {activeSprint && (
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/projects/${projectId}/sprints/${activeSprint.id}`}>
+                <KanbanSquare className="h-4 w-4 mr-1" />
+                Sprint
+              </Link>
+            </Button>
+          )}
         </div>
 
-        <AdminWrapper>
-          <Button onClick={handleAddTask} className="bg-black text-gold hover:text-black hover:bg-gold">
-            <Plus className="mr-1 h-4 w-4" />
-            Add Task
-          </Button>
-        </AdminWrapper>
+        <div className="flex gap-2">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold">{project?.name} Board</h1>
+            <p className="text-muted-foreground">
+              {activeSprint ? `Current Sprint: ${activeSprint.name}` : "No active sprint"}
+            </p>
+          </div>
+
+          <AdminWrapper>
+            <Button onClick={handleAddTask} className="bg-black text-gold hover:text-black hover:bg-gold">
+              <Plus className="mr-1 h-4 w-4" />
+              Add Task
+            </Button>
+          </AdminWrapper>
+        </div>
       </div>
 
       {!firstBoard ? (

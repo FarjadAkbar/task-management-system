@@ -207,11 +207,11 @@ export default function ProjectDetail({ projectId }: { projectId: string }) {
                     <Badge>{activeSprint.status}</Badge>
                   </div>
 
-                  <Progress value={60} className="h-2" />
+                  <Progress value={activeSprint.stats?.completionPercentage || 0} className="h-2" />
 
                   <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>12 tasks completed</span>
-                    <span>20 total tasks</span>
+                    <span>{activeSprint.stats?.completedTasks || 0} tasks completed</span>
+                    <span>{activeSprint.stats?.totalTasks || 0} total tasks</span>
                   </div>
 
                   <Button className="w-full" asChild>

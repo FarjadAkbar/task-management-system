@@ -4,8 +4,8 @@ import { TaskAssignee } from "@/types/type";
 
 export type TaskType = Tasks & {
   assignees: TaskAssignee[];
-  sprint: Sprint;
-  assigned_section: Sections;
+  sprint: Sprint | null;
+  assigned_section: Sections | null;
   task_feedback: TaskFeedback[];
   subtasks: SubTaskType[];
   comments: TaskCommentType[];
@@ -70,8 +70,6 @@ export type MoveTaskPayloadType = {
 }
 
 export type TaskCommentType = TasksComments & {
-  title: string;
-  completedAt: Date
   assigned_user: UserType
 }
 
@@ -82,5 +80,5 @@ export type SubTaskType = SubTask & {
 export type ChecklistItemType = ChecklistItem & {
   completed: boolean
   createdBy: UserType
-  completedBy: UserType
+  completedBy: UserType | null
 }

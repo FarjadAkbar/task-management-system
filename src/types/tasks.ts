@@ -61,8 +61,8 @@ export interface TaskType {
   createdBy: string;
   sprintId?: string;
   assignees: TaskAssignee[];
-  sprint: Sprint;
-  assigned_section: Sections;
+  sprint: Sprint | null;
+  assigned_section: Sections | null;
   task_feedback: TaskFeedbackType[];
   subtasks: SubTaskType[];
   comments: TaskCommentType[];
@@ -377,9 +377,9 @@ export interface TaskTimelineProps {
 // Helper Types
 export interface UserType {
   id: string;
-  name: string;
+  name: string | null;
   email: string;
-  avatar?: string;
+  avatar?: string | null;
   role?: RoleEnum;
   userStatus?: ActiveStatus;
   first_name?: string;

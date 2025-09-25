@@ -46,6 +46,21 @@ export default function ProjectSettingsPage() {
   const params = useParams()
   const router = useRouter()
 
+  if (!params?.id) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center">
+            <p className="text-destructive">Invalid project ID</p>
+            <Button variant="outline" className="mt-4" onClick={() => router.push("/projects")}>
+              Back to Projects
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const projectId = params.id as string
 
   const { data: project, isLoading } = useProject(projectId)
@@ -80,7 +95,10 @@ export default function ProjectSettingsPage() {
     updateProject(
       {
         projectId,
-        data: values,
+        data: {
+          ...values,
+          endDate: values.endDate || undefined,
+        },
       },
       {
         onSuccess: () => {

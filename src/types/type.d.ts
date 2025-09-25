@@ -62,9 +62,9 @@ export interface TaskAssignee {
   assignedAt: Date;
   user: {
     id: string;
-    name: string;
+    name: string | null;
     email: string;
-    avatar?: string;
+    avatar?: string | null;
     role?: RoleEnum;
   };
 }

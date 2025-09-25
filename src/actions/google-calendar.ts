@@ -391,7 +391,7 @@ export async function syncEventsFromGoogle(userId: string): Promise<void> {
     if (!startTime || !endTime) continue
 
     // Create event in our database
-    await prismadb.calendarEvent.create({
+    const createdEvent = await prismadb.calendarEvent.create({
       data: {
         title: googleEvent.summary || "Untitled Event",
         description: googleEvent.description || "",
@@ -419,13 +419,13 @@ export async function syncEventsFromGoogle(userId: string): Promise<void> {
     if (googleEvent.conferenceData?.conferenceId) {
       const meetingUrl = googleEvent.conferenceData.entryPoints?.find((entry) => entry.entryPointType === "video")?.uri
 
-      if (meetingUrl && existingEvent) {
+      if (meetingUrl) {
         await prismadb.meetingRoom.create({
           data: {
             meetingCode: googleEvent.conferenceData.conferenceId,
             meetingUrl,
             joinUrl: meetingUrl,
-            eventId: existingEvent.id,
+            eventId: createdEvent.id,
             creatorId: userId,
           },
         })
