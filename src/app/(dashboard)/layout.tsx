@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL! || "http://localhost:3000"
   ),
-  title: "",
-  description: "",
+  title: "WorkSync - Team Task Management Platform",
+  description: "A comprehensive team task management platform with real-time collaboration, project management, team chat, file sharing, and calendar integration.",
   openGraph: {
     images: [
       {

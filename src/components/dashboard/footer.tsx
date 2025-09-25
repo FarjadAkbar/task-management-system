@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="w-full bg-black border-t border-white/10 py-4 mt-auto">
       <div className="container mx-auto px-4 flex justify-center md:justify-between items-center">
         <Link 
-          href="https://www.dolcefrutti.com/"
+          href="https://www.worksync.com/"
           className="text-white/70 hover:text-white text-sm transition-colors"
         >
           {process.env.NEXT_PUBLIC_APP_NAME} - {process.env.NEXT_PUBLIC_APP_V}

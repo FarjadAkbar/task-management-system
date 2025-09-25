@@ -34,7 +34,7 @@ export function Credentials({ data }: ProfileFormProps) {
     const credentials = [
         ...(data.webmail_email && data.webmail_password ? [{
           title: "Webmail",
-          url: "https://webmail-oxcs.networksolutionsemail.com/appsuite/?user_domain=mail.dolcefrutti.com",
+          url: "https://webmail-oxcs.networksolutionsemail.com/appsuite/?user_domain=mail.worksync.com",
           linkText: "Open Webmail",
           fields: [
             { label: "User Mail", value: data.webmail_email, id: "webmail_email" },

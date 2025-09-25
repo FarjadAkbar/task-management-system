@@ -75,9 +75,6 @@ model Users {
   // Notes Relations
   notes Notes[]
 
-  // Tools Relations
-  tools Tools[]
-
   // Tickets Relations
   tickets          Ticket[]
   assigned_tickets Ticket[] @relation(name: "assigned_ticket")
@@ -101,7 +98,6 @@ model Documents {
   // Relations
   sharedWith FileShare[]
   tasks      TaskDocument[]
-  Tools      Tools[]
   chatAttachments ChatAttachment[] 
 }
 
@@ -421,20 +417,6 @@ model Ticket {
   assignedTo Users? @relation("assigned_ticket", fields: [assignedToId], references: [id])
 }
 
-model Tools {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
-  username   String
-  password   String
-  department String
-  user       String?  @db.ObjectId
-  documentID String   @db.ObjectId
-  createdAt  DateTime @default(now())
-
-  // Relations
-  document   Documents @relation(fields: [documentID], references: [id])
-  created_by Users?    @relation(fields: [user], references: [id])
-}
 
 model ChatRoom {
   id           String            @id @default(auto()) @map("_id") @db.ObjectId

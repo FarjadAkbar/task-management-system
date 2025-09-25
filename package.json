@@ -1,20 +1,20 @@
 {
-  "name": "workflow-sync",
+  "name": "worksync",
   "version": "1.0.0",
-  "description": "A comprehensive team task management platform with real-time collaboration, project management, team chat, file sharing, and calendar integration.",
+  "description": "WorkSync - A comprehensive team task management platform with real-time collaboration, project management, team chat, file sharing, and calendar integration.",
   "private": false,
   "author": {
     "name": "Farjad Akbar",
     "email": "farjadakbar4@gmail.com"
   },
   "license": "MIT",
-  "homepage": "https://github.com/FarjadAkbar/workflow-sync#readme",
+  "homepage": "https://github.com/FarjadAkbar/worksync#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FarjadAkbar/workflow-sync.git"
+    "url": "git+https://github.com/FarjadAkbar/worksync.git"
   },
   "bugs": {
-    "url": "https://github.com/FarjadAkbar/workflow-sync/issues"
+    "url": "https://github.com/FarjadAkbar/worksync/issues"
   },
   "keywords": [
     "task-management",

@@ -5,7 +5,7 @@ const EmployeeGuidelines = () => {
         <>
             <section className="bg-white p-6 rounded-lg shadow-md mb-8">
                 <h1 className="text-2xl font-bold text-gray-800 mb-4">
-                    General Guidelines for Dolce Frutti Employees
+                    General Guidelines for WorkSync Employees
                 </h1>
                 <ul className="list-disc list-inside space-y-2 text-gray-700 text-sm">
                     <li>Stay updated on company products, services, and promotions.</li>
